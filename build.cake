@@ -18,7 +18,7 @@ bool skipPublish = Argument<bool>( "skip_publish", false );
 FilePath sln = File( "./svn2gitnet.sln" );
 DirectoryPath packageDir = Directory( "./dist" );
 
-const string coreAppVers = "netcoreapp2.0";
+const string coreAppVers = "netcoreapp3.1";
 
 List<string> unixRunTimes = new List<string>
 {
