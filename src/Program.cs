@@ -8,8 +8,12 @@ namespace Svn2GitNet
     {
         static void Migrate(Options options, string[] args)
         {
-            ILoggerFactory loggerFactory = new LoggerFactory();
-            loggerFactory.CreateLogger( nameof( Svn2GitNet ) );
+            ILoggerFactory loggerFactory = LoggerFactory.Create(
+                builder =>
+                {
+                    builder.AddConsole();
+                }
+            );
 
             ICommandRunner commandRunner = new CommandRunner(loggerFactory.CreateLogger<CommandRunner>(), options.IsVerbose);
             IMessageDisplayer messageDisplayer = new ConsoleMessageDisplayer();
