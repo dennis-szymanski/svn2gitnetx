@@ -1,5 +1,3 @@
-using System;
-using System.Xml.Serialization;
 using Microsoft.Extensions.Logging;
 
 namespace Svn2GitNet.Tests
@@ -8,7 +6,10 @@ namespace Svn2GitNet.Tests
     {
         public static ILoggerFactory CreateLoggerFactory()
         {
-            return new LoggerFactory().AddConsole();
+            ILoggerFactory factory = new LoggerFactory();
+            factory.CreateLogger( nameof( Svn2GitNet ) );
+
+            return factory;
         }
 
         public static ICommandRunner CreateCommandRunner()

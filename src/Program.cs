@@ -1,7 +1,5 @@
 ﻿using System;
 using CommandLine;
-using CommandLine.Text;
-using System.IO;
 using Microsoft.Extensions.Logging;
 
 namespace Svn2GitNet
@@ -10,7 +8,8 @@ namespace Svn2GitNet
     {
         static void Migrate(Options options, string[] args)
         {
-            ILoggerFactory loggerFactory = new LoggerFactory().AddConsole();
+            ILoggerFactory loggerFactory = new LoggerFactory();
+            loggerFactory.CreateLogger( nameof( Svn2GitNet ) );
 
             ICommandRunner commandRunner = new CommandRunner(loggerFactory.CreateLogger<CommandRunner>(), options.IsVerbose);
             IMessageDisplayer messageDisplayer = new ConsoleMessageDisplayer();

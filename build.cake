@@ -2,9 +2,11 @@
 #addin nuget:?package=Cake.Compression&Version=0.2.4
 
 const string buildTarget = "build";
+const string buildDockerTarget = "build_docker";
 const string unitTestTarget = "unit_test";
 const string integrationTestTarget = "integration_test";
 const string testTarget = "test";
+const string publishDockerTarget = "publish_docker";
 const string publishWindowsTarget = "publish_windows";
 const string publishUnixTarget = "publish_unix";
 const string publishAllTarget = "publish";
@@ -265,6 +267,52 @@ Task( packageTarget )
 .Description( "Packages both Windows and Unix" )
 .IsDependentOn( packageWindowsTarget )
 .IsDependentOn( packageUnixTarget );
+
+// ---------------- Docker ----------------
+
+Task( publishDockerTarget )
+.Does(
+    () =>
+    {
+        DirectoryPath dockerDist = packageDir.Combine( "docker" );
+        EnsureDirectoryExists( dockerDist );
+        CleanDirectory( dockerDist );
+
+        DotNetCorePublishSettings settings = new DotNetCorePublishSettings
+        {
+            Configuration = "Release",
+            SelfContained = false,
+            Runtime = "linux-x64",
+            OutputDirectory = dockerDist
+        };
+
+        DotNetCorePublish( "./src/svn2gitnet.csproj", settings );
+    }
+).Description( "Builds for making the docker image." );
+
+Task( buildDockerTarget )
+.Does(
+    () =>
+    {
+        string arguments = "build -t svn2gitnet -f ./docker/Dockerfile ./dist/docker";
+        ProcessArgumentBuilder argumentsBuilder = ProcessArgumentBuilder.FromString( arguments );
+        ProcessSettings settings = new ProcessSettings
+        {
+            Arguments = argumentsBuilder
+        };
+        int exitCode = StartProcess( "docker", settings );
+        if( exitCode != 0 )
+        {
+            throw new ApplicationException(
+                "Error when running docker.  Got error: " + exitCode
+            );
+        }
+    }
+)
+.Description( "Builds the docker image" )
+.IsDependentOn( publishDockerTarget );
+
+// ---------------- All ----------------
 
 Task( "all" )
 .Description( "Does everything" )
