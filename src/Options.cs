@@ -141,5 +141,12 @@ namespace Svn2GitNet
             get;
             set;
         }
+
+        [Option("breaklocks", HelpText = "Breaks any index.lock files in the .git/svn/refs/remotes/svn/* directories.  Only use this if there are no processes running.", Default = false)]
+        public bool BreakLocks
+        {
+            get;
+            set;
+        }
     }
 }

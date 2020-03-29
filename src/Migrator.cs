@@ -93,6 +93,11 @@ namespace Svn2GitNet
             {
                 PreRunPrepare();
 
+                if( Options.BreakLocks )
+                {
+                    BreakLocks();
+                }
+
                 if (Options.Rebase)
                 {
                     grabber.FetchBranches();
@@ -195,6 +200,31 @@ namespace Svn2GitNet
             {
                 MessageDisplayer.Show("Failed to disable the cached credentials. We'll use the cached credentials for further actions.");
                 Log(ex.ToString());
+            }
+        }
+
+        private void BreakLocks()
+        {
+            string svnIndexFolder = Path.Combine( ".", ".git", "svn", "refs", "remotes", "svn" );
+            if( Directory.Exists( svnIndexFolder ) )
+            {
+                foreach( string dir in Directory.GetDirectories( svnIndexFolder ) )
+                {
+                    string lockFile = Path.Combine( dir, "index.lock" );
+                    if( File.Exists( lockFile ) )
+                    {
+                        Log( $"Breaking lock at '{lockFile}" );
+                        try
+                        {
+                            File.Delete( lockFile );
+                        }
+                        catch( Exception )
+                        {
+                            Log( $"Could not delete lock at '{lockFile}', is the file in use by a different process?" );
+                            throw;
+                        }
+                    }
+                }
             }
         }
 
