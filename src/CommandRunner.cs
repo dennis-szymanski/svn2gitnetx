@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Text;
 using Microsoft.Extensions.Logging;
 
 namespace Svn2GitNet
@@ -18,17 +19,14 @@ namespace Svn2GitNet
 
         public int Run(string cmd, string arguments)
         {
-            string standardOutput;
-            string standardError;
-
-            return Run(cmd, arguments, out standardOutput, out standardError);
+            return Run(cmd, arguments, null, null, null);
         }
 
         public int Run(string cmd, string arguments, out string standardOutput)
         {
             string standardError;
 
-            return Run(cmd, arguments, out standardOutput, out standardError);
+            return Run(cmd, arguments, out standardOutput, out standardError, null);
         }
 
         public int Run(string cmd, string arguments, out string standardOutput, out string standardError)
@@ -37,6 +35,28 @@ namespace Svn2GitNet
         }
 
         public int Run(string cmd, string arguments, out string standardOutput, out string standardError, string workingDirectory)
+        {
+            StringBuilder stdout = new StringBuilder();
+            StringBuilder stderr = new StringBuilder();
+
+            Action<string> onStdOut = delegate( string s )
+            {
+                stdout.Append( s );
+            };
+
+            Action<string> onStdErr = delegate( string s )
+            {
+                stderr.Append( s );
+            };
+
+            int exitCode = Run( cmd, arguments, onStdOut, onStdErr, workingDirectory);
+            standardOutput = stdout.ToString();
+            standardError = stderr.ToString();
+
+            return exitCode;
+        }
+
+        public int Run(string cmd, string arguments, Action<string> onStandardOutput, Action<string> onStandardError, string workingDirectory)
         {
             Log($"Running command: {cmd} {arguments.ToString()}");
             Process commandProcess = new Process
@@ -57,7 +77,6 @@ namespace Svn2GitNet
                 commandProcess.StartInfo.WorkingDirectory = workingDirectory;
             }
 
-            string tempOutput = string.Empty;
             commandProcess.OutputDataReceived += (s, e) =>
             {
                 if (string.IsNullOrEmpty(e.Data))
@@ -66,10 +85,9 @@ namespace Svn2GitNet
                 }
 
                 Console.WriteLine(e.Data);
-                tempOutput += e.Data;
+                onStandardOutput?.Invoke(e.Data);
             };
 
-            string tempError = string.Empty;
             commandProcess.ErrorDataReceived += (s, e) =>
             {
                 if (string.IsNullOrEmpty(e.Data))
@@ -77,8 +95,8 @@ namespace Svn2GitNet
                     return;
                 }
 
-                Console.WriteLine(e.Data);
-                tempError += e.Data;
+                Console.Error.WriteLine(e.Data);
+                onStandardError?.Invoke(e.Data);
             };
 
             int exitCode = -1;
@@ -98,9 +116,6 @@ namespace Svn2GitNet
                 exitCode = commandProcess.ExitCode;
                 commandProcess.Close();
             }
-
-            standardOutput = tempOutput;
-            standardError = tempError;
 
             return exitCode;
         }
