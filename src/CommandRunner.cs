@@ -41,12 +41,12 @@ namespace Svn2GitNet
 
             Action<string> onStdOut = delegate( string s )
             {
-                stdout.Append( s );
+                stdout.AppendLine( s );
             };
 
             Action<string> onStdErr = delegate( string s )
             {
-                stderr.Append( s );
+                stderr.AppendLine( s );
             };
 
             int exitCode = Run( cmd, arguments, onStdOut, onStdErr, workingDirectory);
