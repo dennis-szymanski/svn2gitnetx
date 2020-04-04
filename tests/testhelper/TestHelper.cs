@@ -1,3 +1,4 @@
+using System.Threading;
 using Microsoft.Extensions.Logging;
 
 namespace Svn2GitNet.Tests
@@ -14,7 +15,7 @@ namespace Svn2GitNet.Tests
 
         public static ICommandRunner CreateCommandRunner()
         {
-            return new CommandRunner(CreateLoggerFactory().CreateLogger<CommandRunner>(), false);
+            return new CommandRunner(CreateLoggerFactory().CreateLogger<CommandRunner>(), false, new CancellationToken());
         }
     }
 }

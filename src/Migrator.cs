@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
@@ -14,20 +15,22 @@ namespace Svn2GitNet
         private readonly string _defaultAuthorsFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".svn2gitnet", "authors");
         private readonly string _gitSvnCacheDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".subversion", "auth");
 
-        private string[] _args;
+        private readonly string[] _args;
         private string _gitConfigCommandArguments;
         private string _svnUrl;
-        private ILoggerFactory _loggerFactory;
+        private readonly ILoggerFactory _loggerFactory;
 
-        public Migrator(Options options,
-                        string[] args,
-                        ICommandRunner commandRunner,
-                        IMessageDisplayer messageDisplayer,
-                        ILoggerFactory loggerFactory)
-            : base(options, commandRunner, messageDisplayer, loggerFactory.CreateLogger<Migrator>())
+        public Migrator(
+            Options options,
+            string[] args,
+            ICommandRunner commandRunner,
+            IMessageDisplayer messageDisplayer,
+            ILoggerFactory loggerFactory
+        ) :
+            base(options, commandRunner, messageDisplayer, loggerFactory.CreateLogger<Migrator>())
         {
-            _args = args;
-            _loggerFactory = loggerFactory;
+            this._args = args;
+            this._loggerFactory = loggerFactory;
         }
 
         public void Initialize()

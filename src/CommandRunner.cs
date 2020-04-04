@@ -2,19 +2,23 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 
 namespace Svn2GitNet
 {
     public class CommandRunner : ICommandRunner
     {
-        private ILogger _logger;
-        private bool _isVerbose;
+        private readonly ILogger _logger;
+        private readonly bool _isVerbose;
 
-        public CommandRunner(ILogger logger, bool isVerbose)
+        private readonly CancellationToken _cancelToken;
+
+        public CommandRunner(ILogger logger, bool isVerbose, CancellationToken cancelToken)
         {
             _logger = logger;
             _isVerbose = isVerbose;
+            _cancelToken = cancelToken;
         }
 
         public int Run(string cmd, string arguments)
@@ -59,65 +63,86 @@ namespace Svn2GitNet
         public int Run(string cmd, string arguments, Action<string> onStandardOutput, Action<string> onStandardError, string workingDirectory)
         {
             Log($"Running command: {cmd} {arguments.ToString()}");
-            Process commandProcess = new Process
+
+            ProcessStartInfo startInfo = new ProcessStartInfo
             {
-                StartInfo =
-                {
-                    CreateNoWindow = true,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    FileName = cmd,
-                    Arguments = arguments
-                }
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                FileName = cmd,
+                Arguments = arguments
             };
 
             if (!string.IsNullOrWhiteSpace(workingDirectory))
             {
-                commandProcess.StartInfo.WorkingDirectory = workingDirectory;
+                startInfo.WorkingDirectory = workingDirectory;
             }
 
-            commandProcess.OutputDataReceived += (s, e) =>
+            using( ManualResetEventSlim exitedEvent = new ManualResetEventSlim( false ) )
             {
-                if (string.IsNullOrEmpty(e.Data))
+                using( Process commandProcess = new Process() )
                 {
-                    return;
+                    commandProcess.StartInfo = startInfo;
+
+                    commandProcess.OutputDataReceived += (s, e) =>
+                    {
+                        if (string.IsNullOrEmpty(e.Data))
+                        {
+                            return;
+                        }
+
+                        Console.WriteLine(e.Data);
+                        onStandardOutput?.Invoke(e.Data);
+                    };
+
+                    commandProcess.ErrorDataReceived += (s, e) =>
+                    {
+                        if (string.IsNullOrEmpty(e.Data))
+                        {
+                            return;
+                        }
+
+                        Console.Error.WriteLine(e.Data);
+                        onStandardError?.Invoke(e.Data);
+                    };
+
+                    commandProcess.Exited += ( s, e ) =>
+                    {
+                        exitedEvent.Set();
+                    };
+
+                    int exitCode = -1;
+                    try
+                    {
+                        commandProcess.Start();
+                        commandProcess.BeginOutputReadLine();
+                        commandProcess.BeginErrorReadLine();
+
+                        exitedEvent.Wait( this._cancelToken );
+
+                        commandProcess.WaitForExit();
+                    }
+                    catch (Win32Exception)
+                    {
+                        throw new MigrateException($"Command {cmd} does not exit. Did you install it or add it to the Environment path?");
+                    }
+                    catch( OperationCanceledException )
+                    {
+                        commandProcess.Kill();
+                        commandProcess.WaitForExit();
+                        throw;
+                    }
+                    finally
+                    {
+                        exitCode = commandProcess.ExitCode;
+                        commandProcess.Close();
+                        commandProcess.Dispose();
+                    }
+
+                    return exitCode;
                 }
-
-                Console.WriteLine(e.Data);
-                onStandardOutput?.Invoke(e.Data);
-            };
-
-            commandProcess.ErrorDataReceived += (s, e) =>
-            {
-                if (string.IsNullOrEmpty(e.Data))
-                {
-                    return;
-                }
-
-                Console.Error.WriteLine(e.Data);
-                onStandardError?.Invoke(e.Data);
-            };
-
-            int exitCode = -1;
-            try
-            {
-                commandProcess.Start();
-                commandProcess.BeginOutputReadLine();
-                commandProcess.BeginErrorReadLine();
-                commandProcess.WaitForExit();
             }
-            catch (Win32Exception)
-            {
-                throw new MigrateException($"Command {cmd} does not exit. Did you install it or add it to the Environment path?");
-            }
-            finally
-            {
-                exitCode = commandProcess.ExitCode;
-                commandProcess.Close();
-            }
-
-            return exitCode;
         }
 
         public int RunGitSvnInteractiveCommand(string arguments, string password)
