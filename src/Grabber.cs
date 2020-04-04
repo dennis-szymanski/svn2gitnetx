@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -11,6 +12,11 @@ namespace Svn2GitNetX
     {
         private string _svnUrl = string.Empty;
         private MetaInfo _metaInfo = null;
+
+        private static readonly Regex revisionRegex = new Regex(
+            @"r(?<rev>\d+)\s+=\s+\S+\s+\(.+\)",
+            RegexOptions.Compiled | RegexOptions.ExplicitCapture
+        );
 
         public Grabber(
             string svnUrl,
@@ -159,7 +165,53 @@ namespace Svn2GitNetX
                 arguments.AppendFormat( "--ignore-paths=\"{0}\" ", regexStr );
             }
 
-            if( CommandRunner.Run( "git", arguments.ToString().Trim() ) != 0 )
+            int lastRevision = -1;
+            int currentRevision = lastRevision;
+            void ParseRevision( string s )
+            {
+                Match match = revisionRegex.Match( s );
+                if( match.Success )
+                {
+                    int.TryParse( match.Groups["rev"].Value, out currentRevision );
+                }
+            }
+
+            bool success = false;
+            int currentAttempt = 0;
+            do
+            {
+                int exitCode = CommandRunner.Run( "git", arguments.ToString().Trim(), ParseRevision, null, null );
+                if( exitCode == 0 )
+                {
+                    Log( "Fetch Successful!" );
+                    success = true;
+                    break;
+                }
+                else if( lastRevision != currentRevision )
+                {
+                    Log( "Made Progress, will not increment attempt" );
+                    lastRevision = currentRevision;
+                }
+                else
+                {
+                    Log( "No progress made, attempt #" + currentAttempt + " was a failure" );
+                    ++currentAttempt;
+                }
+
+                if( Options.IgnoreGcErrors )
+                {
+                    // Todo: Working Directory option.
+                    string filePath = Path.Combine( ".git", "gc.log" );
+                    if( File.Exists( filePath ) )
+                    {
+                        Log( "Ignore GC Errors flagged, deleting gc log file" );
+                        File.Delete( filePath );
+                    }
+                }
+            }
+            while( this.Options.FetchAttempts <= 0 || currentAttempt <= this.Options.FetchAttempts );
+
+            if( success == false )
             {
                 throw new MigrateException( $"Fail to execute command \"git {arguments.ToString()}\". Run with -v or --verbose for details." );
             }

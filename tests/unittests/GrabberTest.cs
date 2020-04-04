@@ -697,7 +697,7 @@ namespace Svn2GitNetX.Tests
 
             string expectedArguments = "svn fetch -r 123:456";
 
-            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) ).Returns( 0 );
+            mock.Setup( f => f.Run( "git", expectedArguments, It.IsAny<Action<string>>(), null, null ) ).Returns( 0 );
 
             IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
@@ -705,7 +705,7 @@ namespace Svn2GitNetX.Tests
             grabber.Clone();
 
             // Assert
-            mock.Verify( f => f.Run( "git", expectedArguments ), Times.Once() );
+            mock.Verify( f => f.Run( "git", expectedArguments, It.IsAny<Action<string>>(), null, null ), Times.Once() );
         }
 
         [Fact]
@@ -737,7 +737,7 @@ namespace Svn2GitNetX.Tests
             grabber.Clone();
 
             // Assert
-            mock.Verify( f => f.Run( "git", expectedArguments ), Times.Once() );
+            mock.Verify( f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null ), Times.Once() );
         }
 
         [Fact]
@@ -762,7 +762,7 @@ namespace Svn2GitNetX.Tests
             string ignorePathsRegEx = @"^(?:)(?:ex1|ex2)";
             string expectedArguments = $"svn fetch -r 123:456 --ignore-paths=\"{ignorePathsRegEx}\"";
 
-            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) ).Returns( 0 );
+            mock.Setup( f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null ) ).Returns( 0 );
 
             IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
@@ -770,7 +770,7 @@ namespace Svn2GitNetX.Tests
             grabber.Clone();
 
             // Assert
-            mock.Verify( f => f.Run( "git", expectedArguments ), Times.Once() );
+            mock.Verify( f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null ), Times.Once() );
         }
 
         [Fact]
@@ -795,7 +795,7 @@ namespace Svn2GitNetX.Tests
             string ignorePathsRegEx = @"^(?:subpath[\/])(?:ex1|ex2)";
             string expectedArguments = $"svn fetch --ignore-paths=\"{ignorePathsRegEx}\"";
 
-            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) ).Returns( 0 );
+            mock.Setup( f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null ) ).Returns( 0 );
 
             IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
@@ -803,7 +803,7 @@ namespace Svn2GitNetX.Tests
             grabber.Clone();
 
             // Assert
-            mock.Verify( f => f.Run( "git", expectedArguments ), Times.Once() );
+            mock.Verify( f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null ), Times.Once() );
         }
 
         [Fact]
@@ -833,7 +833,7 @@ namespace Svn2GitNetX.Tests
             string ignorePathsRegEx = @"^(?:subpath[\/]|tag1[\/][^\/]+[\/]|tag2[\/][^\/]+[\/])(?:ex1|ex2)";
             string expectedArguments = $"svn fetch --ignore-paths=\"{ignorePathsRegEx}\"";
 
-            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) ).Returns( 0 );
+            mock.Setup( f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null ) ).Returns( 0 );
 
             IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
@@ -841,7 +841,7 @@ namespace Svn2GitNetX.Tests
             grabber.Clone();
 
             // Assert
-            mock.Verify( f => f.Run( "git", expectedArguments ), Times.Once() );
+            mock.Verify( f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null ), Times.Once() );
         }
 
         [Fact]
@@ -876,7 +876,7 @@ namespace Svn2GitNetX.Tests
             string ignorePathsRegEx = @"^(?:subpath[\/]|tag1[\/][^\/]+[\/]|tag2[\/][^\/]+[\/]|branch1[\/][^\/]+[\/]|branch2[\/][^\/]+[\/])(?:ex1|ex2)";
             string expectedArguments = $"svn fetch --ignore-paths=\"{ignorePathsRegEx}\"";
 
-            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) ).Returns( 0 );
+            mock.Setup( f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null ) ).Returns( 0 );
 
             IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
@@ -884,7 +884,7 @@ namespace Svn2GitNetX.Tests
             grabber.Clone();
 
             // Assert
-            mock.Verify( f => f.Run( "git", expectedArguments ), Times.Once() );
+            mock.Verify( f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null ), Times.Once() );
         }
 
         [Fact]

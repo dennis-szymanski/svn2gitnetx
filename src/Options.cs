@@ -148,5 +148,27 @@ namespace Svn2GitNetX
             get;
             set;
         }
+
+        [Option( 
+            "fetchattempts", 
+            HelpText = "How many attempts to try to fetch a single revision.  Set to -1 (or less) to try forever until CTRL+C is hit.",
+            Default = 0
+        )]
+        public int FetchAttempts
+        {
+            get;
+            set;
+        }
+
+        [Option(
+            "ignoregcerrors",
+            HelpText = "If a GC error happens during fetching, ignore it.",
+            Default = false
+        )]
+        public bool IgnoreGcErrors
+        {
+            get;
+            set;
+        }
     }
 }
