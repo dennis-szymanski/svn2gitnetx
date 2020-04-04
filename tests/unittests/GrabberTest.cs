@@ -10,7 +10,7 @@ using System.Linq;
 using Xunit;
 using Moq;
 
-namespace Svn2GitNet.Tests
+namespace Svn2GitNetX.Tests
 {
     public class GrabberTest
     {

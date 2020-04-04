@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-namespace Svn2GitNet
+namespace Svn2GitNetX
 {
     public class InteractiveWorker : Worker
     {

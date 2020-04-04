@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Svn2GitNet
+namespace Svn2GitNetX
 {
     public enum OutputMessageType
     {

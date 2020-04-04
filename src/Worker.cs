@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Extensions.Logging;
 
-namespace Svn2GitNet
+namespace Svn2GitNetX
 {
     public class Worker
     {

@@ -3,7 +3,7 @@ using System.Threading;
 using CommandLine;
 using Microsoft.Extensions.Logging;
 
-namespace Svn2GitNet
+namespace Svn2GitNetX
 {
     class Program
     {

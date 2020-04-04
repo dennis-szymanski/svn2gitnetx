@@ -1,14 +1,14 @@
 using System.Threading;
 using Microsoft.Extensions.Logging;
 
-namespace Svn2GitNet.Tests
+namespace Svn2GitNetX.Tests
 {
     public static class TestHelper
     {
         public static ILoggerFactory CreateLoggerFactory()
         {
             ILoggerFactory factory = new LoggerFactory();
-            factory.CreateLogger( nameof( Svn2GitNet ) );
+            factory.CreateLogger( nameof( Svn2GitNetX ) );
 
             return factory;
         }

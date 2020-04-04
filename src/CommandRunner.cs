@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 
-namespace Svn2GitNet
+namespace Svn2GitNetX
 {
     public class CommandRunner : ICommandRunner
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Moq;
 using Xunit;
 
-namespace Svn2GitNet.Tests
+namespace Svn2GitNetX.Tests
 {
     public class FixerTest
     {

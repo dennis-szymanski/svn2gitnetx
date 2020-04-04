@@ -1,6 +1,6 @@
 using System;
 
-namespace Svn2GitNet
+namespace Svn2GitNetX
 {
     public class ConsoleMessageDisplayer : IMessageDisplayer
     {

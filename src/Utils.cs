@@ -1,7 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace Svn2GitNet
+namespace Svn2GitNetX
 {
     public static class Utils
     {

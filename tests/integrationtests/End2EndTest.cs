@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 using Microsoft.Extensions.Logging;
 using Xunit;
 
-namespace Svn2GitNet.Tests
+namespace Svn2GitNetX.Tests
 {
     public class End2EndTest
     {

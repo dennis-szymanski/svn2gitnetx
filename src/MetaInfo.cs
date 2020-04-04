@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Svn2GitNet
+namespace Svn2GitNetX
 {
     public class MetaInfo
     {
