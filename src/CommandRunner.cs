@@ -107,8 +107,10 @@ namespace Svn2GitNet
                         onStandardError?.Invoke(e.Data);
                     };
 
+                    commandProcess.EnableRaisingEvents = true;
                     commandProcess.Exited += ( s, e ) =>
                     {
+                        Log( $"Process '{startInfo.FileName} {startInfo.Arguments}' exited" );
                         exitedEvent.Set();
                     };
 
@@ -129,7 +131,8 @@ namespace Svn2GitNet
                     }
                     catch( OperationCanceledException )
                     {
-                        commandProcess.Kill();
+                        Log( "CTRL+C Received" );
+                        commandProcess.Kill( true );
                         commandProcess.WaitForExit();
                         throw;
                     }
@@ -147,74 +150,99 @@ namespace Svn2GitNet
 
         public int RunGitSvnInteractiveCommand(string arguments, string password)
         {
-            Process commandProcess = new Process
+            ProcessStartInfo startInfo = new ProcessStartInfo
             {
-                StartInfo =
-                {
-                    CreateNoWindow = true,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    RedirectStandardInput = true,
-                    FileName = "git",
-                    Arguments = arguments
-                }
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                RedirectStandardInput = true,
+                FileName = "git",
+                Arguments = arguments
             };
 
-            int exitCode = -1;
-            try
+            using( ManualResetEventSlim exitedEvent = new ManualResetEventSlim( false ) )
             {
-                commandProcess.Start();
-
-                OutputMessageType messageType = OutputMessageType.None;
-                do
+                using( Process commandProcess = new Process() )
                 {
-                    messageType = ReadAndDisplayCommandProcessOutput(commandProcess);
-                    if (messageType == OutputMessageType.RequestInputPassword)
+                    int exitCode = -1;
+                    try
                     {
-                        if (string.IsNullOrEmpty(password))
+                        commandProcess.StartInfo = startInfo;
+
+                        commandProcess.EnableRaisingEvents = true;
+                        commandProcess.Exited += ( s, e ) =>
                         {
-                            while (true)
+                            Log( $"Process '{startInfo.FileName} {startInfo.Arguments}' exited" );
+                            exitedEvent.Set();
+                        };
+
+                        commandProcess.Start();
+
+                        OutputMessageType messageType = OutputMessageType.None;
+                        do
+                        {
+                            // Stop if we want to cancel.
+                            this._cancelToken.ThrowIfCancellationRequested();
+
+                            messageType = ReadAndDisplayCommandProcessOutput( commandProcess );
+                            if( messageType == OutputMessageType.RequestInputPassword )
                             {
-                                var key = System.Console.ReadKey(true);
-                                if (key.Key == ConsoleKey.Enter)
+                                if( string.IsNullOrEmpty( password ) )
                                 {
-                                    break;
+                                    while( true )
+                                    {
+                                        var key = System.Console.ReadKey( true );
+                                        if( key.Key == ConsoleKey.Enter )
+                                        {
+                                            break;
+                                        }
+
+                                        password += key.KeyChar;
+                                    }
                                 }
 
-                                password += key.KeyChar;
+                                commandProcess.StandardInput.WriteLine( password );
                             }
-                        }
+                            else if( messageType == OutputMessageType.RequestAcceptCertificateFullOptions )
+                            {
+                                Console.WriteLine( "p" );
+                                commandProcess.StandardInput.WriteLine( "p" );
+                            }
+                            else if( messageType == OutputMessageType.RequestAcceptCertificateNoPermanentOption )
+                            {
+                                Console.WriteLine( "t" );
+                                commandProcess.StandardInput.WriteLine( "t" );
+                            }
 
-                        commandProcess.StandardInput.WriteLine(password);
+                            commandProcess.StandardInput.Flush();
+                        } while( messageType != OutputMessageType.None );
+
+                        exitedEvent.Wait( this._cancelToken );
+
+                        commandProcess.WaitForExit();
                     }
-                    else if (messageType == OutputMessageType.RequestAcceptCertificateFullOptions)
+                    catch( Win32Exception )
                     {
-                        Console.WriteLine("p");
-                        commandProcess.StandardInput.WriteLine("p");
+                        throw new MigrateException( $"Command git does not exit. Did you install it or add it to the Environment path?" );
                     }
-                    else if (messageType == OutputMessageType.RequestAcceptCertificateNoPermanentOption)
+                    catch( OperationCanceledException )
                     {
-                        Console.WriteLine("t");
-                        commandProcess.StandardInput.WriteLine("t");
+                        Log( "CTRL+C Received" );
+
+                        commandProcess.Kill( true );
+                        commandProcess.WaitForExit();
+                        throw;
+                    }
+                    finally
+                    {
+                        exitCode = commandProcess.ExitCode;
+                        commandProcess.Close();
                     }
 
-                    commandProcess.StandardInput.Flush();
-                } while (messageType != OutputMessageType.None);
-
-                commandProcess.WaitForExit();
+                    return exitCode;
+                }
             }
-            catch (Win32Exception)
-            {
-                throw new MigrateException($"Command git does not exit. Did you install it or add it to the Environment path?");
-            }
-            finally
-            {
-                exitCode = commandProcess.ExitCode;
-                commandProcess.Close();
-            }
-
-            return exitCode;
         }
 
         private OutputMessageType ReadAndDisplayCommandProcessOutput(Process commandProcess)

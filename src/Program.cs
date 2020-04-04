@@ -18,6 +18,7 @@ namespace Svn2GitNet
                     if( cancelArgs.SpecialKey == ConsoleSpecialKey.ControlC )
                     {
                         cancelArgs.Cancel = true;
+                        Console.WriteLine( "CTRL+C was received, cleaning up..." );
                         cancelToken.Cancel();
                     }
                 };
@@ -52,7 +53,7 @@ namespace Svn2GitNet
                 }
                 catch(OperationCanceledException)
                 {
-                    Console.WriteLine( "CTRL+C Hit, Child Processes have been killed." );
+                    Console.WriteLine( "CTRL+C was received, child processes have been killed." );
                 }
                 finally
                 {
