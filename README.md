@@ -1,11 +1,15 @@
-# Svn2Git.NET
+# Svn2Git.NETX
 
-[![Build status](https://ci.appveyor.com/api/projects/status/g97ep0v2e9qbhemc?svg=true)](https://ci.appveyor.com/project/mazong1123/svn2gitnet)
-[![Build status](https://travis-ci.org/mazong1123/svn2gitnet.svg?branch=master)](https://travis-ci.org/mazong1123/svn2gitnet)
+**Svn2Git.NETX** Is a fork of [Svn2Git.NET](https://github.com/mazong1123/svn2gitnet).  The 'X' stands for eXtended.  These are extensions to Svn2Git.NET that I needed for my use cases.  It looks like the original Svn2Git.NET is no longer maintained, and the owner seems to have all but disappeared from GitHub, which is why this fork was created.
 
-**Svn2Git.NET** is re-written from [svn2git](https://github.com/nirvdrum/svn2git). It intends to provide a simple and easy way to migrate projects from svn to git.
+**Svn2Git.NETX** is re-written from [svn2git](https://github.com/nirvdrum/svn2git). It intends to provide a simple and easy way to migrate projects from svn to git.
 
-**Svn2Git.NET** is based on `git-svn` so please make sure `git-svn` has been installed.
+**Svn2Git.NETX** is based on `git-svn` so please make sure `git-svn` has been installed.
+
+## What is different from Svn2Git.NET?
+* Hitting CTRL+C now kills all child processes instead of orphaning them.
+* Can break SVN Locks via the "--breaklocks" argument on the command line.
+* Uses dotnet core 3.1 instead of 2.0.
 
 ## Examples
 
@@ -43,7 +47,7 @@ project we'll get:
     $ git tag -l
     [ empty ]
 
-After `svn2gitnet` is done with your project, you'll get this instead:
+After `svn2gitnetx` is done with your project, you'll get this instead:
 
     $ git branch
     * master
@@ -59,32 +63,6 @@ After `svn2gitnet` is done with your project, you'll get this instead:
 Finally, it makes sure the HEAD of master is the same as the current trunk of
 the svn repo.
 
-## Installation
-
-### Windows
-
-- Option 1: Download `.msi` file in the [release page](https://github.com/mazong1123/svn2gitnet/releases). Double click to install it. **Type `svn2gitnet --help` to verify the installation.**
-
-- Option: 2: Download `zip` file in the [release page](https://github.com/mazong1123/svn2gitnet/releases). Extract the zip, and add the folder to `PATH` environment variable. Open command line window and type `svn2gitnet --help`.
-
-### Mac and *nix
-
-Download the correct `tar.gz` file according to your OS. 
-
-Extract it via:
-
-```
-tar -zxvf yourosname.tar.gz
-```
-
-Add the folder to the environment path:
-
-```sh
-PATH=$PATH:yourfolderpath
-```
-
-Type `svn2gitnet --help` to verify the installation.
-
 ## How to use
 
 ### Initial Conversion
@@ -98,21 +76,21 @@ create a git repo from a svn repo in the specified layout.
 root level of the repo.
 
 ```sh
-svn2gitnet http://svn.example.com/path/to/repo
+svn2gitnetx http://svn.example.com/path/to/repo
 ```
 
 2. The svn repo is NOT in standard layout and has only a trunk and tags at the
 root level of the repo.
 
 ```sh
-svn2gitnet http://svn.example.com/path/to/repo --trunk dev --tags rel --nobranches
+svn2gitnetx http://svn.example.com/path/to/repo --trunk dev --tags rel --nobranches
 ```
 
 3. The svn repo is NOT in standard layout and has only a trunk at the root
 level of the repo.
 
 ```sh
-svn2gitnet http://svn.example.com/path/to/repo --trunk trunk --nobranches --notags
+svn2gitnetx http://svn.example.com/path/to/repo --trunk trunk --nobranches --notags
 ```
 
 4. The svn repo is NOT in standard layout and has no trunk, branches, or tags
@@ -120,45 +98,45 @@ at the root level of the repo. Instead the root level of the repo is
 equivalent to the trunk and there are no tags or branches.
 
 ```sh
-svn2gitnet http://svn.example.com/path/to/repo --rootistrunk
+svn2gitnetx http://svn.example.com/path/to/repo --rootistrunk
 ```
 
 5. The svn repo is in the standard layout but you want to exclude the massive
 doc directory and the backup files you once accidently added.
 
 ```sh
-svn2gitnet http://svn.example.com/path/to/repo --exclude doc --exclude '.*~$'
+svn2gitnetx http://svn.example.com/path/to/repo --exclude doc --exclude '.*~$'
 ```
 
 6. The svn repo actually tracks several projects and you only want to migrate
 one of them.
 
 ```sh
-svn2gitnet http://svn.example.com/path/to/repo/nested_project --no-minimize-url
+svn2gitnetx http://svn.example.com/path/to/repo/nested_project --no-minimize-url
 ```
 
 7. The svn repo is password protected.
 
 ```sh
-svn2gitnet http://svn.example.com/path/to/repo --username <<user_with_perms>> --password <<password>>
+svn2gitnetx http://svn.example.com/path/to/repo --username <<user_with_perms>> --password <<password>>
 ```
 
 8. You need to migrate starting at a specific svn revision number.
 
 ```sh
-svn2gitnet http://svn.example.com/path/to/repo --revision <<starting_revision_number>>
+svn2gitnetx http://svn.example.com/path/to/repo --revision <<starting_revision_number>>
 ```
 
 9. You need to migrate starting at a specific svn revision number, ending at a specific revision number.
 
 ```sh
- svn2gitnet http://svn.example.com/path/to/repo --revision <<starting_revision_number>>:<<ending_revision_number>>
+ svn2gitnetx http://svn.example.com/path/to/repo --revision <<starting_revision_number>>:<<ending_revision_number>>
 ```
 
 10. Include metadata (git-svn-id) in git logs.
 
 ```sh
-svn2gitnet http://svn.example.com/path/to/repo --metadata
+svn2gitnetx http://svn.example.com/path/to/repo --metadata
 ```
 
 The above will create a git repository in the current directory with the git
@@ -179,13 +157,13 @@ as a mirroring tool for your SVN repositories.
 The command to call is:
 
 ```sh
-svn2gitnet --rebase
+svn2gitnetx --rebase
 ```
 
 Optionally you can also use an alternate username/password instead of the default:
 
 ```sh
-svn2gitnet --rebase --username <<user>> --password <<password>>
+svn2gitnetx --rebase --username <<user>> --password <<password>>
 ```
 
 # Authors
@@ -194,7 +172,7 @@ To convert all your svn authors to git format, create a file somewhere on your
 system with the list of conversions to make, one per line, for example:
 
     mazong1123 = Jingyu Ma <mazong1123@gmail.com>
-    foo = Foo Foo <foo@just-an-email-address.com>
+    xforever1313 = Seth Hendrick <seth@shendrick.net>
 
 Then pass an `--authors` option to svn2gitnet pointing to your file:
 
@@ -211,15 +189,15 @@ underlying git-svn process as well as other trace information.
 You can turn on verbose logging with the `-v` or `--verbose` flags, like so:
 
 ```sh
-svn2gitnet http://svn.yoursite.com/path/to/repo --verbose
+svn2gitnetx http://svn.yoursite.com/path/to/repo --verbose
 ```
 
 ### Options Reference
 
 ```sh
-PS C:\Users\mazong1123> svn2gitnet --help
-svn2gitnet 1.0.0-preview 
-Copyright (C) 2017 Jingyu Ma
+PS C:\> svn2gitnetx --help
+svn2gitnetx 1.0.0
+Copyright (C) 2020 Seth Hendrick, Jingyu Ma
 
   -v, --verbose        (Default: false) Be verbose in logging -- useful for debugging issues
 
@@ -256,6 +234,9 @@ Copyright (C) 2017 Jingyu Ma
 
   --authors            Path to file containing svn-to-git authors mapping
 
+  --breaklocks         (Default: false) Breaks any index.lock files in the .git/svn/refs/remotes/svn/* directories.
+                       Only use this if there are no processes running.
+
   --help               Display this help screen.
 
   --version            Display version information.
@@ -269,54 +250,42 @@ Bug report and feature request are always welcome. Please file an issue so that 
 ## Build and test the source code
 
 ### Prerequisite
-- .NET Core Runtime 2.0.0 or newer. You can get the latest .NET Core Runtime from https://www.microsoft.com/net/core
+- .NET Core Runtime 3.1.0 or newer. You can get the latest .NET Core Runtime from https://www.microsoft.com/net/core
 
 - Make sure `git-svn` has been installed.
 
 ### Build
 
-Run following command to build the source code:
+Svn2Git.NETX uses [Cake](https://cakebuild.net/) to build and run tests.  To install cake, simply install the cake dotnet core tool:
+
+```sh
+dotnet tool install -g Cake.Tool
+```
+
+Run following command to build the source code in the root of the repo:
 
 Windows:
 
 ```sh
-.\build.cmd
+dotnet cake --target=build
 ``` 
-
-*nix and Mac:
-
-```sh
-./build.sh
-```
 
 ### Run unit tests
 
-If you only want to run unit tests other than full test, go to `tests/unittests`, run `dotnet test`.
+If you only want to run unit tests other than full test run:
 
-### Run unit tests and integration tests
+```sh
+dotnet cake --target=unit_test
+```
+
+### Run integration tests
 
 The integration tests require accessing external test svn repository and save the temp results in local folder. So currently some test cases related to private repository cannot be ran locally.
 
-To run the unit tests and integrationg tests:
+To run the integration tests:
 
 Windows:
 
 ```sh
-.\test.cmd
+dotnet cake --target=integration_test
 ```
-
-*nix and Mac:
-
-```sh
-./test.sh
-```
-
-# Support this project
-
-You can buy me a cup of coffee if `svn2git.net` helped you :).
-
-## Paypal
-mazong1123img@163.com
-
-## Bitcoin address
-16k7L5Y1fwwQsig32NbaUhm48NqYCPejh
