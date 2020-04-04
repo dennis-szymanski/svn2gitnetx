@@ -10,10 +10,10 @@ namespace Svn2GitNet
         private IMessageDisplayer _messageDisplayer;
         private ILogger _logger;
 
-        public Worker(Options options,
+        public Worker( Options options,
                       ICommandRunner commandRunner,
                       IMessageDisplayer messageDisplayer,
-                      ILogger logger)
+                      ILogger logger )
         {
             _options = options;
             _commandRunner = commandRunner;
@@ -73,48 +73,48 @@ namespace Svn2GitNet
             }
         }
 
-        protected void ShowMessageIfPossible(string message)
+        protected void ShowMessageIfPossible( string message )
         {
-            if (_messageDisplayer != null)
+            if( _messageDisplayer != null )
             {
-                _messageDisplayer.Show(message);
+                _messageDisplayer.Show( message );
             }
         }
 
-        protected void Log(string message)
+        protected void Log( string message )
         {
-            if (_logger != null && _options.IsVerbose)
+            if( _logger != null && _options.IsVerbose )
             {
-                _logger.LogInformation(message);
+                _logger.LogInformation( message );
             }
         }
 
-        protected string RunCommandIgnoreExitCode(CommandInfo cmdInfo)
+        protected string RunCommandIgnoreExitCode( CommandInfo cmdInfo )
         {
-            return RunCommandIgnoreExitCode(cmdInfo.Command, cmdInfo.Arguments);
+            return RunCommandIgnoreExitCode( cmdInfo.Command, cmdInfo.Arguments );
         }
 
-        protected string RunCommandIgnoreExitCode(string cmd, string arguments)
+        protected string RunCommandIgnoreExitCode( string cmd, string arguments )
         {
             string standardOutput;
-            _commandRunner.Run(cmd, arguments, out standardOutput);
+            _commandRunner.Run( cmd, arguments, out standardOutput );
 
             return standardOutput;
         }
 
-        protected int RunCommand(CommandInfo cmdInfo)
+        protected int RunCommand( CommandInfo cmdInfo )
         {
-            return _commandRunner.Run(cmdInfo.Command, cmdInfo.Arguments);
+            return _commandRunner.Run( cmdInfo.Command, cmdInfo.Arguments );
         }
 
-        protected int RunCommand(CommandInfo cmdInfo, out string standardOutput)
+        protected int RunCommand( CommandInfo cmdInfo, out string standardOutput )
         {
-            return _commandRunner.Run(cmdInfo.Command, cmdInfo.Arguments, out standardOutput);
+            return _commandRunner.Run( cmdInfo.Command, cmdInfo.Arguments, out standardOutput );
         }
 
-        protected int RunCommand(CommandInfo cmdInfo, out string standardOutput, out string standardError)
+        protected int RunCommand( CommandInfo cmdInfo, out string standardOutput, out string standardError )
         {
-            return _commandRunner.Run(cmdInfo.Command, cmdInfo.Arguments, out standardOutput, out standardError);
+            return _commandRunner.Run( cmdInfo.Command, cmdInfo.Arguments, out standardOutput, out standardError );
         }
     }
 }

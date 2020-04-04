@@ -7,11 +7,11 @@ namespace Svn2GitNet
 {
     class Program
     {
-        static void Migrate(Options options, string[] args)
+        static void Migrate( Options options, string[] args )
         {
             using( CancellationTokenSource cancelToken = new CancellationTokenSource() )
             {
-                ConsoleCancelEventHandler onCtrlC = delegate( object sender, ConsoleCancelEventArgs cancelArgs )
+                ConsoleCancelEventHandler onCtrlC = delegate ( object sender, ConsoleCancelEventArgs cancelArgs )
                 {
                     // Wait for the process to end gracefully if we get CTRL+C,
                     // otherwise, let it die without clean up if we get CTRL+Break.
@@ -51,7 +51,7 @@ namespace Svn2GitNet
                     migrator.Initialize();
                     migrator.Run();
                 }
-                catch(OperationCanceledException)
+                catch( OperationCanceledException )
                 {
                     Console.WriteLine( "CTRL+C was received, child processes have been killed." );
                 }
@@ -62,23 +62,23 @@ namespace Svn2GitNet
             }
         }
 
-        static int Main(string[] args)
+        static int Main( string[] args )
         {
             try
             {
-                Parser.Default.ParseArguments<Options>(args)
-                              .WithParsed(options => Migrate(options, args));
+                Parser.Default.ParseArguments<Options>( args )
+                              .WithParsed( options => Migrate( options, args ) );
             }
-            catch (MigrateException ex)
+            catch( MigrateException ex )
             {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine("Type 'svn2gitnet --help' for more information");
+                Console.WriteLine( ex.Message );
+                Console.WriteLine( "Type 'svn2gitnet --help' for more information" );
 
                 return -1;
             }
-            catch(Exception ex)
+            catch( Exception ex )
             {
-                Console.WriteLine("FATAL: Unhandled Exception: " + ex.Message);
+                Console.WriteLine( "FATAL: Unhandled Exception: " + ex.Message );
                 return -2;
             }
 

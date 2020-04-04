@@ -16,18 +16,18 @@ namespace Svn2GitNet.Tests
         {
             // Prepare
             string[] args = new string[] { };
-            Migrator migrator = new Migrator(new Options(), 
-                                            args, 
-                                            TestHelper.CreateCommandRunner(), 
-                                            new ConsoleMessageDisplayer(), 
-                                            TestHelper.CreateLoggerFactory());
+            Migrator migrator = new Migrator( new Options(),
+                                            args,
+                                            TestHelper.CreateCommandRunner(),
+                                            new ConsoleMessageDisplayer(),
+                                            TestHelper.CreateLoggerFactory() );
 
             // Act
-            Exception ex = Record.Exception(() => migrator.Initialize());
+            Exception ex = Record.Exception( () => migrator.Initialize() );
 
             // Assert
-            Assert.IsType<MigrateException>(ex);
-            Assert.Equal(ExceptionHelper.ExceptionMessage.MISSING_SVN_URL_PARAMETER, ex.Message);
+            Assert.IsType<MigrateException>( ex );
+            Assert.Equal( ExceptionHelper.ExceptionMessage.MISSING_SVN_URL_PARAMETER, ex.Message );
         }
 
         [Fact]
@@ -35,21 +35,21 @@ namespace Svn2GitNet.Tests
         {
             // Prepare
             string[] args = new string[] { "--rebasebranch", "normalarg", "extraarg" };
-            Migrator migrator = new Migrator(new Options()
+            Migrator migrator = new Migrator( new Options()
             {
                 RebaseBranch = "normalarg"
             },
             args,
             TestHelper.CreateCommandRunner(),
             new ConsoleMessageDisplayer(),
-            TestHelper.CreateLoggerFactory());
+            TestHelper.CreateLoggerFactory() );
 
             // Act
-            Exception ex = Record.Exception(() => migrator.Initialize());
+            Exception ex = Record.Exception( () => migrator.Initialize() );
 
             // Assert
-            Assert.IsType<MigrateException>(ex);
-            Assert.Equal(ExceptionHelper.ExceptionMessage.TOO_MANY_ARGUMENTS, ex.Message);
+            Assert.IsType<MigrateException>( ex );
+            Assert.Equal( ExceptionHelper.ExceptionMessage.TOO_MANY_ARGUMENTS, ex.Message );
         }
 
         [Fact]
@@ -57,7 +57,7 @@ namespace Svn2GitNet.Tests
         {
             // Prepare
             string[] args = new string[] { "http://testsvnurl", "--username=\"userName\"", "--password=\"123123\"" };
-            Migrator migrator = new Migrator(new Options()
+            Migrator migrator = new Migrator( new Options()
             {
                 UserName = "userName",
                 Password = "123123"
@@ -65,13 +65,13 @@ namespace Svn2GitNet.Tests
             args,
             TestHelper.CreateCommandRunner(),
             new ConsoleMessageDisplayer(),
-            TestHelper.CreateLoggerFactory());
+            TestHelper.CreateLoggerFactory() );
 
             // Act
-            Exception ex = Record.Exception(() => migrator.Initialize());
+            Exception ex = Record.Exception( () => migrator.Initialize() );
 
             // Assert
-            Assert.Null(ex);
+            Assert.Null( ex );
         }
 
         [Fact]
@@ -79,17 +79,17 @@ namespace Svn2GitNet.Tests
         {
             // Prepare
             string[] args = new string[] { "http://testsvnurl" };
-            Migrator migrator = new Migrator(new Options(),
+            Migrator migrator = new Migrator( new Options(),
             args,
             TestHelper.CreateCommandRunner(),
             new ConsoleMessageDisplayer(),
-            TestHelper.CreateLoggerFactory());
+            TestHelper.CreateLoggerFactory() );
 
             // Act
-            Exception ex = Record.Exception(() => migrator.Initialize());
+            Exception ex = Record.Exception( () => migrator.Initialize() );
 
             // Assert
-            Assert.Null(ex);
+            Assert.Null( ex );
         }
     }
 }

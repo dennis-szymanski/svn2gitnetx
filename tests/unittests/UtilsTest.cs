@@ -20,10 +20,10 @@ namespace Svn2GitNet.Tests
             string expected = "\\\"haha\\\"";
 
             // Act
-            string actual = Utils.EscapeQuotes(input);
+            string actual = Utils.EscapeQuotes( input );
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal( expected, actual );
         }
 
         [Fact]
@@ -35,10 +35,10 @@ namespace Svn2GitNet.Tests
             string expected = "\\'haha\\'";
 
             // Act
-            string actual = Utils.EscapeQuotes(input);
+            string actual = Utils.EscapeQuotes( input );
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal( expected, actual );
         }
 
         [Fact]
@@ -50,10 +50,10 @@ namespace Svn2GitNet.Tests
             string expected = "\\\"haha\\\"hahaha\\\"ha\\\"";
 
             // Act
-            string actual = Utils.EscapeQuotes(input);
+            string actual = Utils.EscapeQuotes( input );
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal( expected, actual );
         }
 
         [Fact]
@@ -65,10 +65,10 @@ namespace Svn2GitNet.Tests
             string expected = "\\'haha\\'\\'haha\\'";
 
             // Act
-            string actual = Utils.EscapeQuotes(input);
+            string actual = Utils.EscapeQuotes( input );
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal( expected, actual );
         }
 
         [Fact]
@@ -80,10 +80,10 @@ namespace Svn2GitNet.Tests
             string expected = "\\'haha\\'\\'haha\\\"haha\\\"";
 
             // Act
-            string actual = Utils.EscapeQuotes(input);
+            string actual = Utils.EscapeQuotes( input );
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal( expected, actual );
         }
 
         [Fact]
@@ -96,10 +96,10 @@ namespace Svn2GitNet.Tests
             string expected = "haha";
 
             // Act
-            string actual = Utils.RemoveFromTwoEnds(source, pattern);
+            string actual = Utils.RemoveFromTwoEnds( source, pattern );
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal( expected, actual );
         }
 
         [Fact]
@@ -112,10 +112,10 @@ namespace Svn2GitNet.Tests
             string expected = "haha";
 
             // Act
-            string actual = Utils.RemoveFromTwoEnds(source, pattern);
+            string actual = Utils.RemoveFromTwoEnds( source, pattern );
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal( expected, actual );
         }
 
         [Fact]
@@ -128,10 +128,10 @@ namespace Svn2GitNet.Tests
             string expected = "haha";
 
             // Act
-            string actual = Utils.RemoveFromTwoEnds(source, pattern);
+            string actual = Utils.RemoveFromTwoEnds( source, pattern );
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal( expected, actual );
         }
 
         [Fact]
@@ -144,10 +144,10 @@ namespace Svn2GitNet.Tests
             string expected = "haha";
 
             // Act
-            string actual = Utils.RemoveFromTwoEnds(source, pattern);
+            string actual = Utils.RemoveFromTwoEnds( source, pattern );
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal( expected, actual );
         }
     }
 }

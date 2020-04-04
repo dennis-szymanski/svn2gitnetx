@@ -22,13 +22,13 @@ namespace Svn2GitNet.Tests
             // Prepare
             var mock = new Mock<ICommandRunner>();
             var standardOutput = "*master";
-            mock.Setup(f => f.Run("git", "branch -l --no-color", out standardOutput))
-                .Returns(0);
-            IGrabber grabber = new Grabber(_testSvnUrl, new Options(), mock.Object, "", null, null);
+            mock.Setup( f => f.Run( "git", "branch -l --no-color", out standardOutput ) )
+                .Returns( 0 );
+            IGrabber grabber = new Grabber( _testSvnUrl, new Options(), mock.Object, "", null, null );
 
-            List<string> expected = new List<string>(new string[]{
+            List<string> expected = new List<string>( new string[]{
                 "master"
-            });
+            } );
 
             // Act
             grabber.FetchBranches();
@@ -36,7 +36,7 @@ namespace Svn2GitNet.Tests
             var actual = grabber.GetMetaInfo().LocalBranches;
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal( expected, actual );
         }
 
         [Fact]
@@ -45,13 +45,13 @@ namespace Svn2GitNet.Tests
             // Prepare
             var mock = new Mock<ICommandRunner>();
             var standardOutput = "origin/master";
-            mock.Setup(f => f.Run("git", "branch -r --no-color", out standardOutput))
-                .Returns(0);
-            IGrabber grabber = new Grabber(_testSvnUrl, new Options(), mock.Object, "", null, null);
+            mock.Setup( f => f.Run( "git", "branch -r --no-color", out standardOutput ) )
+                .Returns( 0 );
+            IGrabber grabber = new Grabber( _testSvnUrl, new Options(), mock.Object, "", null, null );
 
-            List<string> expected = new List<string>(new string[]{
+            List<string> expected = new List<string>( new string[]{
                 "origin/master"
-            });
+            } );
 
             // Act
             grabber.FetchBranches();
@@ -59,7 +59,7 @@ namespace Svn2GitNet.Tests
             var actual = grabber.GetMetaInfo().RemoteBranches;
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal( expected, actual );
         }
 
         [Fact]
@@ -68,15 +68,15 @@ namespace Svn2GitNet.Tests
             // Prepare
             var mock = new Mock<ICommandRunner>();
             var standardOutput = $"*master{Environment.NewLine}dev{Environment.NewLine}test";
-            mock.Setup(f => f.Run("git", "branch -l --no-color", out standardOutput))
-                .Returns(0);
-            IGrabber grabber = new Grabber(_testSvnUrl, new Options(), mock.Object, "", null, null);
+            mock.Setup( f => f.Run( "git", "branch -l --no-color", out standardOutput ) )
+                .Returns( 0 );
+            IGrabber grabber = new Grabber( _testSvnUrl, new Options(), mock.Object, "", null, null );
 
-            List<string> expected = new List<string>(new string[]{
+            List<string> expected = new List<string>( new string[]{
                 "master",
                 "dev",
                 "test"
-            });
+            } );
 
             // Act
             grabber.FetchBranches();
@@ -84,7 +84,7 @@ namespace Svn2GitNet.Tests
             var actual = grabber.GetMetaInfo().LocalBranches;
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal( expected, actual );
         }
 
         [Fact]
@@ -93,15 +93,15 @@ namespace Svn2GitNet.Tests
             // Prepare
             var mock = new Mock<ICommandRunner>();
             var standardOutput = $"origin/master{Environment.NewLine}origin/dev{Environment.NewLine}origin/test";
-            mock.Setup(f => f.Run("git", "branch -r --no-color", out standardOutput))
-                .Returns(0);
-            IGrabber grabber = new Grabber(_testSvnUrl, new Options(), mock.Object, "", null, null);
+            mock.Setup( f => f.Run( "git", "branch -r --no-color", out standardOutput ) )
+                .Returns( 0 );
+            IGrabber grabber = new Grabber( _testSvnUrl, new Options(), mock.Object, "", null, null );
 
-            List<string> expected = new List<string>(new string[]{
+            List<string> expected = new List<string>( new string[]{
                 "origin/master",
                 "origin/dev",
                 "origin/test"
-            });
+            } );
 
             // Act
             grabber.FetchBranches();
@@ -109,7 +109,7 @@ namespace Svn2GitNet.Tests
             var actual = grabber.GetMetaInfo().RemoteBranches;
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal( expected, actual );
         }
 
         [Fact]
@@ -118,13 +118,13 @@ namespace Svn2GitNet.Tests
             // Prepare
             var mock = new Mock<ICommandRunner>();
             var standardOutput = $"origin/master{Environment.NewLine}origin/dev{Environment.NewLine}svn/tags/v1.0.0";
-            mock.Setup(f => f.Run("git", "branch -r --no-color", out standardOutput))
-                .Returns(0);
-            IGrabber grabber = new Grabber(_testSvnUrl, new Options(), mock.Object, "", null, null);
+            mock.Setup( f => f.Run( "git", "branch -r --no-color", out standardOutput ) )
+                .Returns( 0 );
+            IGrabber grabber = new Grabber( _testSvnUrl, new Options(), mock.Object, "", null, null );
 
-            List<string> expected = new List<string>(new string[]{
+            List<string> expected = new List<string>( new string[]{
                 "svn/tags/v1.0.0"
-            });
+            } );
 
             // Act
             grabber.FetchBranches();
@@ -132,7 +132,7 @@ namespace Svn2GitNet.Tests
             var actual = grabber.GetMetaInfo().Tags;
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal( expected, actual );
         }
 
         [Fact]
@@ -142,24 +142,24 @@ namespace Svn2GitNet.Tests
             var mock = new Mock<ICommandRunner>();
             var localBranchInfo = $"*master{Environment.NewLine}dev{Environment.NewLine}dev";
             var remoteBranchInfo = "dev";
-            mock.Setup(f => f.Run("git", "branch -l --no-color", out localBranchInfo))
-                .Returns(0);
-            mock.Setup(f => f.Run("git", "branch -r --no-color", out remoteBranchInfo))
-                .Returns(0);
+            mock.Setup( f => f.Run( "git", "branch -l --no-color", out localBranchInfo ) )
+                .Returns( 0 );
+            mock.Setup( f => f.Run( "git", "branch -r --no-color", out remoteBranchInfo ) )
+                .Returns( 0 );
 
             var options = new Options()
             {
                 RebaseBranch = "dev"
             };
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
-            Exception ex = Record.Exception(() => grabber.FetchRebaseBraches());
+            Exception ex = Record.Exception( () => grabber.FetchRebaseBraches() );
 
             // Assert
-            Assert.IsType<MigrateException>(ex);
-            Assert.Equal(ExceptionHelper.ExceptionMessage.TOO_MANY_MATCHING_LOCAL_BRANCHES, ex.Message);
+            Assert.IsType<MigrateException>( ex );
+            Assert.Equal( ExceptionHelper.ExceptionMessage.TOO_MANY_MATCHING_LOCAL_BRANCHES, ex.Message );
         }
 
         [Fact]
@@ -169,24 +169,24 @@ namespace Svn2GitNet.Tests
             var mock = new Mock<ICommandRunner>();
             var localBranchInfo = $"*master{Environment.NewLine}dev1{Environment.NewLine}dev2";
             var remoteBranchInfo = "dev";
-            mock.Setup(f => f.Run("git", "branch -l --no-color", out localBranchInfo))
-                .Returns(0);
-            mock.Setup(f => f.Run("git", "branch -r --no-color", out remoteBranchInfo))
-                .Returns(0);
+            mock.Setup( f => f.Run( "git", "branch -l --no-color", out localBranchInfo ) )
+                .Returns( 0 );
+            mock.Setup( f => f.Run( "git", "branch -r --no-color", out remoteBranchInfo ) )
+                .Returns( 0 );
 
             var options = new Options()
             {
                 RebaseBranch = "dev"
             };
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
-            Exception ex = Record.Exception(() => grabber.FetchRebaseBraches());
+            Exception ex = Record.Exception( () => grabber.FetchRebaseBraches() );
 
             // Assert
-            Assert.IsType<MigrateException>(ex);
-            Assert.Equal(string.Format(ExceptionHelper.ExceptionMessage.NO_LOCAL_BRANCH_FOUND, options.RebaseBranch), ex.Message);
+            Assert.IsType<MigrateException>( ex );
+            Assert.Equal( string.Format( ExceptionHelper.ExceptionMessage.NO_LOCAL_BRANCH_FOUND, options.RebaseBranch ), ex.Message );
         }
 
         [Fact]
@@ -197,25 +197,25 @@ namespace Svn2GitNet.Tests
 
             var localBranchInfo = "*dev";
             var remoteBranchInfo = $"*master{Environment.NewLine}dev{Environment.NewLine}dev{Environment.NewLine}dev";
-            mock.Setup(f => f.Run("git", "branch -l --no-color", out localBranchInfo))
-                .Returns(0);
+            mock.Setup( f => f.Run( "git", "branch -l --no-color", out localBranchInfo ) )
+                .Returns( 0 );
 
-            mock.Setup(f => f.Run("git", "branch -r --no-color", out remoteBranchInfo))
-                .Returns(0);
+            mock.Setup( f => f.Run( "git", "branch -r --no-color", out remoteBranchInfo ) )
+                .Returns( 0 );
 
             var options = new Options()
             {
                 RebaseBranch = "dev"
             };
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
-            Exception ex = Record.Exception(() => grabber.FetchRebaseBraches());
+            Exception ex = Record.Exception( () => grabber.FetchRebaseBraches() );
 
             // Assert
-            Assert.IsType<MigrateException>(ex);
-            Assert.Equal(ExceptionHelper.ExceptionMessage.TOO_MANY_MATCHING_REMOTE_BRANCHES, ex.Message);
+            Assert.IsType<MigrateException>( ex );
+            Assert.Equal( ExceptionHelper.ExceptionMessage.TOO_MANY_MATCHING_REMOTE_BRANCHES, ex.Message );
         }
 
         [Fact]
@@ -225,25 +225,25 @@ namespace Svn2GitNet.Tests
             var mock = new Mock<ICommandRunner>();
             var localBranchInfo = "*dev";
             var remoteBranchInfo = $"*master{Environment.NewLine}dev1{Environment.NewLine}dev2{Environment.NewLine}dev3";
-            mock.Setup(f => f.Run("git", "branch -l --no-color", out localBranchInfo))
-                .Returns(0);
+            mock.Setup( f => f.Run( "git", "branch -l --no-color", out localBranchInfo ) )
+                .Returns( 0 );
 
-            mock.Setup(f => f.Run("git", "branch -r --no-color", out remoteBranchInfo))
-                .Returns(0);
+            mock.Setup( f => f.Run( "git", "branch -r --no-color", out remoteBranchInfo ) )
+                .Returns( 0 );
 
             var options = new Options()
             {
                 RebaseBranch = "dev"
             };
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
-            Exception ex = Record.Exception(() => grabber.FetchRebaseBraches());
+            Exception ex = Record.Exception( () => grabber.FetchRebaseBraches() );
 
             // Assert
-            Assert.IsType<MigrateException>(ex);
-            Assert.Equal(string.Format(ExceptionHelper.ExceptionMessage.NO_REMOTE_BRANCH_FOUND, options.RebaseBranch), ex.Message);
+            Assert.IsType<MigrateException>( ex );
+            Assert.Equal( string.Format( ExceptionHelper.ExceptionMessage.NO_REMOTE_BRANCH_FOUND, options.RebaseBranch ), ex.Message );
         }
 
         [Fact]
@@ -253,29 +253,29 @@ namespace Svn2GitNet.Tests
             var mock = new Mock<ICommandRunner>();
             var localBranchInfo = $"*master{Environment.NewLine}dev";
             var remoteBranchInfo = "dev";
-            mock.Setup(f => f.Run("git", "branch -l --no-color", out localBranchInfo))
-                .Returns(0);
-            mock.Setup(f => f.Run("git", "branch -r --no-color", out remoteBranchInfo))
-                .Returns(0);
+            mock.Setup( f => f.Run( "git", "branch -l --no-color", out localBranchInfo ) )
+                .Returns( 0 );
+            mock.Setup( f => f.Run( "git", "branch -r --no-color", out remoteBranchInfo ) )
+                .Returns( 0 );
 
             var options = new Options()
             {
                 RebaseBranch = "dev"
             };
 
-            var expected = new List<string>(new string[]
+            var expected = new List<string>( new string[]
             {
                 "dev"
-            });
+            } );
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
             grabber.FetchRebaseBraches();
             var actual = grabber.GetMetaInfo().LocalBranches;
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal( expected, actual );
         }
 
         [Fact]
@@ -286,30 +286,30 @@ namespace Svn2GitNet.Tests
 
             var localBranchInfo = "*dev";
             var remoteBranchInfo = $"*master{Environment.NewLine}dev";
-            mock.Setup(f => f.Run("git", "branch -l --no-color", out localBranchInfo))
-                .Returns(0);
+            mock.Setup( f => f.Run( "git", "branch -l --no-color", out localBranchInfo ) )
+                .Returns( 0 );
 
-            mock.Setup(f => f.Run("git", "branch -r --no-color", out remoteBranchInfo))
-                .Returns(0);
+            mock.Setup( f => f.Run( "git", "branch -r --no-color", out remoteBranchInfo ) )
+                .Returns( 0 );
 
             var options = new Options()
             {
                 RebaseBranch = "dev"
             };
 
-            var expected = new List<string>(new string[]
+            var expected = new List<string>( new string[]
             {
                 "dev"
-            });
+            } );
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
             grabber.FetchRebaseBraches();
             var actual = grabber.GetMetaInfo().LocalBranches;
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal( expected, actual );
         }
 
         [Fact]
@@ -328,18 +328,18 @@ namespace Svn2GitNet.Tests
 
             string expectedArguments = $"svn init --prefix=svn/ --username=\"userName\" --no-metadata --no-minimize-url --trunk=\"/\" {_testSvnUrl}";
 
-            mock.Setup(f => f.Run("git", It.IsAny<string>())).Returns(0);
+            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) ).Returns( 0 );
 
-            mock.Setup(f => f.RunGitSvnInteractiveCommand(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(0);
+            mock.Setup( f => f.RunGitSvnInteractiveCommand( It.IsAny<string>(), It.IsAny<string>() ) )
+                .Returns( 0 );
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
             grabber.Clone();
 
             // Assert
-            mock.Verify(f => f.RunGitSvnInteractiveCommand(expectedArguments, options.Password), Times.Once());
+            mock.Verify( f => f.RunGitSvnInteractiveCommand( expectedArguments, options.Password ), Times.Once() );
         }
 
         [Fact]
@@ -356,18 +356,18 @@ namespace Svn2GitNet.Tests
 
             string expectedArguments = $"svn init --prefix=svn/ --no-metadata --no-minimize-url --trunk=\"/\" {_testSvnUrl}";
 
-            mock.Setup(f => f.Run("git", It.IsAny<string>())).Returns(0);
+            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) ).Returns( 0 );
 
-            mock.Setup(f => f.RunGitSvnInteractiveCommand(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(0);
+            mock.Setup( f => f.RunGitSvnInteractiveCommand( It.IsAny<string>(), It.IsAny<string>() ) )
+                .Returns( 0 );
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
             grabber.Clone();
 
             // Assert
-            mock.Verify(f => f.RunGitSvnInteractiveCommand(expectedArguments, options.Password), Times.Once());
+            mock.Verify( f => f.RunGitSvnInteractiveCommand( expectedArguments, options.Password ), Times.Once() );
         }
 
         [Fact]
@@ -384,18 +384,18 @@ namespace Svn2GitNet.Tests
 
             string expectedArguments = $"svn init --prefix=svn/ --no-minimize-url --trunk=\"/\" {_testSvnUrl}";
 
-            mock.Setup(f => f.Run("git", It.IsAny<string>())).Returns(0);
+            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) ).Returns( 0 );
 
-            mock.Setup(f => f.RunGitSvnInteractiveCommand(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(0);
+            mock.Setup( f => f.RunGitSvnInteractiveCommand( It.IsAny<string>(), It.IsAny<string>() ) )
+                .Returns( 0 );
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
             grabber.Clone();
 
             // Assert
-            mock.Verify(f => f.RunGitSvnInteractiveCommand(expectedArguments, options.Password), Times.Once());
+            mock.Verify( f => f.RunGitSvnInteractiveCommand( expectedArguments, options.Password ), Times.Once() );
         }
 
         [Fact]
@@ -412,18 +412,18 @@ namespace Svn2GitNet.Tests
 
             string expectedArguments = $"svn init --prefix=svn/ --no-minimize-url --trunk=\"/\" {_testSvnUrl}";
 
-            mock.Setup(f => f.Run("git", It.IsAny<string>())).Returns(0);
+            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) ).Returns( 0 );
 
-            mock.Setup(f => f.RunGitSvnInteractiveCommand(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(0);
+            mock.Setup( f => f.RunGitSvnInteractiveCommand( It.IsAny<string>(), It.IsAny<string>() ) )
+                .Returns( 0 );
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
             grabber.Clone();
 
             // Assert
-            mock.Verify(f => f.RunGitSvnInteractiveCommand(expectedArguments, options.Password), Times.Once());
+            mock.Verify( f => f.RunGitSvnInteractiveCommand( expectedArguments, options.Password ), Times.Once() );
         }
 
         [Fact]
@@ -441,18 +441,18 @@ namespace Svn2GitNet.Tests
 
             string expectedArguments = $"svn init --prefix=svn/ {_testSvnUrl}";
 
-            mock.Setup(f => f.Run("git", It.IsAny<string>())).Returns(0);
+            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) ).Returns( 0 );
 
-            mock.Setup(f => f.RunGitSvnInteractiveCommand(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(0);
+            mock.Setup( f => f.RunGitSvnInteractiveCommand( It.IsAny<string>(), It.IsAny<string>() ) )
+                .Returns( 0 );
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
             grabber.Clone();
 
             // Assert
-            mock.Verify(f => f.RunGitSvnInteractiveCommand(expectedArguments, options.Password), Times.Once());
+            mock.Verify( f => f.RunGitSvnInteractiveCommand( expectedArguments, options.Password ), Times.Once() );
         }
 
         [Fact]
@@ -471,19 +471,19 @@ namespace Svn2GitNet.Tests
 
             string expectedArguments = $"svn init --prefix=svn/ --trunk=\"subpath\" {_testSvnUrl}";
 
-            mock.Setup(f => f.Run("git", It.IsAny<string>()))
-                .Returns(0);
+            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) )
+                .Returns( 0 );
 
-            mock.Setup(f => f.RunGitSvnInteractiveCommand(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(0);
+            mock.Setup( f => f.RunGitSvnInteractiveCommand( It.IsAny<string>(), It.IsAny<string>() ) )
+                .Returns( 0 );
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
             grabber.Clone();
 
             // Assert
-            mock.Verify(f => f.RunGitSvnInteractiveCommand(expectedArguments, options.Password), Times.Once());
+            mock.Verify( f => f.RunGitSvnInteractiveCommand( expectedArguments, options.Password ), Times.Once() );
         }
 
         [Fact]
@@ -507,19 +507,19 @@ namespace Svn2GitNet.Tests
 
             string expectedArguments = $"svn init --prefix=svn/ --trunk=\"subpath\" --tags=\"tag1\" --tags=\"tag2\" {_testSvnUrl}";
 
-            mock.Setup(f => f.Run("git", It.IsAny<string>()))
-                .Returns(0);
+            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) )
+                .Returns( 0 );
 
-            mock.Setup(f => f.RunGitSvnInteractiveCommand(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(0);
+            mock.Setup( f => f.RunGitSvnInteractiveCommand( It.IsAny<string>(), It.IsAny<string>() ) )
+                .Returns( 0 );
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
             grabber.Clone();
 
             // Assert
-            mock.Verify(f => f.RunGitSvnInteractiveCommand(expectedArguments, options.Password), Times.Once());
+            mock.Verify( f => f.RunGitSvnInteractiveCommand( expectedArguments, options.Password ), Times.Once() );
         }
 
         [Fact]
@@ -538,19 +538,19 @@ namespace Svn2GitNet.Tests
 
             string expectedArguments = $"svn init --prefix=svn/ --trunk=\"subpath\" --tags=\"tags\" {_testSvnUrl}";
 
-            mock.Setup(f => f.Run("git", It.IsAny<string>()))
-                .Returns(0);
+            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) )
+                .Returns( 0 );
 
-            mock.Setup(f => f.RunGitSvnInteractiveCommand(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(0);
+            mock.Setup( f => f.RunGitSvnInteractiveCommand( It.IsAny<string>(), It.IsAny<string>() ) )
+                .Returns( 0 );
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
             grabber.Clone();
 
             // Assert
-            mock.Verify(f => f.RunGitSvnInteractiveCommand(expectedArguments, options.Password), Times.Once());
+            mock.Verify( f => f.RunGitSvnInteractiveCommand( expectedArguments, options.Password ), Times.Once() );
         }
 
         [Fact]
@@ -569,19 +569,19 @@ namespace Svn2GitNet.Tests
 
             string expectedArguments = $"svn init --prefix=svn/ --trunk=\"subpath\" --branches=\"branches\" {_testSvnUrl}";
 
-            mock.Setup(f => f.Run("git", It.IsAny<string>()))
-                .Returns(0);
+            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) )
+                .Returns( 0 );
 
-            mock.Setup(f => f.RunGitSvnInteractiveCommand(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(0);
+            mock.Setup( f => f.RunGitSvnInteractiveCommand( It.IsAny<string>(), It.IsAny<string>() ) )
+                .Returns( 0 );
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
             grabber.Clone();
 
             // Assert
-            mock.Verify(f => f.RunGitSvnInteractiveCommand(expectedArguments, options.Password), Times.Once());
+            mock.Verify( f => f.RunGitSvnInteractiveCommand( expectedArguments, options.Password ), Times.Once() );
         }
 
         [Fact]
@@ -605,19 +605,19 @@ namespace Svn2GitNet.Tests
 
             string expectedArguments = $"svn init --prefix=svn/ --trunk=\"subpath\" --branches=\"branch1\" --branches=\"branch2\" {_testSvnUrl}";
 
-            mock.Setup(f => f.Run("git", It.IsAny<string>()))
-                .Returns(0);
+            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) )
+                .Returns( 0 );
 
-            mock.Setup(f => f.RunGitSvnInteractiveCommand(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(0);
+            mock.Setup( f => f.RunGitSvnInteractiveCommand( It.IsAny<string>(), It.IsAny<string>() ) )
+                .Returns( 0 );
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
             grabber.Clone();
 
             // Assert
-            mock.Verify(f => f.RunGitSvnInteractiveCommand(expectedArguments, options.Password), Times.Once());
+            mock.Verify( f => f.RunGitSvnInteractiveCommand( expectedArguments, options.Password ), Times.Once() );
         }
 
         [Fact]
@@ -634,19 +634,19 @@ namespace Svn2GitNet.Tests
                 RootIsTrunk = false,
             };
 
-            string expectedExceptionMessage = string.Format(ExceptionHelper.ExceptionMessage.FAIL_TO_EXECUTE_COMMAND, $"git svn init --prefix=svn/ --trunk=\"subpath\" {_testSvnUrl}");
+            string expectedExceptionMessage = string.Format( ExceptionHelper.ExceptionMessage.FAIL_TO_EXECUTE_COMMAND, $"git svn init --prefix=svn/ --trunk=\"subpath\" {_testSvnUrl}" );
 
-            mock.Setup(f => f.RunGitSvnInteractiveCommand(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(-1);
+            mock.Setup( f => f.RunGitSvnInteractiveCommand( It.IsAny<string>(), It.IsAny<string>() ) )
+                .Returns( -1 );
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
-            Exception ex = Record.Exception(() => grabber.Clone());
+            Exception ex = Record.Exception( () => grabber.Clone() );
 
             // Assert
-            Assert.IsType<MigrateException>(ex);
-            Assert.Equal(expectedExceptionMessage, ex.Message);
+            Assert.IsType<MigrateException>( ex );
+            Assert.Equal( expectedExceptionMessage, ex.Message );
         }
 
         [Fact]
@@ -666,18 +666,18 @@ namespace Svn2GitNet.Tests
 
             string expectedArguments = "config svn.authorsfile author1";
 
-            mock.Setup(f => f.RunGitSvnInteractiveCommand(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(0);
+            mock.Setup( f => f.RunGitSvnInteractiveCommand( It.IsAny<string>(), It.IsAny<string>() ) )
+                .Returns( 0 );
 
-            mock.Setup(f => f.Run("git", It.IsAny<string>())).Returns(0);
+            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) ).Returns( 0 );
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "config", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "config", null, null );
 
             // Act
             grabber.Clone();
 
             // Assert
-            mock.Verify(f => f.Run("git", expectedArguments), Times.Once());
+            mock.Verify( f => f.Run( "git", expectedArguments ), Times.Once() );
         }
 
         [Fact]
@@ -697,15 +697,15 @@ namespace Svn2GitNet.Tests
 
             string expectedArguments = "svn fetch -r 123:456";
 
-            mock.Setup(f => f.Run("git", It.IsAny<string>())).Returns(0);
+            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) ).Returns( 0 );
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
             grabber.Clone();
 
             // Assert
-            mock.Verify(f => f.Run("git", expectedArguments), Times.Once());
+            mock.Verify( f => f.Run( "git", expectedArguments ), Times.Once() );
         }
 
         [Fact]
@@ -729,15 +729,15 @@ namespace Svn2GitNet.Tests
             string ignorePathsRegEx = @"^(?:)(?:ex1|ex2)";
             string expectedArguments = $"svn fetch --ignore-paths=\"{ignorePathsRegEx}\"";
 
-            mock.Setup(f => f.Run("git", It.IsAny<string>())).Returns(0);
+            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) ).Returns( 0 );
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
             grabber.Clone();
 
             // Assert
-            mock.Verify(f => f.Run("git", expectedArguments), Times.Once());
+            mock.Verify( f => f.Run( "git", expectedArguments ), Times.Once() );
         }
 
         [Fact]
@@ -762,15 +762,15 @@ namespace Svn2GitNet.Tests
             string ignorePathsRegEx = @"^(?:)(?:ex1|ex2)";
             string expectedArguments = $"svn fetch -r 123:456 --ignore-paths=\"{ignorePathsRegEx}\"";
 
-            mock.Setup(f => f.Run("git", It.IsAny<string>())).Returns(0);
+            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) ).Returns( 0 );
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
             grabber.Clone();
 
             // Assert
-            mock.Verify(f => f.Run("git", expectedArguments), Times.Once());
+            mock.Verify( f => f.Run( "git", expectedArguments ), Times.Once() );
         }
 
         [Fact]
@@ -795,15 +795,15 @@ namespace Svn2GitNet.Tests
             string ignorePathsRegEx = @"^(?:subpath[\/])(?:ex1|ex2)";
             string expectedArguments = $"svn fetch --ignore-paths=\"{ignorePathsRegEx}\"";
 
-            mock.Setup(f => f.Run("git", It.IsAny<string>())).Returns(0);
+            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) ).Returns( 0 );
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
             grabber.Clone();
 
             // Assert
-            mock.Verify(f => f.Run("git", expectedArguments), Times.Once());
+            mock.Verify( f => f.Run( "git", expectedArguments ), Times.Once() );
         }
 
         [Fact]
@@ -833,15 +833,15 @@ namespace Svn2GitNet.Tests
             string ignorePathsRegEx = @"^(?:subpath[\/]|tag1[\/][^\/]+[\/]|tag2[\/][^\/]+[\/])(?:ex1|ex2)";
             string expectedArguments = $"svn fetch --ignore-paths=\"{ignorePathsRegEx}\"";
 
-            mock.Setup(f => f.Run("git", It.IsAny<string>())).Returns(0);
+            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) ).Returns( 0 );
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
             grabber.Clone();
 
             // Assert
-            mock.Verify(f => f.Run("git", expectedArguments), Times.Once());
+            mock.Verify( f => f.Run( "git", expectedArguments ), Times.Once() );
         }
 
         [Fact]
@@ -876,15 +876,15 @@ namespace Svn2GitNet.Tests
             string ignorePathsRegEx = @"^(?:subpath[\/]|tag1[\/][^\/]+[\/]|tag2[\/][^\/]+[\/]|branch1[\/][^\/]+[\/]|branch2[\/][^\/]+[\/])(?:ex1|ex2)";
             string expectedArguments = $"svn fetch --ignore-paths=\"{ignorePathsRegEx}\"";
 
-            mock.Setup(f => f.Run("git", It.IsAny<string>())).Returns(0);
+            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) ).Returns( 0 );
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
             grabber.Clone();
 
             // Assert
-            mock.Verify(f => f.Run("git", expectedArguments), Times.Once());
+            mock.Verify( f => f.Run( "git", expectedArguments ), Times.Once() );
         }
 
         [Fact]
@@ -917,23 +917,23 @@ namespace Svn2GitNet.Tests
             };
 
             var standardOutput = "*branch1";
-            mock.Setup(f => f.Run("git", "branch -l --no-color", out standardOutput))
-                .Returns(0);
+            mock.Setup( f => f.Run( "git", "branch -l --no-color", out standardOutput ) )
+                .Returns( 0 );
 
             standardOutput = "svn/tags/branch2";
-            mock.Setup(f => f.Run("git", "branch -r --no-color", out standardOutput))
-                .Returns(0);
+            mock.Setup( f => f.Run( "git", "branch -r --no-color", out standardOutput ) )
+                .Returns( 0 );
 
-            IGrabber grabber = new Grabber(_testSvnUrl, options, mock.Object, "", null, null);
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
 
             // Act
             grabber.FetchBranches();
             var actual = grabber.GetMetaInfo();
 
             // Assert
-            Assert.Equal(new List<string>() { "svn/tags/branch2" }, actual.Tags);
-            Assert.Equal(new List<string>() { "branch1" }, actual.LocalBranches);
-            Assert.Equal(new List<string>() { "svn/tags/branch2" }, actual.RemoteBranches);
+            Assert.Equal( new List<string>() { "svn/tags/branch2" }, actual.Tags );
+            Assert.Equal( new List<string>() { "branch1" }, actual.LocalBranches );
+            Assert.Equal( new List<string>() { "svn/tags/branch2" }, actual.RemoteBranches );
         }
     }
 }

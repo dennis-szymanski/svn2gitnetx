@@ -8,7 +8,7 @@ namespace Svn2GitNet
         /// Build command "git checkout -b "{branch}" "remotes/svn/{branch}""
         /// </summary>
         /// <returns>Built command info.</returns>
-        public static CommandInfo BuildCheckoutSvnRemoteBranchCommandInfo(string branch)
+        public static CommandInfo BuildCheckoutSvnRemoteBranchCommandInfo( string branch )
         {
             return new CommandInfo()
             {
@@ -21,7 +21,7 @@ namespace Svn2GitNet
         /// Build command "git checkout "{branch}""
         /// </summary>
         /// <returns>Built command info.</returns>
-        public static CommandInfo BuildCheckoutLocalBranchCommandInfo(string branch)
+        public static CommandInfo BuildCheckoutLocalBranchCommandInfo( string branch )
         {
             return new CommandInfo()
             {
@@ -34,7 +34,7 @@ namespace Svn2GitNet
         /// Build command "git checkout -f "{branch}""
         /// </summary>
         /// <returns>Built command info.</returns>
-        public static CommandInfo BuildForceCheckoutLocalBranchCommandInfo(string branch)
+        public static CommandInfo BuildForceCheckoutLocalBranchCommandInfo( string branch )
         {
             return new CommandInfo()
             {
@@ -47,7 +47,7 @@ namespace Svn2GitNet
         /// Build command "git rebase "remotes/svn/{branch}""
         /// </summary>
         /// <returns>Built command info.</returns>
-        public static CommandInfo BuildGitRebaseRemoteSvnBranchCommandInfo(string branch)
+        public static CommandInfo BuildGitRebaseRemoteSvnBranchCommandInfo( string branch )
         {
             return new CommandInfo()
             {
@@ -60,12 +60,12 @@ namespace Svn2GitNet
         /// Build command "git svn fetch"
         /// </summary>
         /// <returns>Built command info.</returns>
-        public static CommandInfo BuildGitSvnFetchCommandInfo(string userName)
+        public static CommandInfo BuildGitSvnFetchCommandInfo( string userName )
         {
             return new CommandInfo()
             {
                 Command = "git",
-                Arguments = string.IsNullOrWhiteSpace(userName) ? "svn fetch" : $"svn fetch --username {userName}"
+                Arguments = string.IsNullOrWhiteSpace( userName ) ? "svn fetch" : $"svn fetch --username {userName}"
             };
         }
 
@@ -73,7 +73,7 @@ namespace Svn2GitNet
         /// Build command "git branch --track "{branch}" "remotes/svn/{branch}""
         /// </summary>
         /// <returns>Built command info.</returns>
-        public static CommandInfo BuildGitBranchTrackCommandInfo(string branch)
+        public static CommandInfo BuildGitBranchTrackCommandInfo( string branch )
         {
             return new CommandInfo()
             {

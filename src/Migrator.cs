@@ -12,8 +12,8 @@ namespace Svn2GitNet
 {
     public class Migrator : Worker
     {
-        private readonly string _defaultAuthorsFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".svn2gitnet", "authors");
-        private readonly string _gitSvnCacheDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".subversion", "auth");
+        private readonly string _defaultAuthorsFile = Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.UserProfile ), ".svn2gitnet", "authors" );
+        private readonly string _gitSvnCacheDirectory = Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.UserProfile ), ".subversion", "auth" );
 
         private readonly string[] _args;
         private string _gitConfigCommandArguments;
@@ -27,7 +27,7 @@ namespace Svn2GitNet
             IMessageDisplayer messageDisplayer,
             ILoggerFactory loggerFactory
         ) :
-            base(options, commandRunner, messageDisplayer, loggerFactory.CreateLogger<Migrator>())
+            base( options, commandRunner, messageDisplayer, loggerFactory.CreateLogger<Migrator>() )
         {
             this._args = args;
             this._loggerFactory = loggerFactory;
@@ -35,61 +35,61 @@ namespace Svn2GitNet
 
         public void Initialize()
         {
-            if (string.IsNullOrWhiteSpace(Options.Authors))
+            if( string.IsNullOrWhiteSpace( Options.Authors ) )
             {
                 Options.Authors = GetDefaultAuthorsOption();
             }
 
-            if (Options.Rebase)
+            if( Options.Rebase )
             {
                 VerifyWorkingTreeIsClean();
             }
-            else if (!string.IsNullOrWhiteSpace(Options.RebaseBranch))
+            else if( !string.IsNullOrWhiteSpace( Options.RebaseBranch ) )
             {
-                if (_args.Length > 2)
+                if( _args.Length > 2 )
                 {
-                    throw new MigrateException(ExceptionHelper.ExceptionMessage.TOO_MANY_ARGUMENTS);
+                    throw new MigrateException( ExceptionHelper.ExceptionMessage.TOO_MANY_ARGUMENTS );
                 }
 
                 VerifyWorkingTreeIsClean();
             }
-            else if (_args.Length == 0)
+            else if( _args.Length == 0 )
             {
-                throw new MigrateException(ExceptionHelper.ExceptionMessage.MISSING_SVN_URL_PARAMETER);
+                throw new MigrateException( ExceptionHelper.ExceptionMessage.MISSING_SVN_URL_PARAMETER );
             }
 
-            _svnUrl = _args[0].Replace(" ", "\\ ");
+            _svnUrl = _args[0].Replace( " ", "\\ " );
         }
 
         public void Run()
         {
-            Grabber grabber = new Grabber(_svnUrl,
+            Grabber grabber = new Grabber( _svnUrl,
                                           Options,
                                           CommandRunner,
                                           GitConfigCommandArguments,
                                           MessageDisplayer,
-                                          _loggerFactory.CreateLogger<Grabber>());
+                                          _loggerFactory.CreateLogger<Grabber>() );
 
-            Fixer fixer = new Fixer(grabber.GetMetaInfo(),
+            Fixer fixer = new Fixer( grabber.GetMetaInfo(),
                                     Options,
                                     CommandRunner,
                                     GitConfigCommandArguments,
                                     MessageDisplayer,
-                                    _loggerFactory.CreateLogger<Fixer>());
+                                    _loggerFactory.CreateLogger<Fixer>() );
 
-            Run(grabber, fixer);
+            Run( grabber, fixer );
         }
 
-        public void Run(IGrabber grabber, IFixer fixer)
+        public void Run( IGrabber grabber, IFixer fixer )
         {
-            if (grabber == null)
+            if( grabber == null )
             {
-                throw new ArgumentNullException("grabber");
+                throw new ArgumentNullException( "grabber" );
             }
 
-            if (fixer == null)
+            if( fixer == null )
             {
-                throw new ArgumentNullException("fixer");
+                throw new ArgumentNullException( "fixer" );
             }
 
             try
@@ -101,11 +101,11 @@ namespace Svn2GitNet
                     BreakLocks();
                 }
 
-                if (Options.Rebase)
+                if( Options.Rebase )
                 {
                     grabber.FetchBranches();
                 }
-                else if (!string.IsNullOrWhiteSpace(Options.RebaseBranch))
+                else if( !string.IsNullOrWhiteSpace( Options.RebaseBranch ) )
                 {
                     grabber.FetchRebaseBraches();
                 }
@@ -129,13 +129,13 @@ namespace Svn2GitNet
         {
             get
             {
-                if (_gitConfigCommandArguments == null)
+                if( _gitConfigCommandArguments == null )
                 {
                     string standardOutput;
                     string standardError;
-                    CommandRunner.Run("git", "config --local --get user.name", out standardOutput, out standardError);
+                    CommandRunner.Run( "git", "config --local --get user.name", out standardOutput, out standardError );
                     string combinedOutput = standardOutput + standardError;
-                    _gitConfigCommandArguments = Regex.IsMatch(combinedOutput, @"(?m)unknown option") ? "config" : "config --local";
+                    _gitConfigCommandArguments = Regex.IsMatch( combinedOutput, @"(?m)unknown option" ) ? "config" : "config --local";
                 }
 
                 return _gitConfigCommandArguments;
@@ -147,21 +147,21 @@ namespace Svn2GitNet
             string standardOutput = string.Empty;
             string standardError = string.Empty;
 
-            int exitCode = CommandRunner.Run("git", "status --porcelain --untracked-files=no", out standardOutput, out standardError);
-            if (exitCode != 0)
+            int exitCode = CommandRunner.Run( "git", "status --porcelain --untracked-files=no", out standardOutput, out standardError );
+            if( exitCode != 0 )
             {
-                throw new MigrateException($"Fail to execute command 'git status --porcelain --untracked-files=no'. Run with -v or --verbose for details.");
+                throw new MigrateException( $"Fail to execute command 'git status --porcelain --untracked-files=no'. Run with -v or --verbose for details." );
             }
 
-            if (!string.IsNullOrWhiteSpace(standardOutput) || !string.IsNullOrWhiteSpace(standardError))
+            if( !string.IsNullOrWhiteSpace( standardOutput ) || !string.IsNullOrWhiteSpace( standardError ) )
             {
-                throw new MigrateException("You have local pending changes. The working tree must be clean in order to continue.");
+                throw new MigrateException( "You have local pending changes. The working tree must be clean in order to continue." );
             }
         }
 
         private string GetDefaultAuthorsOption()
         {
-            if (File.Exists(_defaultAuthorsFile))
+            if( File.Exists( _defaultAuthorsFile ) )
             {
                 return _defaultAuthorsFile;
             }
@@ -173,36 +173,36 @@ namespace Svn2GitNet
         {
             try
             {
-                string svnSimpleFolder = Path.Combine(_gitSvnCacheDirectory, "svn.simple");
-                if (!Directory.Exists(svnSimpleFolder))
+                string svnSimpleFolder = Path.Combine( _gitSvnCacheDirectory, "svn.simple" );
+                if( !Directory.Exists( svnSimpleFolder ) )
                 {
                     return;
                 }
 
-                var cacheFiles = Directory.GetFiles(svnSimpleFolder);
-                if (cacheFiles.Length > 0)
+                var cacheFiles = Directory.GetFiles( svnSimpleFolder );
+                if( cacheFiles.Length > 0 )
                 {
-                    MessageDisplayer.Show("Temporarily disabling the cached credentials...");
-                    foreach (var cf in cacheFiles)
+                    MessageDisplayer.Show( "Temporarily disabling the cached credentials..." );
+                    foreach( var cf in cacheFiles )
                     {
-                        if (string.IsNullOrEmpty(Path.GetExtension(cf)))
+                        if( string.IsNullOrEmpty( Path.GetExtension( cf ) ) )
                         {
                             string newFileName = cf + ".svn2gitnet";
-                            if (File.Exists(newFileName))
+                            if( File.Exists( newFileName ) )
                             {
-                                File.Delete(newFileName);
+                                File.Delete( newFileName );
                             }
 
-                            File.Move(cf, newFileName);
+                            File.Move( cf, newFileName );
                         }
                     }
-                    MessageDisplayer.Show("The cached credentials are disabled.");
+                    MessageDisplayer.Show( "The cached credentials are disabled." );
                 }
             }
-            catch (IOException ex)
+            catch( IOException ex )
             {
-                MessageDisplayer.Show("Failed to disable the cached credentials. We'll use the cached credentials for further actions.");
-                Log(ex.ToString());
+                MessageDisplayer.Show( "Failed to disable the cached credentials. We'll use the cached credentials for further actions." );
+                Log( ex.ToString() );
             }
         }
 
@@ -235,43 +235,43 @@ namespace Svn2GitNet
         {
             try
             {
-                string svnSimpleFolder = Path.Combine(_gitSvnCacheDirectory, "svn.simple");
-                if (!Directory.Exists(svnSimpleFolder))
+                string svnSimpleFolder = Path.Combine( _gitSvnCacheDirectory, "svn.simple" );
+                if( !Directory.Exists( svnSimpleFolder ) )
                 {
                     return;
                 }
 
-                var cacheFiles = Directory.GetFiles(svnSimpleFolder);
-                if (cacheFiles.Length > 0)
+                var cacheFiles = Directory.GetFiles( svnSimpleFolder );
+                if( cacheFiles.Length > 0 )
                 {
-                    MessageDisplayer.Show("Recoverying cached credentials...");
-                    foreach (var cf in cacheFiles)
+                    MessageDisplayer.Show( "Recoverying cached credentials..." );
+                    foreach( var cf in cacheFiles )
                     {
-                        if (string.IsNullOrEmpty(Path.GetExtension(cf)))
+                        if( string.IsNullOrEmpty( Path.GetExtension( cf ) ) )
                         {
                             continue;
                         }
 
-                        var fileNameWithoutExt = Path.GetFileNameWithoutExtension(cf);
-                        var cacheFilePath = Path.Combine(svnSimpleFolder, fileNameWithoutExt);
-                        if (!File.Exists(cacheFilePath))
+                        var fileNameWithoutExt = Path.GetFileNameWithoutExtension( cf );
+                        var cacheFilePath = Path.Combine( svnSimpleFolder, fileNameWithoutExt );
+                        if( !File.Exists( cacheFilePath ) )
                         {
-                            File.Move(cf, cacheFilePath);
+                            File.Move( cf, cacheFilePath );
                         }
                         else
                         {
                             // A new cache file with the same hash generated.
                             // No need to recover the old one.
-                            File.Delete(cf);
+                            File.Delete( cf );
                         }
                     }
-                    MessageDisplayer.Show("Cached credentials recovered");
+                    MessageDisplayer.Show( "Cached credentials recovered" );
                 }
             }
-            catch (IOException ex)
+            catch( IOException ex )
             {
-                MessageDisplayer.Show("Failed to recover the cached credentials.");
-                Log(ex.ToString());
+                MessageDisplayer.Show( "Failed to recover the cached credentials." );
+                Log( ex.ToString() );
             }
         }
     }

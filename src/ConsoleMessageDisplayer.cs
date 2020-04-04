@@ -4,9 +4,9 @@ namespace Svn2GitNet
 {
     public class ConsoleMessageDisplayer : IMessageDisplayer
     {
-        public void Show(string message)
+        public void Show( string message )
         {
-            Console.WriteLine(message);
+            Console.WriteLine( message );
         }
     }
 }

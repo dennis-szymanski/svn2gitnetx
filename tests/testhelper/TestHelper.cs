@@ -15,7 +15,7 @@ namespace Svn2GitNet.Tests
 
         public static ICommandRunner CreateCommandRunner()
         {
-            return new CommandRunner(CreateLoggerFactory().CreateLogger<CommandRunner>(), false, new CancellationToken());
+            return new CommandRunner( CreateLoggerFactory().CreateLogger<CommandRunner>(), false, new CancellationToken() );
         }
     }
 }

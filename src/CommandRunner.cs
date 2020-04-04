@@ -14,55 +14,55 @@ namespace Svn2GitNet
 
         private readonly CancellationToken _cancelToken;
 
-        public CommandRunner(ILogger logger, bool isVerbose, CancellationToken cancelToken)
+        public CommandRunner( ILogger logger, bool isVerbose, CancellationToken cancelToken )
         {
             _logger = logger;
             _isVerbose = isVerbose;
             _cancelToken = cancelToken;
         }
 
-        public int Run(string cmd, string arguments)
+        public int Run( string cmd, string arguments )
         {
-            return Run(cmd, arguments, null, null, null);
+            return Run( cmd, arguments, null, null, null );
         }
 
-        public int Run(string cmd, string arguments, out string standardOutput)
+        public int Run( string cmd, string arguments, out string standardOutput )
         {
             string standardError;
 
-            return Run(cmd, arguments, out standardOutput, out standardError, null);
+            return Run( cmd, arguments, out standardOutput, out standardError, null );
         }
 
-        public int Run(string cmd, string arguments, out string standardOutput, out string standardError)
+        public int Run( string cmd, string arguments, out string standardOutput, out string standardError )
         {
-            return Run(cmd, arguments, out standardOutput, out standardError, null);
+            return Run( cmd, arguments, out standardOutput, out standardError, null );
         }
 
-        public int Run(string cmd, string arguments, out string standardOutput, out string standardError, string workingDirectory)
+        public int Run( string cmd, string arguments, out string standardOutput, out string standardError, string workingDirectory )
         {
             StringBuilder stdout = new StringBuilder();
             StringBuilder stderr = new StringBuilder();
 
-            Action<string> onStdOut = delegate( string s )
+            void onStdOut( string s )
             {
                 stdout.Append( s );
-            };
+            }
 
-            Action<string> onStdErr = delegate( string s )
+            void onStdErr( string s )
             {
                 stderr.Append( s );
-            };
+            }
 
-            int exitCode = Run( cmd, arguments, onStdOut, onStdErr, workingDirectory);
+            int exitCode = Run( cmd, arguments, onStdOut, onStdErr, workingDirectory );
             standardOutput = stdout.ToString();
             standardError = stderr.ToString();
 
             return exitCode;
         }
 
-        public int Run(string cmd, string arguments, Action<string> onStandardOutput, Action<string> onStandardError, string workingDirectory)
+        public int Run( string cmd, string arguments, Action<string> onStandardOutput, Action<string> onStandardError, string workingDirectory )
         {
-            Log($"Running command: {cmd} {arguments.ToString()}");
+            Log( $"Running command: {cmd} {arguments.ToString()}" );
 
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
@@ -74,7 +74,7 @@ namespace Svn2GitNet
                 Arguments = arguments
             };
 
-            if (!string.IsNullOrWhiteSpace(workingDirectory))
+            if( !string.IsNullOrWhiteSpace( workingDirectory ) )
             {
                 startInfo.WorkingDirectory = workingDirectory;
             }
@@ -85,26 +85,26 @@ namespace Svn2GitNet
                 {
                     commandProcess.StartInfo = startInfo;
 
-                    commandProcess.OutputDataReceived += (s, e) =>
+                    commandProcess.OutputDataReceived += ( s, e ) =>
                     {
-                        if (string.IsNullOrEmpty(e.Data))
+                        if( string.IsNullOrEmpty( e.Data ) )
                         {
                             return;
                         }
 
-                        Console.WriteLine(e.Data);
-                        onStandardOutput?.Invoke(e.Data);
+                        Console.WriteLine( e.Data );
+                        onStandardOutput?.Invoke( e.Data );
                     };
 
-                    commandProcess.ErrorDataReceived += (s, e) =>
+                    commandProcess.ErrorDataReceived += ( s, e ) =>
                     {
-                        if (string.IsNullOrEmpty(e.Data))
+                        if( string.IsNullOrEmpty( e.Data ) )
                         {
                             return;
                         }
 
-                        Console.Error.WriteLine(e.Data);
-                        onStandardError?.Invoke(e.Data);
+                        Console.Error.WriteLine( e.Data );
+                        onStandardError?.Invoke( e.Data );
                     };
 
                     commandProcess.EnableRaisingEvents = true;
@@ -125,9 +125,9 @@ namespace Svn2GitNet
 
                         commandProcess.WaitForExit();
                     }
-                    catch (Win32Exception)
+                    catch( Win32Exception )
                     {
-                        throw new MigrateException($"Command {cmd} does not exit. Did you install it or add it to the Environment path?");
+                        throw new MigrateException( $"Command {cmd} does not exit. Did you install it or add it to the Environment path?" );
                     }
                     catch( OperationCanceledException )
                     {
@@ -148,7 +148,7 @@ namespace Svn2GitNet
             }
         }
 
-        public int RunGitSvnInteractiveCommand(string arguments, string password)
+        public int RunGitSvnInteractiveCommand( string arguments, string password )
         {
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
@@ -245,47 +245,47 @@ namespace Svn2GitNet
             }
         }
 
-        private OutputMessageType ReadAndDisplayCommandProcessOutput(Process commandProcess)
+        private OutputMessageType ReadAndDisplayCommandProcessOutput( Process commandProcess )
         {
             int lastChr = 0;
 
             string output = "";
             OutputMessageType messageType = OutputMessageType.None;
 
-            while ((messageType == OutputMessageType.None || commandProcess.StandardError.Peek() != -1)
-                    && (lastChr = commandProcess.StandardError.Read()) > 0)
+            while( ( messageType == OutputMessageType.None || commandProcess.StandardError.Peek() != -1 )
+                    && ( lastChr = commandProcess.StandardError.Read() ) > 0 )
             {
                 string outputChr = null;
-                outputChr += commandProcess.StandardError.CurrentEncoding.GetString(new byte[] { (byte)lastChr });
+                outputChr += commandProcess.StandardError.CurrentEncoding.GetString( new byte[] { (byte)lastChr } );
                 output += outputChr;
 
-                if (messageType == OutputMessageType.None)
+                if( messageType == OutputMessageType.None )
                 {
-                    if (output.Contains("Password for"))
+                    if( output.Contains( "Password for" ) )
                     {
                         messageType = OutputMessageType.RequestInputPassword;
                     }
-                    else if (output.Contains("(R)eject, accept (t)emporarily or accept (p)ermanently?"))
+                    else if( output.Contains( "(R)eject, accept (t)emporarily or accept (p)ermanently?" ) )
                     {
                         messageType = OutputMessageType.RequestAcceptCertificateFullOptions;
                     }
-                    else if (output.Contains("(R)eject or accept (t)emporarily?"))
+                    else if( output.Contains( "(R)eject or accept (t)emporarily?" ) )
                     {
                         messageType = OutputMessageType.RequestAcceptCertificateNoPermanentOption;
                     }
                 }
 
-                Console.Write(outputChr);
+                Console.Write( outputChr );
             }
 
             return messageType;
         }
 
-        private void Log(string message)
+        private void Log( string message )
         {
-            if (_logger != null && _isVerbose)
+            if( _logger != null && _isVerbose )
             {
-                _logger.LogInformation(message);
+                _logger.LogInformation( message );
             }
         }
     }
