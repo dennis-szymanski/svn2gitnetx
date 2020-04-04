@@ -177,7 +177,7 @@ system with the list of conversions to make, one per line, for example:
 Then pass an `--authors` option to svn2gitnet pointing to your file:
 
 ```sh
-svn2gitnet http://svn.example.com/path/to/repo --authors ~/authors.txt
+svn2gitnetx http://svn.example.com/path/to/repo --authors ~/authors.txt
 ```
 
 ### Debugging
