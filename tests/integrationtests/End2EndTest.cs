@@ -218,7 +218,7 @@ namespace Svn2GitNetX.Tests
 
         private string GetBinaryName()
         {
-            return RuntimeInformation.IsOSPlatform( OSPlatform.Windows ) ? "svn2gitnet.exe" : "svn2gitnet";
+            return RuntimeInformation.IsOSPlatform( OSPlatform.Windows ) ? "svn2gitnetx.exe" : "svn2gitnetx";
         }
 
         private string GetPlatformSpecifier()

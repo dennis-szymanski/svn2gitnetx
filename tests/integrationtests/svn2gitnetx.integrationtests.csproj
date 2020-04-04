@@ -5,7 +5,7 @@
 
     <IsPackable>false</IsPackable>
 
-    <RootNamespace>Svn2GitNet.IntegrationTests</RootNamespace>
+    <RootNamespace>Svn2GitNetX.IntegrationTests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +17,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\svn2gitnet.csproj" />
+    <ProjectReference Include="..\..\src\svn2gitnetx.csproj" />
     <ProjectReference Include="..\testhelper\testhelper.csproj" />
   </ItemGroup>
 

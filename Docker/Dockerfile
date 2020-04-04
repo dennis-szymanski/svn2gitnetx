@@ -21,16 +21,16 @@ RUN apt -y clean
 RUN apt -y autoclean
 
 # Create user who does not have root access.
-RUN useradd -d /svn2gitnet -m svn2gitnetuser 
-RUN chown -R svn2gitnetuser:svn2gitnetuser /svn2gitnet
-USER svn2gitnetuser
+RUN useradd -d /svn2gitnetx -m svn2gitnetxuser 
+RUN chown -R svn2gitnetxuser:svn2gitnetxuser /svn2gitnetx
+USER svn2gitnetxuser
 
-RUN mkdir /svn2gitnet/repo/
-RUN mkdir /svn2gitnet/app/
-COPY ./* /svn2gitnet/app/
+RUN mkdir /svn2gitnetx/repo/
+RUN mkdir /svn2gitnetx/app/
+COPY ./* /svn2gitnetx/app/
 
 # Make our working directory the repo directory.
-WORKDIR /svn2gitnet/repo/
+WORKDIR /svn2gitnetx/repo/
 
-ENTRYPOINT [ "/svn2gitnet/app/svn2gitnet" ]
+ENTRYPOINT [ "/svn2gitnetx/app/svn2gitnetx" ]
 CMD [ "--help" ]

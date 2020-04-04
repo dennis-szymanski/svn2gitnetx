@@ -17,7 +17,7 @@ const string packageTarget = "package";
 string target = Argument( "target", buildTarget );
 bool skipPublish = Argument<bool>( "skip_publish", false );
 
-FilePath sln = File( "./svn2gitnet.sln" );
+FilePath sln = File( "./svn2gitnetx.sln" );
 DirectoryPath packageDir = Directory( "./dist" );
 
 const string coreAppVers = "netcoreapp3.1";
@@ -54,7 +54,7 @@ Task( unitTestTarget )
             NoBuild = true,
             NoRestore = true
         };
-        DotNetCoreTest( "./tests/unittests/svn2gitnet.unittests.csproj", settings );
+        DotNetCoreTest( "./tests/unittests/svn2gitnetx.unittests.csproj", settings );
     }
 ).Description( "Runs Unit Tests" )
 .IsDependentOn( buildTarget );
@@ -70,7 +70,7 @@ private void DoPublish( string runTime )
         Runtime = runTime
     };
 
-    DotNetCorePublish( "./src/svn2gitnet.csproj", settings );
+    DotNetCorePublish( "./src/svn2gitnetx.csproj", settings );
 }
 
 Task( publishWindowsTarget )
@@ -134,7 +134,7 @@ var integrationTestTask = Task( integrationTestTarget )
                 NoRestore = true,
                 WorkingDirectory = "./tests/integrationtests"
             };
-            DotNetCoreTest( "./svn2gitnet.integrationtests.csproj", settings );
+            DotNetCoreTest( "./svn2gitnetx.integrationtests.csproj", settings );
         }
         finally
         {
@@ -169,7 +169,7 @@ var packageWindowsTask = Task( packageWindowsTarget )
         foreach( string platform in platforms )
         {
             DirectoryPath packageFolder = packageDir.Combine( "win-" + platform );
-            FilePath wxsFile = packageFolder.CombineWithFilePath( $"svn2gitnet-{platform}.wxs" );
+            FilePath wxsFile = packageFolder.CombineWithFilePath( $"svn2gitnetx-{platform}.wxs" );
             EnsureDirectoryExists( packageFolder );
             CleanDirectory( packageFolder );
 
@@ -178,13 +178,13 @@ var packageWindowsTask = Task( packageWindowsTarget )
             Information( "Starting Heat for " + platform );
             HeatSettings heatSettings = new HeatSettings
             {
-                ComponentGroupName = "svn2gitnet", // -cg
+                ComponentGroupName = "svn2gitnetx", // -cg
                 GenerateGuid = true,               // -gg
                 SuppressFragments = true,          // -sfrag
                 SuppressRegistry = true,           // -sreg
                 SuppressVb6Com = true,             // -svb6
                 Template = WiXTemplateType.Product,// -template product
-                Transform = "svn2gitnet.xslt",
+                Transform = "svn2gitnetx.xslt",
                 ToolPath = @"C:\Program Files (x86)\WiX Toolset v3.11\bin\heat.exe"
             };
 
@@ -213,11 +213,11 @@ var packageWindowsTask = Task( packageWindowsTarget )
             LightSettings lightSettings = new LightSettings
             {
                 RawArguments = $"-ext WixUIExtension -cultures:en-us -b .\\src\\bin\\Release\\{coreAppVers}\\win10-{platform}\\publish",
-                OutputFile = packageFolder.CombineWithFilePath( $"svn2gitnet-{platform}.msi" ),
+                OutputFile = packageFolder.CombineWithFilePath( $"svn2gitnetx-{platform}.msi" ),
                 ToolPath = @"C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe"
             };
 
-            FilePath wixObjFile = packageFolder.CombineWithFilePath( $"svn2gitnet-{platform}.wixobj" );
+            FilePath wixObjFile = packageFolder.CombineWithFilePath( $"svn2gitnetx-{platform}.wixobj" );
             WiXLight( wixObjFile.ToString(), lightSettings );
         }
     }
@@ -234,7 +234,7 @@ var packageUnixTask = Task( packageUnixTarget )
             Information( $"Packing {platform}..." );
 
             DirectoryPath packageFolder = packageDir.Combine( platform );
-            FilePath tarFile = packageFolder.CombineWithFilePath( $"svn2gitnet-{platform}.tar.gz" );
+            FilePath tarFile = packageFolder.CombineWithFilePath( $"svn2gitnetx-{platform}.tar.gz" );
             EnsureDirectoryExists( packageFolder );
             CleanDirectory( packageFolder );
 
@@ -286,7 +286,7 @@ Task( publishDockerTarget )
             OutputDirectory = dockerDist
         };
 
-        DotNetCorePublish( "./src/svn2gitnet.csproj", settings );
+        DotNetCorePublish( "./src/svn2gitnetx.csproj", settings );
     }
 ).Description( "Builds for making the docker image." );
 
@@ -294,7 +294,7 @@ Task( buildDockerTarget )
 .Does(
     () =>
     {
-        string arguments = "build -t svn2gitnet -f ./docker/Dockerfile ./dist/docker";
+        string arguments = "build -t svn2gitnetx -f ./docker/Dockerfile ./dist/docker";
         ProcessArgumentBuilder argumentsBuilder = ProcessArgumentBuilder.FromString( arguments );
         ProcessSettings settings = new ProcessSettings
         {

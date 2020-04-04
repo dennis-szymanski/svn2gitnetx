@@ -9,15 +9,15 @@ xmlns:wix="http://schemas.microsoft.com/wix/2006/wi">
   </xsl:template>
 
   <xsl:template match="wix:Product/@Manufacturer">
-    <xsl:attribute name="Manufacturer">Jingyu Ma</xsl:attribute>
+    <xsl:attribute name="Manufacturer">Seth Hendrick, Jingyu Ma</xsl:attribute>
   </xsl:template>
 
   <xsl:template match="wix:Product/@Name">
-    <xsl:attribute name="Name">Svn2Git.NET</xsl:attribute>
+    <xsl:attribute name="Name">Svn2Git.NETX</xsl:attribute>
   </xsl:template>
 
   <xsl:template match="wix:Feature/@Title">
-    <xsl:attribute name="Title">Svn2Git.NET.Main</xsl:attribute>
+    <xsl:attribute name="Title">Svn2Git.NETX.Main</xsl:attribute>
   </xsl:template>
 
   <xsl:template match="wix:Product">
@@ -33,13 +33,13 @@ xmlns:wix="http://schemas.microsoft.com/wix/2006/wi">
   </xsl:template>
 
   <xsl:template match="wix:Product/wix:Directory/wix:Directory/@Name">
-    <xsl:attribute name="Name">Svn2Git.NET</xsl:attribute>
+    <xsl:attribute name="Name">Svn2Git.NETX</xsl:attribute>
   </xsl:template>
 
   <xsl:template match="wix:Product/wix:Directory/wix:Directory">
     <Directory Id="ProgramFilesFolder" xmlns="http://schemas.microsoft.com/wix/2006/wi">
       <Component Id ="setEnviroment">
-        <xsl:attribute name="Guid">{9AE672fD-224C-44D4-A38C-26012FF0B478}</xsl:attribute>
+        <xsl:attribute name="Guid">{0A8D3F46-B69E-44C6-AB36-623607E3E802}</xsl:attribute>
         <CreateFolder />
         <Environment
         Id="Environment"

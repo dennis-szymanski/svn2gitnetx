@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.8
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "svn2gitnet", "src\svn2gitnet.csproj", "{7B83A5C6-6C24-414A-9260-D2F3B2EFA499}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "svn2gitnetx", "src\svn2gitnetx.csproj", "{7B83A5C6-6C24-414A-9260-D2F3B2EFA499}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "svn2gitnet.unittests", "tests\unittests\svn2gitnet.unittests.csproj", "{163A32DC-BABF-43E5-B1A0-28493393BF84}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "svn2gitnetx.unittests", "tests\unittests\svn2gitnetx.unittests.csproj", "{163A32DC-BABF-43E5-B1A0-28493393BF84}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "svn2gitnet.integrationtests", "tests\integrationtests\svn2gitnet.integrationtests.csproj", "{665409E5-67E0-4F76-A4B7-52B9EB128088}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "svn2gitnetx.integrationtests", "tests\integrationtests\svn2gitnetx.integrationtests.csproj", "{665409E5-67E0-4F76-A4B7-52B9EB128088}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "testhelper", "tests\testhelper\testhelper.csproj", "{30CD7DD9-64C0-43F2-B4B3-CCFD972AB8E2}"
 EndProject
