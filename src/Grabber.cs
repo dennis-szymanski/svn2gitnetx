@@ -176,6 +176,8 @@ namespace Svn2GitNetX
                 }
             }
 
+            //---- Fetch ----
+
             bool success = false;
             int currentAttempt = 0;
             do
