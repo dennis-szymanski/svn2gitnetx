@@ -40,14 +40,32 @@ namespace Svn2GitNetX
         public void Clone()
         {
             Log( "Start cloning..." );
+            
+            var branches = Options.Branches == null ? new List<string>() : new List<string>( Options.Branches );
+            var tags = Options.Tags == null ? new List<string>() : new List<string>( Options.Tags );
+
+            Log( "Git Init" );
+            DoGitInit( branches, tags );
+
+            Log( "Git Fetch" );
+            DoFetch( branches, tags );
+
+            Log( "Fetch Branches" );
+            FetchBranches();
+
+            Log( "End clone." );
+        }
+
+        private void DoGitInit( IList<string> branches, IList<string> tags )
+        {
             StringBuilder arguments = new StringBuilder( "svn init --prefix=svn/ " );
 
-            if( !string.IsNullOrWhiteSpace( Options.UserName ) )
+            if( string.IsNullOrWhiteSpace( Options.UserName ) == false )
             {
                 arguments.AppendFormat( "--username=\"{0}\" ", Options.UserName );
             }
 
-            if( !Options.IncludeMetaData )
+            if( Options.IncludeMetaData == false )
             {
                 arguments.Append( "--no-metadata " );
             }
@@ -56,9 +74,6 @@ namespace Svn2GitNetX
             {
                 arguments.Append( "--no-minimize-url " );
             }
-
-            var branches = Options.Branches == null ? new List<string>() : new List<string>( Options.Branches );
-            var tags = Options.Tags == null ? new List<string>() : new List<string>( Options.Tags );
 
             if( Options.RootIsTrunk )
             {
@@ -72,12 +87,12 @@ namespace Svn2GitNetX
             else
             {
                 // Add each component to the command that was passed as an argument.
-                if( !string.IsNullOrWhiteSpace( Options.SubpathToTrunk ) )
+                if( string.IsNullOrWhiteSpace( Options.SubpathToTrunk ) == false )
                 {
                     arguments.AppendFormat( "--trunk=\"{0}\" ", Options.SubpathToTrunk );
                 }
 
-                if( !Options.NoTags )
+                if( Options.NoTags == false )
                 {
                     if( tags.Count == 0 )
                     {
@@ -92,7 +107,7 @@ namespace Svn2GitNetX
                     }
                 }
 
-                if( !Options.NoBranches )
+                if( Options.NoBranches == false )
                 {
                     if( branches.Count == 0 )
                     {
@@ -116,15 +131,19 @@ namespace Svn2GitNetX
                 throw new MigrateException( exceptionMessage );
             }
 
-            if( !string.IsNullOrWhiteSpace( Options.Authors ) )
+            // Setup author file after the init.
+            if( string.IsNullOrWhiteSpace( Options.Authors ) == false )
             {
                 string args = string.Format( "{0} svn.authorsfile {1}",
                             GitConfigCommandArguments, Options.Authors );
                 CommandRunner.Run( "git", args );
             }
+        }
 
-            arguments = new StringBuilder( "svn fetch " );
-            if( !string.IsNullOrWhiteSpace( Options.Revision ) )
+        private void DoFetch( IList<string> branches, IList<string> tags )
+        {
+            StringBuilder arguments = new StringBuilder( "svn fetch " );
+            if( string.IsNullOrWhiteSpace( Options.Revision ) == false )
             {
                 var range = Options.Revision.Split( ":" );
                 string start = range[0];
@@ -132,19 +151,19 @@ namespace Svn2GitNetX
                 arguments.AppendFormat( "-r {0}:{1} ", start, end );
             }
 
-            if( Options.Exclude != null && Options.Exclude.Any() )
+            if( ( Options.Exclude != null ) && Options.Exclude.Any() )
             {
                 // Add exclude paths to the command line. Some versions of git support
                 // this for fetch only, later also for init.
                 List<string> regex = new List<string>();
-                if( !Options.RootIsTrunk )
+                if( Options.RootIsTrunk == false )
                 {
-                    if( !string.IsNullOrWhiteSpace( Options.SubpathToTrunk ) )
+                    if( string.IsNullOrWhiteSpace( Options.SubpathToTrunk ) == false )
                     {
                         regex.Add( Options.SubpathToTrunk + @"[\/]" );
                     }
 
-                    if( !Options.NoTags && tags.Count > 0 )
+                    if( ( Options.NoTags == false ) && tags.Count > 0 )
                     {
                         foreach( var t in tags )
                         {
@@ -152,7 +171,7 @@ namespace Svn2GitNetX
                         }
                     }
 
-                    if( !Options.NoBranches && branches.Count > 0 )
+                    if( ( Options.NoBranches == false ) && branches.Count > 0 )
                     {
                         foreach( var b in branches )
                         {
@@ -165,6 +184,8 @@ namespace Svn2GitNetX
                 arguments.AppendFormat( "--ignore-paths=\"{0}\" ", regexStr );
             }
 
+            //---- Fetch ----
+
             int lastRevision = -1;
             int currentRevision = lastRevision;
             void ParseRevision( string s )
@@ -175,8 +196,6 @@ namespace Svn2GitNetX
                     int.TryParse( match.Groups["rev"].Value, out currentRevision );
                 }
             }
-
-            //---- Fetch ----
 
             bool success = false;
             int currentAttempt = 0;
@@ -211,16 +230,12 @@ namespace Svn2GitNetX
                     }
                 }
             }
-            while( this.Options.FetchAttempts <= 0 || currentAttempt <= this.Options.FetchAttempts );
+            while( ( this.Options.FetchAttempts <= 0 ) || ( currentAttempt <= this.Options.FetchAttempts ) );
 
             if( success == false )
             {
                 throw new MigrateException( $"Fail to execute command \"git {arguments.ToString()}\". Run with -v or --verbose for details." );
             }
-
-            FetchBranches();
-
-            Log( "End clone." );
         }
 
         public void FetchBranches()
