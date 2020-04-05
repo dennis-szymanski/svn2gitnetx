@@ -4,8 +4,27 @@ using CommandLine;
 
 namespace Svn2GitNetX
 {
+    public enum CredentialsMethod
+    {
+        /// <summary>
+        /// Get the credentials from the command line arguments
+        /// (default)
+        /// </summary>
+        args,
+
+        /// <summary>
+        /// Get the credentials from an environment variable.
+        /// </summary>
+        env_var
+    }
+
     public class Options
     {
+        public Options()
+        {
+            this.UserNameMethod = CredentialsMethod.args;
+        }
+
         /// <summary>
         /// Be verbose in logging -- useful for debugging issues
         /// </summary>
@@ -107,8 +126,25 @@ namespace Svn2GitNetX
             set;
         }
 
-        [Option( "username", HelpText = "Username for transports that needs it (http(s), svn)" )]
+        [Option(
+            "username",
+            HelpText = "Username for transports that needs it (http(s), svn)" 
+        )]
         public string UserName
+        {
+            get;
+            set;
+        }
+
+        [Option(
+            "username-method",
+            HelpText = "How to get the user name.  '" + 
+                       nameof( CredentialsMethod.args ) + 
+                       "' for using the value passed into the username argument.  '" +
+                       nameof( CredentialsMethod.env_var ) + "' for using the value stored in the environment variable specified in the username argument.",
+            Default = CredentialsMethod.args
+        )]
+        public CredentialsMethod UserNameMethod
         {
             get;
             set;
@@ -173,6 +209,20 @@ namespace Svn2GitNetX
         {
             get;
             set;
+        }
+
+        // ---------------- Functions ----------------
+
+        public string GetUserName()
+        {
+            if( this.UserNameMethod == CredentialsMethod.env_var )
+            {
+                return Environment.GetEnvironmentVariable( this.UserName );
+            }
+            else
+            {
+                return this.UserName;
+            }
         }
     }
 }

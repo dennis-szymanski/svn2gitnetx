@@ -54,10 +54,10 @@ namespace Svn2GitNetX
             if( Options.Rebase )
             {
                 Log( "Rebasing..." );
-                CommandInfo cmdInfo = CommandInfoBuilder.BuildGitSvnFetchCommandInfo( Options.UserName );
+                CommandInfo cmdInfo = CommandInfoBuilder.BuildGitSvnFetchCommandInfo( Options.GetUserName() );
 
                 int exitCode = 0;
-                if( string.IsNullOrWhiteSpace( Options.UserName ) )
+                if( string.IsNullOrWhiteSpace( Options.GetUserName() ) )
                 {
                     exitCode = RunCommand( cmdInfo );
                 }
