@@ -142,7 +142,11 @@ namespace Svn2GitNetX
             set;
         }
 
-        [Option( "breaklocks", HelpText = "Breaks any index.lock files in the .git/svn/refs/remotes/svn/* directories.  Only use this if there are no processes running.", Default = false )]
+        [Option(
+            "break-locks",
+            HelpText = "Breaks any index.lock files in the .git/svn/refs/remotes/svn/* directories.  Only use this if you are sure there are no git process running in this directory.",
+            Default = false
+        )]
         public bool BreakLocks
         {
             get;
@@ -150,7 +154,7 @@ namespace Svn2GitNetX
         }
 
         [Option( 
-            "fetchattempts", 
+            "fetch-attempts", 
             HelpText = "How many attempts to try to fetch a single revision AFTER the first failure.  Set to -1 (or less) to try forever until CTRL+C is hit.",
             Default = 0
         )]
@@ -161,8 +165,8 @@ namespace Svn2GitNetX
         }
 
         [Option(
-            "ignoregcerrors",
-            HelpText = "If a GC error happens during fetching, ignore it.",
+            "ignore-gc-errors",
+            HelpText = "If a GC error happens during fetching, ignore it.  This also deletes the gc.log file.",
             Default = false
         )]
         public bool IgnoreGcErrors
