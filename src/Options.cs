@@ -151,7 +151,7 @@ namespace Svn2GitNetX
 
         [Option( 
             "fetchattempts", 
-            HelpText = "How many attempts to try to fetch a single revision.  Set to -1 (or less) to try forever until CTRL+C is hit.",
+            HelpText = "How many attempts to try to fetch a single revision AFTER the first failure.  Set to -1 (or less) to try forever until CTRL+C is hit.",
             Default = 0
         )]
         public int FetchAttempts

@@ -590,5 +590,248 @@ namespace Svn2GitNetX.Tests
             // Assert
             mock.Verify( f => f.Run( "git", expectedArguments, It.IsAny<Action<string>>(), null, null ), Times.Once() );
         }
+
+        [Fact]
+        public void FetchWithUnlimitedRetriesTest()
+        {
+            // Prepare
+            var mock = new Mock<ICommandRunner>();
+            Options options = new Options
+            {
+                // -1 means unlimited attempts.
+                FetchAttempts = -1
+            };
+
+            int timesCalled = 0;
+            const int maxAttempts = 3;
+
+            mock.Setup( 
+                f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null )
+            )
+            .Returns( 
+                delegate( string cmd, string arguments, Action<string> onStdout, Action<string> onStdErr, string workDir )
+                {
+                    // Only make progress on 1 revision.
+                    onStdout( "r1 = somehash (ref/somewhere/svn)" );
+
+                    // After 3 attempts, return 0
+                    // to emulate the fetch finally working.
+                    ++timesCalled;
+                    if( timesCalled <= maxAttempts )
+                    {
+                        return 128;
+                    }
+                    else
+                    {
+                        return 0;   
+                    }
+                }
+            );
+
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
+
+            // Act
+            grabber.Clone();
+
+            // Assert
+            Assert.Equal( maxAttempts + 1, timesCalled );
+        }
+
+        [Fact]
+        public void FetchWithLimitedRetriesTest()
+        {
+            // Prepare
+            var mock = new Mock<ICommandRunner>();
+            Options options = new Options
+            {
+                FetchAttempts = 3
+            };
+
+            int timesCalled = 0;
+
+            mock.Setup( 
+                f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null )
+            )
+            .Returns( 
+                delegate( string cmd, string arguments, Action<string> onStdout, Action<string> onStdErr, string workDir )
+                {
+                    // Only make progress on 1 revision.
+                    // This will increment our attempts since no progress has been made.
+                    onStdout( "r127 = somehash (ref/somewhere/svn)" );
+
+                    ++timesCalled;
+                    return 128;
+                }
+            );
+
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
+
+            // Act
+            Exception ex = Record.Exception( () => grabber.Clone() );
+
+            // Assert
+            Assert.IsType<MigrateException>( ex );
+
+            // Times it will be called:
+            // 1 - to go from rev -1 to rev 127 (we treat this as making progress)
+            // 2 - to go from rev 127 to rev 127 (First Failure)
+            // 3 - to go from rev 127 to rev 127 (Attempt 1)
+            // 4 - to go from rev 127 to rev 127 (Attempt 2)
+            // 5 - to go from rev 127 to rev 127 (Attempt 3, break out)
+            Assert.Equal( options.FetchAttempts + 2, timesCalled );
+        }
+
+        [Fact]
+        public void FetchWithLimitedRetriesButWithProgressMadeTest()
+        {
+            // Prepare
+            var mock = new Mock<ICommandRunner>();
+            Options options = new Options
+            {
+                FetchAttempts = 1
+            };
+
+            List<string> responses = new List<string>
+            {
+                "r127 = somehash (ref/somewhere/svn)",
+                "r128 = somehash (ref/somewhere/svn)",
+                "r129 = somehash (ref/somewhere/svn)"
+            };
+
+            int timesCalled = 0;
+
+            mock.Setup( 
+                f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null )
+            )
+            .Returns( 
+                delegate( string cmd, string arguments, Action<string> onStdout, Action<string> onStdErr, string workDir )
+                {
+                    onStdout( responses[timesCalled] );
+
+                    ++timesCalled;
+
+                    if( timesCalled >= responses.Count )
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return 128;
+                    }
+                }
+            );
+
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
+
+            // Act
+            grabber.Clone();
+
+            // Assert
+
+            // Times it will be called:
+            // 1 - to go from rev -1 to rev 127 (we treat this as making progress)
+            // 2 - to go from rev 127 to rev 128 (Made Progress)
+            // 3 - to go from rev 128 to rev 129 (Made Progress, returns 0, breaks out)
+            Assert.Equal( responses.Count, timesCalled );
+        }
+
+        [Fact]
+        public void FetchWithLimitedRetriesuBtWithProgressMadeAfter1FailureTest()
+        {
+            // Prepare
+            var mock = new Mock<ICommandRunner>();
+            Options options = new Options
+            {
+                FetchAttempts = 1
+            };
+
+            List<Tuple<string, int>> responses = new List<Tuple<string, int>>
+            {
+                new Tuple<string, int>( "r126 = somehash (ref/somewhere/svn)", 128 ),
+                new Tuple<string, int>( "r127 = somehash (ref/somewhere/svn)", 128 ),
+                new Tuple<string, int>( "r128 = somehash (ref/somewhere/svn)", 128 ),
+                new Tuple<string, int>( "r128 = somehash (ref/somewhere/svn)", 128 ),
+                new Tuple<string, int>( "r129 = somehash (ref/somewhere/svn)", 0 )
+            };
+
+            int timesCalled = 0;
+
+            mock.Setup( 
+                f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null )
+            )
+            .Returns( 
+                delegate( string cmd, string arguments, Action<string> onStdout, Action<string> onStdErr, string workDir )
+                {
+                    onStdout( responses[timesCalled].Item1 );
+
+                    return responses[timesCalled++].Item2;
+                }
+            );
+
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
+
+            // Act
+            grabber.Clone();
+
+            // Assert
+
+            // Times it will be called:
+            // 1 - to go from rev -1 to rev 126 (we treat this as making progress)
+            // 2 - to go from rev 126 to rev 127 (Made progress even though returned non-zero)
+            // 2 - to go from rev 127 to rev 128 (Made progress even though returned non-zero)
+            // 3 - to go from rev 128 to rev 128 (First Failure, did not make progress, increment attempt.)
+            // 4 - to go from rev 128 to rev 129 (Attempt 1, returns 0, breaks out)
+            Assert.Equal( responses.Count, timesCalled );
+        }
+
+        [Fact]
+        public void FetchWithLimitedRetriesuBtWithNoProgressMadeAfter1FailureTest()
+        {
+            // Prepare
+            var mock = new Mock<ICommandRunner>();
+            Options options = new Options
+            {
+                FetchAttempts = 1
+            };
+
+            List<Tuple<string, int>> responses = new List<Tuple<string, int>>
+            {
+                new Tuple<string, int>( "r126 = somehash (ref/somewhere/svn)", 128 ),
+                new Tuple<string, int>( "r127 = somehash (ref/somewhere/svn)", 128 ),
+                new Tuple<string, int>( "r128 = somehash (ref/somewhere/svn)", 128 ),
+                new Tuple<string, int>( "r128 = somehash (ref/somewhere/svn)", 128 ),
+                new Tuple<string, int>( "r128 = somehash (ref/somewhere/svn)", 128 )
+            };
+
+            int timesCalled = 0;
+
+            mock.Setup( 
+                f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null )
+            )
+            .Returns( 
+                delegate( string cmd, string arguments, Action<string> onStdout, Action<string> onStdErr, string workDir )
+                {
+                    onStdout( responses[timesCalled].Item1 );
+
+                    return responses[timesCalled++].Item2;
+                }
+            );
+
+            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
+
+            // Act
+            Exception ex = Record.Exception( () => grabber.Clone() );
+
+            // Assert
+            Assert.IsType<MigrateException>( ex );
+
+            // Times it will be called:
+            // 1 - to go from rev -1 to rev 126 (we treat this as making progress)
+            // 2 - to go from rev 126 to rev 127 (Made progress even though returned non-zero)
+            // 3 - to go from rev 127 to rev 128 (Made progress even though returned non-zero)
+            // 4 - to go from rev 128 to rev 128 (First Failure, did not make progress, increment attempt.)
+            // 5 - to go from rev 128 to rev 128 (Attempt 1, no success.  Should throw exception).
+            Assert.Equal( responses.Count, timesCalled );
+        }
     }
 }

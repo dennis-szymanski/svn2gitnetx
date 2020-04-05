@@ -82,7 +82,7 @@ namespace Svn2GitNetX
         }
 
         protected void Log( string message )
-        {
+        {   
             if( _logger != null && _options.IsVerbose )
             {
                 _logger.LogInformation( message );

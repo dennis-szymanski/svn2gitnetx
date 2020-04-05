@@ -212,11 +212,13 @@ namespace Svn2GitNetX
                 {
                     Log( "Made Progress, will not increment attempt" );
                     lastRevision = currentRevision;
+                    // We made progress! Reset our current attempts.
+                    currentAttempt = 0;
                 }
                 else
                 {
-                    Log( "No progress made, attempt #" + currentAttempt + " was a failure" );
                     ++currentAttempt;
+                    Log( "No progress made, attempt #" + currentAttempt + " was a failure" );
                 }
 
                 if( Options.IgnoreGcErrors )
