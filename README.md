@@ -10,6 +10,8 @@
 * Hitting CTRL+C now kills all child processes instead of orphaning them.
 * Can break SVN Locks via the "--breaklocks" argument on the command line.
 * Uses dotnet core 3.1 instead of 2.0.
+* Allows one to ignore git gc errors and auto-deletes gc.log.
+* Allows one to specify the number of times to attempt to fetch before giving up.  This count is reset whenever the process makes progress and downloads a new SVN revision.
 
 ## Examples
 
@@ -199,47 +201,52 @@ PS C:\> svn2gitnetx --help
 svn2gitnetx 1.0.0
 Copyright (C) 2020 Seth Hendrick, Jingyu Ma
 
-  -v, --verbose        (Default: false) Be verbose in logging -- useful for debugging issues
+  -v, --verbose         (Default: false) Be verbose in logging -- useful for debugging issues
 
-  -m, --metadata       (Default: false) Include metadata in git logs (git-svn-id)
+  -m, --metadata        (Default: false) Include metadata in git logs (git-svn-id)
 
-  --no-minimize-url    Accept URLs as-is without attempting to connect to a higher level directory
+  --no-minimize-url     Accept URLs as-is without attempting to connect to a higher level directory
 
-  --rootistrunk        Use this if the root level of the repo is equivalent to the trunk and there are no tags or
-                       branches
+  --rootistrunk         Use this if the root level of the repo is equivalent to the trunk and there are no tags or branches
 
-  --trunk              (Default: trunk) Subpath to trunk from repository URL (default: trunk)
+  --trunk               (Default: trunk) Subpath to trunk from repository URL (default: trunk)
 
-  --notrunk            Do not import anything from trunk
+  --notrunk             Do not import anything from trunk
 
-  --branches           Subpath to branches from repository URL (default: branches); can be used multiple times
+  --branches            Subpath to branches from repository URL (default: branches); can be used multiple times
 
-  --nobranches         Do not try to import any branches
+  --nobranches          Do not try to import any branches
 
-  --tags               Subpath to tags from repository URL (default: tags); can be used multiple times
+  --tags                Subpath to tags from repository URL (default: tags); can be used multiple times
 
-  --notags             Do not try to import any tags
+  --notags              Do not try to import any tags
 
-  --exclude            Specify a Perl regular expression to filter paths when fetching; can be used multiple times
+  --exclude             Specify a Perl regular expression to filter paths when fetching; can be used multiple times
 
-  --revision           Start importing from SVN revision START_REV; optionally end at END_REV
+  --revision            Start importing from SVN revision START_REV; optionally end at END_REV
 
-  --username           Username for transports that needs it (http(s), svn)
+  --username            Username for transports that needs it (http(s), svn)
 
-  --password           Password for transports that need it (http(s), svn)
+  --password            Password for transports that need it (http(s), svn)
 
-  --rebase             Instead of cloning a new project, rebase an existing one against SVN
+  --rebase              Instead of cloning a new project, rebase an existing one against SVN
 
-  --rebasebranch       Rebase specified branch
+  --rebasebranch        Rebase specified branch
 
-  --authors            Path to file containing svn-to-git authors mapping
+  --authors             Path to file containing svn-to-git authors mapping
 
-  --breaklocks         (Default: false) Breaks any index.lock files in the .git/svn/refs/remotes/svn/* directories.
-                       Only use this if there are no processes running.
+  --break-locks         (Default: false) Breaks any index.lock files in the .git/svn/refs/remotes/svn/* directories.  Only use this if you are sure there are no git
+                        process running in this directory.
 
-  --help               Display this help screen.
+  --fetch-attempts      (Default: 0) How many attempts to try to fetch a single revision AFTER the first failure.  Set to -1 (or less) to try forever until CTRL+C is
+                        hit.
 
-  --version            Display version information.
+  --ignore-gc-errors    (Default: false) If a GC error happens during fetching, ignore it.  This also deletes the gc.log file.
+
+  --help                Display this help screen.
+
+  --version             Display version information.
+
 ```
 
 ### Contribution
