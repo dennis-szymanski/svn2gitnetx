@@ -441,7 +441,7 @@ namespace Svn2GitNetX.Tests
             grabber.Clone();
 
             // Assert
-            mock.Verify( f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null ), Times.Once() );
+            mock.Verify( f => f.Run( "git", expectedArguments, It.IsAny<Action<string>>(), null, null ), Times.Once() );
         }
 
         [Fact]
@@ -474,7 +474,7 @@ namespace Svn2GitNetX.Tests
             grabber.Clone();
 
             // Assert
-            mock.Verify( f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null ), Times.Once() );
+            mock.Verify( f => f.Run( "git", expectedArguments, It.IsAny<Action<string>>(), null, null ), Times.Once() );
         }
 
         [Fact]
@@ -507,7 +507,7 @@ namespace Svn2GitNetX.Tests
             grabber.Clone();
 
             // Assert
-            mock.Verify( f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null ), Times.Once() );
+            mock.Verify( f => f.Run( "git", expectedArguments, It.IsAny<Action<string>>(), null, null ), Times.Once() );
         }
 
         [Fact]
@@ -545,7 +545,7 @@ namespace Svn2GitNetX.Tests
             grabber.Clone();
 
             // Assert
-            mock.Verify( f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null ), Times.Once() );
+            mock.Verify( f => f.Run( "git", expectedArguments, It.IsAny<Action<string>>(), null, null ), Times.Once() );
         }
 
         [Fact]
@@ -588,7 +588,7 @@ namespace Svn2GitNetX.Tests
             grabber.Clone();
 
             // Assert
-            mock.Verify( f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null ), Times.Once() );
+            mock.Verify( f => f.Run( "git", expectedArguments, It.IsAny<Action<string>>(), null, null ), Times.Once() );
         }
     }
 }
