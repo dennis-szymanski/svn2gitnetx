@@ -7,11 +7,13 @@
 **Svn2Git.NETX** is based on `git-svn` so please make sure `git-svn` has been installed.
 
 ## What is different from Svn2Git.NET?
+
 * Hitting CTRL+C now kills all child processes instead of orphaning them.
 * Can break SVN Locks via the "--breaklocks" argument on the command line.
 * Uses dotnet core 3.1 instead of 2.0.
 * Allows one to ignore git gc errors and auto-deletes gc.log.
 * Allows one to specify the number of times to attempt to fetch before giving up.  This count is reset whenever the process makes progress and downloads a new SVN revision.
+* Allows one to pass in the username and password through environment variables instead of through command line arguments.
 
 ## Examples
 
@@ -74,28 +76,28 @@ svn repo. The differentiating factor is the svn repo layout. Below is an
 enumerated listing of the varying supported layouts and the proper way to
 create a git repo from a svn repo in the specified layout.
 
-1. The svn repo is in the standard layout of (trunk, branches, tags) at the
+* The svn repo is in the standard layout of (trunk, branches, tags) at the
 root level of the repo.
 
 ```sh
 svn2gitnetx http://svn.example.com/path/to/repo
 ```
 
-2. The svn repo is NOT in standard layout and has only a trunk and tags at the
+* The svn repo is NOT in standard layout and has only a trunk and tags at the
 root level of the repo.
 
 ```sh
 svn2gitnetx http://svn.example.com/path/to/repo --trunk dev --tags rel --nobranches
 ```
 
-3. The svn repo is NOT in standard layout and has only a trunk at the root
+* The svn repo is NOT in standard layout and has only a trunk at the root
 level of the repo.
 
 ```sh
 svn2gitnetx http://svn.example.com/path/to/repo --trunk trunk --nobranches --notags
 ```
 
-4. The svn repo is NOT in standard layout and has no trunk, branches, or tags
+* The svn repo is NOT in standard layout and has no trunk, branches, or tags
 at the root level of the repo. Instead the root level of the repo is
 equivalent to the trunk and there are no tags or branches.
 
@@ -103,39 +105,51 @@ equivalent to the trunk and there are no tags or branches.
 svn2gitnetx http://svn.example.com/path/to/repo --rootistrunk
 ```
 
-5. The svn repo is in the standard layout but you want to exclude the massive
+* The svn repo is in the standard layout but you want to exclude the massive
 doc directory and the backup files you once accidently added.
 
 ```sh
 svn2gitnetx http://svn.example.com/path/to/repo --exclude doc --exclude '.*~$'
 ```
 
-6. The svn repo actually tracks several projects and you only want to migrate
-one of them.
+* The svn repo actually tracks several projects and you only want to migrate
+one of them.a
 
 ```sh
 svn2gitnetx http://svn.example.com/path/to/repo/nested_project --no-minimize-url
 ```
 
-7. The svn repo is password protected.
+* *The svn repo is password protected.
 
 ```sh
 svn2gitnetx http://svn.example.com/path/to/repo --username <<user_with_perms>> --password <<password>>
 ```
 
-8. You need to migrate starting at a specific svn revision number.
+* The svn repo is password protected, and the user name and password exist in environment variables.
+
+```sh
+set userName=user_with_perms # Windows
+set passwd=MyPassword # Windows
+
+export userName=user_with_perms # Unix
+export passwd=user_with_prems # Unix
+
+svn2gitnetx http://svn.example.com/path/to/repo --username userName --password passwd --username-method env_var --password-method env_var
+```
+
+* You need to migrate starting at a specific svn revision number.
 
 ```sh
 svn2gitnetx http://svn.example.com/path/to/repo --revision <<starting_revision_number>>
 ```
 
-9. You need to migrate starting at a specific svn revision number, ending at a specific revision number.
+* You need to migrate starting at a specific svn revision number, ending at a specific revision number.
 
 ```sh
  svn2gitnetx http://svn.example.com/path/to/repo --revision <<starting_revision_number>>:<<ending_revision_number>>
 ```
 
-10. Include metadata (git-svn-id) in git logs.
+* Include metadata (git-svn-id) in git logs.
 
 ```sh
 svn2gitnetx http://svn.example.com/path/to/repo --metadata
@@ -176,7 +190,7 @@ system with the list of conversions to make, one per line, for example:
     mazong1123 = Jingyu Ma <mazong1123@gmail.com>
     xforever1313 = Seth Hendrick <seth@shendrick.net>
 
-Then pass an `--authors` option to svn2gitnet pointing to your file:
+Then pass an `--authors` option to svn2gitnetx pointing to your file:
 
 ```sh
 svn2gitnetx http://svn.example.com/path/to/repo --authors ~/authors.txt
@@ -196,7 +210,7 @@ svn2gitnetx http://svn.yoursite.com/path/to/repo --verbose
 
 ### Options Reference
 
-```sh
+```txt
 PS C:\> svn2gitnetx --help
 svn2gitnetx 1.0.0
 Copyright (C) 2020 Seth Hendrick, Jingyu Ma
@@ -213,21 +227,27 @@ Copyright (C) 2020 Seth Hendrick, Jingyu Ma
 
   --notrunk             Do not import anything from trunk
 
-  --branches            Subpath to branches from repository URL (default: branches); can be used multiple times
+  --branches            Subpath to branches from repository URL (default: branches); can take in multiple values via '--branches banch1 branch2'
 
   --nobranches          Do not try to import any branches
 
-  --tags                Subpath to tags from repository URL (default: tags); can be used multiple times
+  --tags                Subpath to tags from repository URL (default: tags); can take in multiple values via '--tags tag1 tag2'
 
   --notags              Do not try to import any tags
 
-  --exclude             Specify a Perl regular expression to filter paths when fetching; can be used multiple times
+  --exclude             Specify a Perl regular expression to filter paths when fetching; can take in multiple values via '--exclude exclude1 exclude2'
 
   --revision            Start importing from SVN revision START_REV; optionally end at END_REV
 
   --username            Username for transports that needs it (http(s), svn)
 
+  --username-method     (Default: args) How to get the user name.  'args' for using the value passed into the username argument.  'env_var' for using the value stored
+                        in the environment variable specified in the username argument.
+
   --password            Password for transports that need it (http(s), svn)
+
+  --password-method     (Default: args) How to get the password.  'args' for using the value passed into the password argument (not recommended).  'env_var' for using
+                        the value stored in the environment variable specified in the password argument.
 
   --rebase              Instead of cloning a new project, rebase an existing one against SVN
 
@@ -246,7 +266,6 @@ Copyright (C) 2020 Seth Hendrick, Jingyu Ma
   --help                Display this help screen.
 
   --version             Display version information.
-
 ```
 
 ### Contribution
@@ -257,9 +276,9 @@ Bug report and feature request are always welcome. Please file an issue so that 
 ## Build and test the source code
 
 ### Prerequisite
-- .NET Core Runtime 3.1.0 or newer. You can get the latest .NET Core Runtime from https://www.microsoft.com/net/core
+- .NET Core Runtime 3.1.0 or newer. You can get the latest .NET Core SDK from https://www.microsoft.com/net/core
 
-- Make sure `git-svn` has been installed.
+* Make sure `git-svn` has been installed.
 
 ### Build
 
@@ -270,8 +289,6 @@ dotnet tool install -g Cake.Tool
 ```
 
 Run following command to build the source code in the root of the repo:
-
-Windows:
 
 ```sh
 dotnet cake --target=build
@@ -290,8 +307,6 @@ dotnet cake --target=unit_test
 The integration tests require accessing external test svn repository and save the temp results in local folder. So currently some test cases related to private repository cannot be ran locally.
 
 To run the integration tests:
-
-Windows:
 
 ```sh
 dotnet cake --target=integration_test
