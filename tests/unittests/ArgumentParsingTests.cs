@@ -37,13 +37,15 @@ namespace Svn2GitNetX.Tests
         /// we default to the CLI argument.
         /// </summary>
         [Fact]
-        public void DefaultUserNameTest()
+        public void DefaultUserNamePasswordTest()
         {
             const string expectedName = "myself";
+            const string expectedPassword = "password123";
 
             string[] args = new string[]
             {
-                $"--username={expectedName}"
+                $"--username={expectedName}",
+                $"--password={expectedPassword}"
             };
 
             // Act
@@ -52,17 +54,23 @@ namespace Svn2GitNetX.Tests
             // Assert
             Assert.Equal( expectedName, opt.UserName );
             Assert.Equal( expectedName, opt.GetUserName() );
+
+            Assert.Equal( expectedPassword, opt.Password );
+            Assert.Equal( expectedPassword, opt.GetPassword() );
         }
 
         [Fact]
         public void UserNameThroughArgsTest()
         {
             const string expectedName = "myself";
+            const string expectedPassword = "password123";
 
             string[] args = new string[]
             {
                 $"--username={expectedName}",
-                "--username-method=args"
+                "--username-method=args",
+                $"--password={expectedPassword}",
+                "--password-method=args"
             };
 
             // Act
@@ -71,37 +79,50 @@ namespace Svn2GitNetX.Tests
             // Assert
             Assert.Equal( expectedName, opt.UserName );
             Assert.Equal( expectedName, opt.GetUserName() );
+
+            Assert.Equal( expectedPassword, opt.Password );
+            Assert.Equal( expectedPassword, opt.GetPassword() );
         }
 
         [Fact]
-        public void UserNameThroughEnvVarTest()
+        public void UserNamePasswordThroughEnvVarTest()
         {
             // Preparte
-            const string envVarName = "SVN2GITNETX_USERNAME_ENV_VAR";
+            const string envVarUserName = "SVN2GITNETX_USERNAME_ENV_VAR";
             const string expectedName = "someone";
+
+            const string envVarPassword = "SVN2GITNETX_PASSWD_ENV_VAR";
+            const string expectedPassword = "password4567";
 
             string[] args = new string[]
             {
-                $"--username={envVarName}",
-                "--username-method=env_var"
+                $"--username={envVarUserName}",
+                "--username-method=env_var",
+                $"--password={envVarPassword}",
+                "--password-method=env_var"
             };
 
             try
             {
                 // Act
-                Environment.SetEnvironmentVariable( envVarName, expectedName );
+                Environment.SetEnvironmentVariable( envVarUserName, expectedName );
+                Environment.SetEnvironmentVariable( envVarPassword, expectedPassword );
                 Options opt = ParseArgs( args );
 
                 // Assert
 
-                // UserName should be the environment variable name, but the
-                // actual function call should return the real user name.
-                Assert.Equal( envVarName, opt.UserName );
+                // UserName/password should be the environment variable name, but the
+                // actual function call should return the real username/password.
+                Assert.Equal( envVarUserName, opt.UserName );
                 Assert.Equal( expectedName, opt.GetUserName() );
+
+                Assert.Equal( envVarPassword, opt.Password );
+                Assert.Equal( expectedPassword, opt.GetPassword() );
             }
             finally
             {
-                Environment.SetEnvironmentVariable( envVarName, string.Empty );
+                Environment.SetEnvironmentVariable( envVarUserName, string.Empty );
+                Environment.SetEnvironmentVariable( envVarPassword, string.Empty );
             }
         }
 

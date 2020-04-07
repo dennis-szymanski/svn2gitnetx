@@ -125,7 +125,7 @@ namespace Svn2GitNetX
 
             arguments.Append( _svnUrl );
 
-            if( CommandRunner.RunGitSvnInteractiveCommand( arguments.ToString(), Options.Password ) != 0 )
+            if( CommandRunner.RunGitSvnInteractiveCommand( arguments.ToString(), Options.GetPassword() ) != 0 )
             {
                 string exceptionMessage = string.Format( ExceptionHelper.ExceptionMessage.FAIL_TO_EXECUTE_COMMAND, $"git {arguments.ToString()}" );
                 throw new MigrateException( exceptionMessage );

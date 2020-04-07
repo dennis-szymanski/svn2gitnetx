@@ -23,6 +23,7 @@ namespace Svn2GitNetX
         public Options()
         {
             this.UserNameMethod = CredentialsMethod.args;
+            this.PasswordMethod = CredentialsMethod.args;
         }
 
         /// <summary>
@@ -110,7 +111,6 @@ namespace Svn2GitNetX
             set;
         }
 
-
         [Option( "notags", HelpText = "Do not try to import any tags" )]
         public bool NoTags
         {
@@ -161,6 +161,20 @@ namespace Svn2GitNetX
 
         [Option( "password", HelpText = "Password for transports that need it (http(s), svn)" )]
         public string Password
+        {
+            get;
+            set;
+        }
+
+        [Option(
+            "password-method",
+            HelpText = "How to get the password.  '" + 
+                       nameof( CredentialsMethod.args ) + 
+                       "' for using the value passed into the password argument (not recommended).  '" +
+                       nameof( CredentialsMethod.env_var ) + "' for using the value stored in the environment variable specified in the password argument.",
+            Default = CredentialsMethod.args
+        )]
+        public CredentialsMethod PasswordMethod
         {
             get;
             set;
@@ -231,6 +245,18 @@ namespace Svn2GitNetX
             else
             {
                 return this.UserName;
+            }
+        }
+
+        public string GetPassword()
+        {
+            if( this.PasswordMethod == CredentialsMethod.env_var )
+            {
+                return Environment.GetEnvironmentVariable( this.Password );
+            }
+            else
+            {
+                return this.Password;
             }
         }
     }

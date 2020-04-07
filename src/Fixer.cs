@@ -63,7 +63,7 @@ namespace Svn2GitNetX
                 }
                 else
                 {
-                    exitCode = CommandRunner.RunGitSvnInteractiveCommand( cmdInfo.Arguments, Options.Password );
+                    exitCode = CommandRunner.RunGitSvnInteractiveCommand( cmdInfo.Arguments, Options.GetPassword() );
                 }
 
                 if( exitCode != 0 )

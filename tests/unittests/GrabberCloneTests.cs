@@ -47,13 +47,17 @@ namespace Svn2GitNetX.Tests
         }
 
         [Fact]
-        public void CloneWhenRootIsTrunkWithAllAndUserNameIsEnvParametersTest()
+        public void CloneWhenRootIsTrunkWithAllAndUserNamePasswordAreEnvParametersTest()
         {
             const string envVarName = "svn2gitnetxtest_user";
             const string userName = "MyUser";
+
+            const string envVarPassword = "svn2gitnetxtest_passwd";
+            const string password = "Password123";
             try
             {
                 Environment.SetEnvironmentVariable( envVarName, userName );
+                Environment.SetEnvironmentVariable( envVarPassword, password );
              
                 // Prepare
                 var mock = new Mock<ICommandRunner>();
@@ -61,7 +65,8 @@ namespace Svn2GitNetX.Tests
                 {
                     UserName = envVarName,
                     UserNameMethod = CredentialsMethod.env_var,
-                    Password = "password",
+                    Password = envVarPassword,
+                    PasswordMethod = CredentialsMethod.env_var,
                     IncludeMetaData = false,
                     NoMinimizeUrl = true,
                     RootIsTrunk = true
@@ -80,11 +85,12 @@ namespace Svn2GitNetX.Tests
                 grabber.Clone();
 
                 // Assert
-                mock.Verify( f => f.RunGitSvnInteractiveCommand( expectedArguments, options.Password ), Times.Once() );
+                mock.Verify( f => f.RunGitSvnInteractiveCommand( expectedArguments, password ), Times.Once() );
             }
             finally
             {
                 Environment.SetEnvironmentVariable( envVarName, string.Empty );
+                Environment.SetEnvironmentVariable( envVarPassword, string.Empty );
             }
         }
 
