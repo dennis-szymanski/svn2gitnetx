@@ -83,7 +83,10 @@ namespace Svn2GitNetX
             set;
         }
 
-        [Option( "branches", HelpText = "Subpath to branches from repository URL (default: branches); can be used multiple times" )]
+        [Option(
+            "branches",
+            HelpText = "Subpath to branches from repository URL (default: branches); can take in multiple values via '--branches banch1 branch2'"
+        )]
         public IEnumerable<string> Branches
         {
             get;
@@ -97,7 +100,10 @@ namespace Svn2GitNetX
             set;
         }
 
-        [Option( "tags", HelpText = "Subpath to tags from repository URL (default: tags); can be used multiple times" )]
+        [Option(
+            "tags",
+            HelpText = "Subpath to tags from repository URL (default: tags); can take in multiple values via '--tags tag1 tag2'"
+        )]
         public IEnumerable<string> Tags
         {
             get;
@@ -112,7 +118,10 @@ namespace Svn2GitNetX
             set;
         }
 
-        [Option( "exclude", HelpText = "Specify a Perl regular expression to filter paths when fetching; can be used multiple times" )]
+        [Option(
+            "exclude",
+            HelpText = "Specify a Perl regular expression to filter paths when fetching; can take in multiple values via '--exclude exclude1 exclude2'"
+        )]
         public IEnumerable<string> Exclude
         {
             get;

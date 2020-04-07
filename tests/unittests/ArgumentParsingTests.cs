@@ -105,6 +105,130 @@ namespace Svn2GitNetX.Tests
             }
         }
 
+        [Fact]
+        public void SingleExcludeTest()
+        {
+            string[] args = new string[]
+            {
+                "--exclude=hello"
+            };
+
+            // Act
+            Options opt = ParseArgs( args );
+
+            // Assert
+            Assert.NotNull( opt.Exclude );
+            Assert.Single( opt.Exclude );
+            Assert.Equal( "hello", opt.Exclude.First() );
+        }
+
+        [Fact]
+        public void SingleExcludeAndTagTest()
+        {
+            string[] args = new string[]
+            {
+                "--exclude",
+                "hello",
+                "--tags",
+                "world"
+            };
+
+            // Act
+            Options opt = ParseArgs( args );
+
+            // Assert
+            Assert.NotNull( opt.Exclude );
+            Assert.Single( opt.Exclude );
+            Assert.Equal( "hello", opt.Exclude.First() );
+
+            Assert.NotNull( opt.Tags );
+            Assert.Single( opt.Tags );
+            Assert.Equal( "world", opt.Tags.First() );
+        }
+
+        [Fact]
+        public void MultipleExcludeTest()
+        {
+            string[] args = new string[]
+            {
+                "--exclude",
+                "hello",
+                "world"
+            };
+
+            // Act
+            Options opt = ParseArgs( args );
+
+            // Assert
+            Assert.NotNull( opt.Exclude );
+            Assert.Equal( 2, opt.Exclude.Count() );
+            Assert.Equal( "hello", opt.Exclude.First() );
+            Assert.Equal( "world", opt.Exclude.Last() );
+        }
+
+        [Fact]
+        public void MultipleExcludeAndTagTest()
+        {
+            string[] args = new string[]
+            {
+                "--exclude",
+                "hello",
+                "world",
+                "--tags",
+                "how",
+                "are you"
+            };
+
+            // Act
+            Options opt = ParseArgs( args );
+
+            // Assert
+            Assert.NotNull( opt.Exclude );
+            Assert.Equal( 2, opt.Exclude.Count() );
+            Assert.Equal( "hello", opt.Exclude.First() );
+            Assert.Equal( "world", opt.Exclude.Last() );
+
+            Assert.NotNull( opt.Tags );
+            Assert.Equal( 2, opt.Tags.Count() );
+            Assert.Equal( "how", opt.Tags.First() );
+            Assert.Equal( "are you", opt.Tags.Last() );
+        }
+
+// This test does not work.  It seems like its a limitation
+// with the CommandLineParser Library
+// Just need to specify the exclude and tag arguments once.
+#if FALSE
+        [Fact]
+        public void MultipleExcludeAndTagOutOfOrderTest()
+        {
+            string[] args = new string[]
+            {
+                "--exclude",
+                "hello",
+                "--tags",
+                "how",
+                "--exclude",
+                "world",
+                "--tags",
+                "are you"
+            };
+
+            // Act
+            Options opt = ParseArgs( args );
+
+            // Assert
+            Assert.NotNull( opt.Exclude );
+            Assert.Equal( 2, opt.Exclude.Count() );
+            Assert.Equal( "hello", opt.Exclude.First() );
+            Assert.Equal( "world", opt.Exclude.Last() );
+
+            Assert.NotNull( opt.Tags );
+            Assert.Equal( 2, opt.Tags.Count() );
+            Assert.Equal( "how", opt.Tags.First() );
+            Assert.Equal( "are you", opt.Tags.Last() );
+        }
+#endif
+
         // ---------------- Test Helpers ----------------
 
         private static Options ParseArgs( string[] args )
