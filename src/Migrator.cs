@@ -202,7 +202,7 @@ namespace Svn2GitNetX
             catch( IOException ex )
             {
                 MessageDisplayer.Show( "Failed to disable the cached credentials. We'll use the cached credentials for further actions." );
-                Log( ex.ToString() );
+                LogError( ex.ToString() );
             }
         }
 
@@ -223,7 +223,7 @@ namespace Svn2GitNetX
                         }
                         catch( Exception )
                         {
-                            Log( $"Could not delete lock at '{lockFile}', is the file in use by a different process?" );
+                            LogError( $"Could not delete lock at '{lockFile}', is the file in use by a different process?" );
                             throw;
                         }
                     }
@@ -271,7 +271,7 @@ namespace Svn2GitNetX
             catch( IOException ex )
             {
                 MessageDisplayer.Show( "Failed to recover the cached credentials." );
-                Log( ex.ToString() );
+                LogError( ex.ToString() );
             }
         }
     }

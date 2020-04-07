@@ -83,9 +83,25 @@ namespace Svn2GitNetX
 
         protected void Log( string message )
         {   
-            if( _logger != null && _options.IsVerbose )
+            if( ( _logger != null ) && _options.IsVerbose )
             {
                 _logger.LogInformation( message );
+            }
+        }
+
+        protected void LogWarning( string message )
+        {
+            if( ( _logger != null ) && _options.IsVerbose )
+            {
+                _logger.LogWarning( message );
+            }
+        }
+
+        protected void LogError( string message )
+        {
+            if( ( _logger != null ) && _options.IsVerbose )
+            {
+                _logger.LogError( message );
             }
         }
 

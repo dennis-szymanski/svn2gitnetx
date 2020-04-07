@@ -218,7 +218,7 @@ namespace Svn2GitNetX
                 else
                 {
                     ++currentAttempt;
-                    Log( "No progress made, attempt #" + currentAttempt + " was a failure" );
+                    LogWarning( "No progress made, attempt #" + currentAttempt + " was a failure" );
                 }
 
                 if( Options.IgnoreGcErrors )
