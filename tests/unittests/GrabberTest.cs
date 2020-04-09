@@ -1,14 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.IO.Pipes;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Xml.Serialization;
-using System.Linq;
-using Xunit;
 using Moq;
+using Xunit;
 
 namespace Svn2GitNetX.Tests
 {
@@ -24,7 +17,7 @@ namespace Svn2GitNetX.Tests
             var standardOutput = "*master";
             mock.Setup( f => f.Run( "git", "branch -l --no-color", out standardOutput ) )
                 .Returns( 0 );
-            IGrabber grabber = new Grabber( _testSvnUrl, new Options(), mock.Object, "", null, null );
+            IGrabber grabber = CreateGrabber( new Options(), mock.Object );
 
             List<string> expected = new List<string>( new string[]{
                 "master"
@@ -47,7 +40,7 @@ namespace Svn2GitNetX.Tests
             var standardOutput = "origin/master";
             mock.Setup( f => f.Run( "git", "branch -r --no-color", out standardOutput ) )
                 .Returns( 0 );
-            IGrabber grabber = new Grabber( _testSvnUrl, new Options(), mock.Object, "", null, null );
+            IGrabber grabber = CreateGrabber( new Options(), mock.Object );
 
             List<string> expected = new List<string>( new string[]{
                 "origin/master"
@@ -70,7 +63,7 @@ namespace Svn2GitNetX.Tests
             var standardOutput = $"*master{Environment.NewLine}dev{Environment.NewLine}test";
             mock.Setup( f => f.Run( "git", "branch -l --no-color", out standardOutput ) )
                 .Returns( 0 );
-            IGrabber grabber = new Grabber( _testSvnUrl, new Options(), mock.Object, "", null, null );
+            IGrabber grabber = CreateGrabber( new Options(), mock.Object );
 
             List<string> expected = new List<string>( new string[]{
                 "master",
@@ -95,7 +88,7 @@ namespace Svn2GitNetX.Tests
             var standardOutput = $"origin/master{Environment.NewLine}origin/dev{Environment.NewLine}origin/test";
             mock.Setup( f => f.Run( "git", "branch -r --no-color", out standardOutput ) )
                 .Returns( 0 );
-            IGrabber grabber = new Grabber( _testSvnUrl, new Options(), mock.Object, "", null, null );
+            IGrabber grabber = CreateGrabber( new Options(), mock.Object );
 
             List<string> expected = new List<string>( new string[]{
                 "origin/master",
@@ -120,7 +113,7 @@ namespace Svn2GitNetX.Tests
             var standardOutput = $"origin/master{Environment.NewLine}origin/dev{Environment.NewLine}svn/tags/v1.0.0";
             mock.Setup( f => f.Run( "git", "branch -r --no-color", out standardOutput ) )
                 .Returns( 0 );
-            IGrabber grabber = new Grabber( _testSvnUrl, new Options(), mock.Object, "", null, null );
+            IGrabber grabber = CreateGrabber( new Options(), mock.Object );
 
             List<string> expected = new List<string>( new string[]{
                 "svn/tags/v1.0.0"
@@ -152,7 +145,7 @@ namespace Svn2GitNetX.Tests
                 RebaseBranch = "dev"
             };
 
-            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
+            IGrabber grabber = CreateGrabber( options, mock.Object );
 
             // Act
             Exception ex = Record.Exception( () => grabber.FetchRebaseBraches() );
@@ -179,7 +172,7 @@ namespace Svn2GitNetX.Tests
                 RebaseBranch = "dev"
             };
 
-            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
+            IGrabber grabber = CreateGrabber( options, mock.Object );
 
             // Act
             Exception ex = Record.Exception( () => grabber.FetchRebaseBraches() );
@@ -208,7 +201,7 @@ namespace Svn2GitNetX.Tests
                 RebaseBranch = "dev"
             };
 
-            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
+            IGrabber grabber = CreateGrabber( options, mock.Object );
 
             // Act
             Exception ex = Record.Exception( () => grabber.FetchRebaseBraches() );
@@ -236,7 +229,7 @@ namespace Svn2GitNetX.Tests
                 RebaseBranch = "dev"
             };
 
-            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
+            IGrabber grabber = CreateGrabber( options, mock.Object );
 
             // Act
             Exception ex = Record.Exception( () => grabber.FetchRebaseBraches() );
@@ -268,7 +261,7 @@ namespace Svn2GitNetX.Tests
                 "dev"
             } );
 
-            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
+            IGrabber grabber = CreateGrabber( options, mock.Object );
 
             // Act
             grabber.FetchRebaseBraches();
@@ -302,7 +295,7 @@ namespace Svn2GitNetX.Tests
                 "dev"
             } );
 
-            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
+            IGrabber grabber = CreateGrabber( options, mock.Object );
 
             // Act
             grabber.FetchRebaseBraches();
@@ -349,7 +342,7 @@ namespace Svn2GitNetX.Tests
             mock.Setup( f => f.Run( "git", "branch -r --no-color", out standardOutput ) )
                 .Returns( 0 );
 
-            IGrabber grabber = new Grabber( _testSvnUrl, options, mock.Object, "", null, null );
+            IGrabber grabber = CreateGrabber( options, mock.Object );
 
             // Act
             grabber.FetchBranches();
@@ -359,6 +352,25 @@ namespace Svn2GitNetX.Tests
             Assert.Equal( new List<string>() { "svn/tags/branch2" }, actual.Tags );
             Assert.Equal( new List<string>() { "branch1" }, actual.LocalBranches );
             Assert.Equal( new List<string>() { "svn/tags/branch2" }, actual.RemoteBranches );
+        }
+
+        // ---------------- Test Helpers ----------------
+
+        private IGrabber CreateGrabber( Options options, ICommandRunner runner, string gitConfigCommandArgs = "" )
+        {
+            Mock<IGcErrorIgnorer> ignorer = new Mock<IGcErrorIgnorer>( MockBehavior.Strict );
+
+            ignorer.Setup( m => m.Options ).Returns( options );
+
+            return new Grabber(
+                _testSvnUrl,
+                options,
+                runner,
+                gitConfigCommandArgs,
+                null,
+                null,
+                ignorer.Object
+            );
         }
     }
 }

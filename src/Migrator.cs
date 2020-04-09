@@ -63,19 +63,29 @@ namespace Svn2GitNetX
 
         public void Run()
         {
-            Grabber grabber = new Grabber( _svnUrl,
-                                          Options,
-                                          CommandRunner,
-                                          GitConfigCommandArguments,
-                                          MessageDisplayer,
-                                          _loggerFactory.CreateLogger<Grabber>() );
+            GcErrorIgnorer gcIgnorer = new GcErrorIgnorer(
+                _loggerFactory.CreateLogger<GcErrorIgnorer>(),
+                Options
+            );
 
-            Fixer fixer = new Fixer( grabber.GetMetaInfo(),
-                                    Options,
-                                    CommandRunner,
-                                    GitConfigCommandArguments,
-                                    MessageDisplayer,
-                                    _loggerFactory.CreateLogger<Fixer>() );
+            Grabber grabber = new Grabber(
+                _svnUrl,
+                Options,
+                CommandRunner,
+                GitConfigCommandArguments,
+                MessageDisplayer,
+                _loggerFactory.CreateLogger<Grabber>(),
+                gcIgnorer
+            );
+
+            Fixer fixer = new Fixer(
+                grabber.GetMetaInfo(),
+                Options,
+                CommandRunner,
+                GitConfigCommandArguments,
+                MessageDisplayer,
+                _loggerFactory.CreateLogger<Fixer>()
+            );
 
             Run( grabber, fixer );
         }

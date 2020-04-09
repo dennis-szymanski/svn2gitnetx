@@ -10,13 +10,20 @@ namespace Svn2GitNetX
 {
     public class Grabber : InteractiveWorker, IGrabber
     {
-        private string _svnUrl = string.Empty;
-        private MetaInfo _metaInfo = null;
+        // ----------------- Fields -----------------
+
+        private readonly string _svnUrl;
+
+        private readonly MetaInfo _metaInfo;
+
+        private readonly IGcErrorIgnorer _gcIgnorer;
 
         private static readonly Regex revisionRegex = new Regex(
             @"r(?<rev>\d+)\s+=\s+\S+\s+\(.+\)",
             RegexOptions.Compiled | RegexOptions.ExplicitCapture
         );
+
+        // ----------------- Constructor -----------------
 
         public Grabber(
             string svnUrl,
@@ -24,7 +31,8 @@ namespace Svn2GitNetX
             ICommandRunner commandRunner,
             string gitConfigCommandArguments,
             IMessageDisplayer messageDisplayer,
-            ILogger logger
+            ILogger logger,
+            IGcErrorIgnorer ignorer
         ) :
             base( options, commandRunner, gitConfigCommandArguments, messageDisplayer, logger )
         {
@@ -35,7 +43,10 @@ namespace Svn2GitNetX
                 LocalBranches = new List<string>(),
                 Tags = new List<string>()
             };
+            _gcIgnorer = ignorer;
         }
+
+        // ----------------- Functions -----------------
 
         public void Clone()
         {
@@ -186,6 +197,8 @@ namespace Svn2GitNetX
 
             //---- Fetch ----
 
+            this._gcIgnorer.DeleteGcLogIfEnabled();
+
             int lastRevision = -1;
             int currentRevision = lastRevision;
             void ParseRevision( string s )
@@ -221,16 +234,7 @@ namespace Svn2GitNetX
                     LogWarning( "No progress made, attempt #" + currentAttempt + " was a failure" );
                 }
 
-                if( Options.IgnoreGcErrors )
-                {
-                    // Todo: Working Directory option.
-                    string filePath = Path.Combine( ".git", "gc.log" );
-                    if( File.Exists( filePath ) )
-                    {
-                        Log( "Ignore GC Errors flagged, deleting gc log file" );
-                        File.Delete( filePath );
-                    }
-                }
+                this._gcIgnorer.DeleteGcLogIfEnabled();
             }
             while( ( this.Options.FetchAttempts <= 0 ) || ( currentAttempt <= this.Options.FetchAttempts ) );
 
