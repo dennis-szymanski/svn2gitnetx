@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Microsoft.Extensions.Logging;
 
 namespace Svn2GitNetX
@@ -59,7 +60,7 @@ namespace Svn2GitNetX
                 QuerySvnBranches( branchDir, branches );
             }
 
-            if( Options.IsVerbose )
+            if( this.Options.IsVerbose )
             {
                 Log( $"Found {branches.Count} SVN branches:" );
                 foreach( string branch in branches )
@@ -143,7 +144,7 @@ namespace Svn2GitNetX
             int exitCode = this.CommandRunner.Run( "svn", "--version" );
             if( exitCode != 0 )
             {
-                throw new PlatformNotSupportedException( "Platform does not have SVN install.  This action is not supported" );
+                throw new PlatformNotSupportedException( "Platform does not have SVN installed.  This action is not supported" );
             }
         }
 
@@ -151,12 +152,23 @@ namespace Svn2GitNetX
         {
             void AddBranch( string branchName )
             {
-                branches.Add( branchName.TrimEnd( '/' ) );
+                // '/' is a folder.  Otherwise it is a file.
+                if( branchName.EndsWith( '/' ) )
+                {
+                    branches.Add( branchName.TrimEnd( '/' ) );
+                }
             }
 
-            string arguments = $"ls {svnUrl}/{branchPath}";
+            StringBuilder arguments = new StringBuilder();
+            arguments.Append( $"ls {svnUrl}/{branchPath}" );
 
-            int exitCode = this.CommandRunner.Run( "svn", arguments, AddBranch, null, null );
+            string userName = this.Options.GetUserName();
+            if( string.IsNullOrWhiteSpace( userName ) == false )
+            {
+                arguments.Append( $" --username={userName}");
+            }
+
+            int exitCode = this.CommandRunner.Run( "svn", arguments.ToString(), AddBranch, null, null );
             if( exitCode != 0 )
             {
                 throw new ApplicationException( "Could not query SVN branch at " + branchPath );
