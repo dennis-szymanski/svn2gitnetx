@@ -259,6 +259,138 @@ namespace Svn2GitNetX.Tests
             Assert.Equal( expectedBranchesToPurge, branchesToPurge ); // <- All branches should be purged except normal.
         }
 
+        [Fact]
+        public void PurgeGitBranchesTest()
+        {
+            // Prepare
+
+            List<string> branchesToPurge = new List<string>
+            {
+                "branch1",
+                "branch2"
+            };
+
+            Options options = new Options
+            {
+            };
+
+            Mock<ICommandRunner> mockCmd = new Mock<ICommandRunner>( MockBehavior.Strict );
+            Mock<IFileSystem> mockFileSystem = new Mock<IFileSystem>( MockBehavior.Strict );
+
+            StaleSvnBranchDeleter uut = new StaleSvnBranchDeleter(
+                svnUrl,
+                options,
+                mockCmd.Object,
+                null,
+                null,
+                null,
+                mockFileSystem.Object
+            );
+
+            foreach( string branch in branchesToPurge )
+            {
+                string expectedDirectory = Path.Combine( ".", ".git", "svn", "refs", "remotes", branch );
+
+                mockCmd.Setup( m => m.Run( "git", $"branch -D -r \"{branch}\"" ) ).Returns( 0 );
+                mockFileSystem.Setup( m => m.DeleteDirectoryIfItExists( expectedDirectory ) );
+            }
+
+            // Act
+            IEnumerable<string> deletedBranches = uut.PurgeGitBranches( branchesToPurge );
+
+            // Assert
+            Assert.Equal( branchesToPurge, deletedBranches );
+            mockCmd.VerifyAll();
+            mockFileSystem.VerifyAll();
+        }
+
+        [Fact]
+        public void PurgeGitBranchesCmdFailed()
+        {
+            // Prepare
+
+            List<string> branchesToPurge = new List<string>
+            {
+                "branch1"
+            };
+
+            Options options = new Options
+            {
+            };
+
+            Mock<ICommandRunner> mockCmd = new Mock<ICommandRunner>( MockBehavior.Strict );
+            Mock<IFileSystem> mockFileSystem = new Mock<IFileSystem>( MockBehavior.Strict );
+
+            StaleSvnBranchDeleter uut = new StaleSvnBranchDeleter(
+                svnUrl,
+                options,
+                mockCmd.Object,
+                null,
+                null,
+                null,
+                mockFileSystem.Object
+            );
+
+            foreach( string branch in branchesToPurge )
+            {
+                mockCmd.Setup( m => m.Run( "git", $"branch -D -r \"{branch}\"" ) ).Returns( 1 );
+            }
+
+            // Act
+            IEnumerable<string> deletedBranches = uut.PurgeGitBranches( branchesToPurge );
+
+            // Assert
+            Assert.Empty( deletedBranches ); // Command failed, should not be added to the list.
+            mockCmd.VerifyAll();
+            mockFileSystem.VerifyNoOtherCalls(); // Return code failed, should not even make it to the file system.
+        }
+
+        [Fact]
+        public void PurgeGitBranchesDeleteDirectoryFailed()
+        {
+            // Prepare
+
+            List<string> branchesToPurge = new List<string>
+            {
+                "branch1"
+            };
+
+            Options options = new Options
+            {
+            };
+
+            Mock<ICommandRunner> mockCmd = new Mock<ICommandRunner>( MockBehavior.Strict );
+            Mock<IFileSystem> mockFileSystem = new Mock<IFileSystem>( MockBehavior.Strict );
+
+            StaleSvnBranchDeleter uut = new StaleSvnBranchDeleter(
+                svnUrl,
+                options,
+                mockCmd.Object,
+                null,
+                null,
+                null,
+                mockFileSystem.Object
+            );
+
+            foreach( string branch in branchesToPurge )
+            {
+                string expectedDirectory = Path.Combine( ".", ".git", "svn", "refs", "remotes", branch );
+
+                mockCmd.Setup( m => m.Run( "git", $"branch -D -r \"{branch}\"" ) ).Returns( 0 );
+                mockFileSystem.Setup( 
+                    m => m.DeleteDirectoryIfItExists( expectedDirectory )
+                ).Throws( new IOException( "Nope" ) );
+            }
+
+            // Act
+            IEnumerable<string> deletedBranches = uut.PurgeGitBranches( branchesToPurge );
+
+            // Assert
+            Assert.Empty( deletedBranches ); // Delete failed, should not be added to the list.
+            mockCmd.VerifyAll();
+            mockFileSystem.VerifyAll();
+        }
+
         // ---------------- Test Helpers ----------------
 
         private void SetupMockForVersionQuery( Mock<ICommandRunner> mock, int exitCode = 0 )

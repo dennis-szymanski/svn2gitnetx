@@ -117,11 +117,15 @@ namespace Svn2GitNetX
             return localBranchesToPurge;
         }
 
-        public void PurgeGitBranches( IEnumerable<string> branchesToPurge )
+        public IEnumerable<string> PurgeGitBranches( IEnumerable<string> branchesToPurge )
         {
+            List<string> deletedBranches = new List<string>();
+
             foreach( string branch in branchesToPurge )
             {
-                int exitCode = CommandRunner.Run( "git", "branch -d -r " + branch );
+                // Use -D to force the delete.  We want to delete branches whether or not
+                // they were merged or not.
+                int exitCode = CommandRunner.Run( "git", $"branch -D -r \"{branch}\"" );
 
                 if( exitCode == 0 )
                 {
@@ -129,18 +133,28 @@ namespace Svn2GitNetX
                     try
                     {
                         this.fileSystem.DeleteDirectoryIfItExists( dirToDelete );
+
+                        // TODO: This is just ****guess*** at what would happen,
+                        // but if git branch -D is run, but the svn ref
+                        // is still there, the branch is still going to be pulled down the next rebase.
+                        // So, only say the branch was deleted if both removed from GIT and SVN.
+                        //
+                        // If this is NOT what happens, we should consider a different approach.
+                        deletedBranches.Add( branch );
                     }
-                    catch( IOException e )
+                    catch( Exception e )
                     {
-                        this.MessageDisplayer.Show( "Unable to delete '" + dirToDelete + "'" );
+                        this.MessageDisplayer?.Show( "Unable to delete '" + dirToDelete + "'" );
                         LogWarning( e.Message );
                     }
                 }
                 else
                 {
-                    this.MessageDisplayer.Show( $"Unable to delete branch '{branch}', got exit code: {exitCode}" );
+                    this.MessageDisplayer?.Show( $"Unable to delete branch '{branch}', got exit code: {exitCode}" );
                 }
             }
+
+            return deletedBranches;
         }
 
         private void EnsureSvnInstalled()
