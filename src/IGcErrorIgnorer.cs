@@ -4,7 +4,7 @@
     {
         // ---------------- Properties ----------------
 
-        Options Options { get; }
+        bool IgnoreGcErrors { get; }
 
         // ---------------- Functions----------------
 
@@ -19,7 +19,7 @@
     {
         public static void DeleteGcLogIfEnabled( this IGcErrorIgnorer ignorer )
         {
-            if( ignorer.Options.IgnoreGcErrors )
+            if( ignorer.IgnoreGcErrors )
             {
                 ignorer.DeleteGcLog();
             }

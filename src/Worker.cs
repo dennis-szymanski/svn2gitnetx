@@ -1,107 +1,68 @@
 using System;
+using System.IO;
 using Microsoft.Extensions.Logging;
 
 namespace Svn2GitNetX
 {
+    // ---------------- Constructor ----------------
+
     public class Worker
     {
-        private Options _options;
-        private ICommandRunner _commandRunner;
-        private IMessageDisplayer _messageDisplayer;
-        private ILogger _logger;
-
-        public Worker( Options options,
-                      ICommandRunner commandRunner,
-                      IMessageDisplayer messageDisplayer,
-                      ILogger logger )
+        public Worker( 
+            Options options,
+            ICommandRunner commandRunner,
+            IMessageDisplayer messageDisplayer,
+            ILogger logger
+        )
         {
-            _options = options;
-            _commandRunner = commandRunner;
-            _messageDisplayer = messageDisplayer;
-            _logger = logger;
+            this.Options = options;
+            this.CommandRunner = commandRunner;
+            this.MessageDisplayer = messageDisplayer;
+            this.Logger = logger;
         }
 
-        protected Options Options
-        {
-            get
-            {
-                return _options;
-            }
+        // ---------------- Properties ----------------
 
-            set
-            {
-                _options = value;
-            }
-        }
+        protected Options Options { get; set; }
 
-        protected ICommandRunner CommandRunner
-        {
-            get
-            {
-                return _commandRunner;
-            }
+        protected ICommandRunner CommandRunner { get; set; }
 
-            set
-            {
-                _commandRunner = value;
-            }
-        }
+        protected IMessageDisplayer MessageDisplayer { get; set; }
 
-        protected IMessageDisplayer MessageDisplayer
-        {
-            get
-            {
-                return _messageDisplayer;
-            }
+        protected ILogger Logger { get; set; }
 
-            set
-            {
-                _messageDisplayer = value;
-            }
-        }
+        protected string WorkingDirectory => ".";
 
-        protected ILogger Logger
-        {
-            get
-            {
-                return _logger;
-            }
+        protected string GitDirectory => Path.Combine( WorkingDirectory, ".git" );
 
-            set
-            {
-                _logger = value;
-            }
-        }
+        // ---------------- Functions ----------------
 
         protected void ShowMessageIfPossible( string message )
         {
-            if( _messageDisplayer != null )
-            {
-                _messageDisplayer.Show( message );
-            }
+            MessageDisplayer?.Show( message );
         }
 
         protected void Log( string message )
         {   
-            if( ( _logger != null ) && _options.IsVerbose )
+            if( Options.IsVerbose )
             {
-                _logger.LogInformation( message );
+                Logger?.LogInformation( message );
             }
         }
 
         protected void LogWarning( string message )
         {
-            if( ( _logger != null ) && _options.IsVerbose )
+            if( Options.IsVerbose )
             {
-                _logger.LogWarning( message );
+                Logger?.LogWarning( message );
             }
         }
 
         protected void LogError( string message )
         {
-            if( ( _logger != null ) && _options.IsVerbose )
+            if( Options.IsVerbose )
             {
-                _logger.LogError( message );
+                Logger?.LogError( message );
             }
         }
 
@@ -113,24 +74,24 @@ namespace Svn2GitNetX
         protected string RunCommandIgnoreExitCode( string cmd, string arguments )
         {
             string standardOutput;
-            _commandRunner.Run( cmd, arguments, out standardOutput );
+            CommandRunner.Run( cmd, arguments, out standardOutput );
 
             return standardOutput;
         }
 
         protected int RunCommand( CommandInfo cmdInfo )
         {
-            return _commandRunner.Run( cmdInfo.Command, cmdInfo.Arguments );
+            return CommandRunner.Run( cmdInfo.Command, cmdInfo.Arguments );
         }
 
         protected int RunCommand( CommandInfo cmdInfo, out string standardOutput )
         {
-            return _commandRunner.Run( cmdInfo.Command, cmdInfo.Arguments, out standardOutput );
+            return CommandRunner.Run( cmdInfo.Command, cmdInfo.Arguments, out standardOutput );
         }
 
         protected int RunCommand( CommandInfo cmdInfo, out string standardOutput, out string standardError )
         {
-            return _commandRunner.Run( cmdInfo.Command, cmdInfo.Arguments, out standardOutput, out standardError );
+            return CommandRunner.Run( cmdInfo.Command, cmdInfo.Arguments, out standardOutput, out standardError );
         }
     }
 }

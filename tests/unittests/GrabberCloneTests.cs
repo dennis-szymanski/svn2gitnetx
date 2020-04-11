@@ -930,7 +930,7 @@ namespace Svn2GitNetX.Tests
         {
             Mock<IGcErrorIgnorer> ignorer = new Mock<IGcErrorIgnorer>( MockBehavior.Strict );
 
-            ignorer.Setup( m => m.Options ).Returns( options );
+            ignorer.Setup( m => m.IgnoreGcErrors ).Returns( options.IgnoreGcErrors );
 
             return new Grabber(
                 _testSvnUrl,

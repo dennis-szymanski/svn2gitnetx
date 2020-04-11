@@ -118,7 +118,7 @@ namespace Svn2GitNetX
 
                 if( exitCode == 0 )
                 {
-                    string dirToDelete = Path.Combine( ".git", "svn", "refs", "remotes", branch );
+                    string dirToDelete = Path.Combine( this.GitDirectory, "svn", "refs", "remotes", branch );
                     try
                     {
                         if( Directory.Exists( dirToDelete ) )
