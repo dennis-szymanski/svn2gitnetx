@@ -19,6 +19,7 @@ namespace Svn2GitNetX
         private string _gitConfigCommandArguments;
         private string _svnUrl;
         private readonly ILoggerFactory _loggerFactory;
+        private readonly IFileSystem fileSystem;
 
         public Migrator(
             Options options,
@@ -31,6 +32,7 @@ namespace Svn2GitNetX
         {
             this._args = args;
             this._loggerFactory = loggerFactory;
+            this.fileSystem = new FileSystem( options, this._loggerFactory.CreateLogger<FileSystem>() );
         }
 
         public void Initialize()
@@ -65,7 +67,8 @@ namespace Svn2GitNetX
         {
             GcErrorIgnorer gcIgnorer = new GcErrorIgnorer(
                 _loggerFactory.CreateLogger<GcErrorIgnorer>(),
-                Options
+                Options,
+                this.fileSystem
             );
 
             Grabber grabber = new Grabber(

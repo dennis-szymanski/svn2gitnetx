@@ -10,11 +10,14 @@ namespace Svn2GitNetX
     {
         // ---------------- Fields ----------------
 
+        private readonly IFileSystem fileSystem;
+
         // ---------------- Constructor ----------------
 
-        public GcErrorIgnorer( ILogger logger, Options options ) :
+        public GcErrorIgnorer( ILogger logger, Options options, IFileSystem fileSystem ) :
             base( options, null, null, logger )
         {
+            this.fileSystem = fileSystem;
         }
 
         // ---------------- Properties ----------------
@@ -26,11 +29,7 @@ namespace Svn2GitNetX
         public void DeleteGcLog()
         {
             string filePath = Path.Combine( this.GitDirectory, "gc.log" );
-            if( File.Exists( filePath ) )
-            {
-                Log( "Ignore GC Errors flagged, deleting gc log file" );
-                File.Delete( filePath );
-            }
+            this.fileSystem.DeleteFileIfItExists( filePath );
         }
     }
 }
