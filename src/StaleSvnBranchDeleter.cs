@@ -22,6 +22,8 @@ namespace Svn2GitNetX
 
         private readonly MetaInfo metaInfo;
 
+        private readonly IFileSystem fileSystem;
+
         // ---------------- Constructor ----------------
 
         public StaleSvnBranchDeleter(
@@ -30,12 +32,13 @@ namespace Svn2GitNetX
             ICommandRunner cmdRunner,
             IMessageDisplayer msgDisplayer,
             ILogger logger,
-            MetaInfo metaInfo
+            MetaInfo metaInfo,
+            IFileSystem fileSystem
         ) : base( options, cmdRunner, msgDisplayer, logger )
         {
             this.svnUrl = svnUrl;
-
             this.metaInfo = metaInfo;
+            this.fileSystem = fileSystem;
         }
 
         // ---------------- Functions ----------------
@@ -47,7 +50,11 @@ namespace Svn2GitNetX
         {
             List<string> branches = new List<string>();
 
-            if( this.Options.NoBranches || ( this.Options.Branches == null ) )
+            if(
+                this.Options.NoBranches ||
+                ( this.Options.Branches == null ) ||
+                ( this.Options.Branches.Any() == false )
+            ) 
             {
                 Log( "No Branches specified, skipping checking SVN branches" );
                 return branches;
@@ -121,10 +128,7 @@ namespace Svn2GitNetX
                     string dirToDelete = Path.Combine( this.GitDirectory, "svn", "refs", "remotes", branch );
                     try
                     {
-                        if( Directory.Exists( dirToDelete ) )
-                        {
-                            Directory.Delete( dirToDelete, true );
-                        }
+                        this.fileSystem.DeleteDirectoryIfItExists( dirToDelete );
                     }
                     catch( IOException e )
                     {

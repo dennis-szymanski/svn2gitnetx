@@ -40,6 +40,7 @@ namespace Svn2GitNetX.Tests
                 cmdRunner.Object,
                 null,
                 null,
+                null,
                 null
             );
 
@@ -87,6 +88,7 @@ namespace Svn2GitNetX.Tests
                 svnUrl,
                 options,
                 cmdRunner.Object,
+                null,
                 null,
                 null,
                 null
@@ -154,7 +156,8 @@ namespace Svn2GitNetX.Tests
                 null,
                 null,
                 null,
-                info
+                info,
+                null
             );
 
             // Act
@@ -194,7 +197,8 @@ namespace Svn2GitNetX.Tests
                 null,
                 null,
                 null,
-                info
+                info,
+                null
             );
 
             // Act
@@ -244,7 +248,8 @@ namespace Svn2GitNetX.Tests
                 null,
                 null,
                 null,
-                info
+                info,
+                null
             );
 
             // Act

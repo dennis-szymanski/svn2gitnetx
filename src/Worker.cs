@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using Microsoft.Extensions.Logging;
 
@@ -31,7 +30,7 @@ namespace Svn2GitNetX
 
         protected ILogger Logger { get; set; }
 
-        protected string WorkingDirectory => ".";
+        protected string WorkingDirectory => "."; // Todo: Maybe an option?
 
         protected string GitDirectory => Path.Combine( WorkingDirectory, ".git" );
 
