@@ -68,6 +68,55 @@ namespace Svn2GitNetX.Tests
             Assert.Equal( expectedBranches, actualBranches );
         }
 
+        [Fact]
+        public void QueryHeadSvnBranchesWithUserNameTest()
+        {
+            // Prepare
+            const string userName = "someuser";
+
+            Options options = new Options
+            {
+                Branches = new List<string>{ "branches" },
+                UserName = userName
+            };
+
+            Mock<ICommandRunner> cmdRunner = new Mock<ICommandRunner>( MockBehavior.Strict );
+            SetupMockForVersionQuery( cmdRunner );
+
+            StaleSvnBranchDeleter uut = new StaleSvnBranchDeleter(
+                svnUrl,
+                options,
+                cmdRunner.Object,
+                null,
+                null,
+                null
+            );
+
+            string expectedArgs = $"ls {svnUrl}/{options.Branches.First()} --username={userName}";
+
+            List<string> expectedBranches = new List<string>
+            {
+                "branch1",
+                "My Branch",
+                ".MyAwesomeBranch"
+            };
+
+            List<string> stdOut = new List<string>();
+            foreach( string expectedBranch in expectedBranches )
+            {
+                stdOut.Add( expectedBranch + "/" );
+            }
+            stdOut.Add( "some_file" );
+
+            SetupMockForBranchQuery( cmdRunner, expectedArgs, stdOut );
+
+            // Act
+            List<string> actualBranches = uut.QueryHeadSvnBranches().ToList();
+
+            // Assert
+            Assert.Equal( expectedBranches, actualBranches );
+        }
+
         // ---------------- Test Helpers ----------------
 
         private void SetupMockForVersionQuery( Mock<ICommandRunner> mock, int exitCode = 0 )
