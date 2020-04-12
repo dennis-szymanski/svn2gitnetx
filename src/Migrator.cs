@@ -90,19 +90,34 @@ namespace Svn2GitNetX
                 _loggerFactory.CreateLogger<Fixer>()
             );
 
-            Run( grabber, fixer );
+            StaleSvnBranchDeleter branchDeleter = new StaleSvnBranchDeleter(
+                _svnUrl,
+                Options,
+                CommandRunner,
+                MessageDisplayer,
+                _loggerFactory.CreateLogger<StaleSvnBranchDeleter>(),
+                grabber.GetMetaInfo(),
+                fileSystem
+            );
+
+            Run( grabber, fixer, branchDeleter );
         }
 
-        public void Run( IGrabber grabber, IFixer fixer )
+        public void Run( IGrabber grabber, IFixer fixer, IStaleSvnBranchDeleter svnBranchDeleter )
         {
             if( grabber == null )
             {
-                throw new ArgumentNullException( "grabber" );
+                throw new ArgumentNullException( nameof( grabber ) );
             }
 
             if( fixer == null )
             {
-                throw new ArgumentNullException( "fixer" );
+                throw new ArgumentNullException( nameof( fixer ) );
+            }
+
+            if( svnBranchDeleter == null )
+            {
+                throw new ArgumentNullException( nameof( svnBranchDeleter ) );
             }
 
             try
@@ -131,6 +146,22 @@ namespace Svn2GitNetX
                 fixer.FixTags();
                 fixer.FixTrunk();
                 fixer.OptimizeRepos();
+
+                if( Options.StaleSvnBranchPurgeOption != StaleSvnBranchPurgeOptions.nothing )
+                {
+                    IEnumerable<string> svnBranches = svnBranchDeleter.QueryHeadSvnBranches();
+                    
+                    IEnumerable<string> gitBranchesToPurge = svnBranchDeleter.GetGitBranchesToPurge( svnBranches );
+                    svnBranches = null;
+
+                    IEnumerable<string> deletedLocalBranches = svnBranchDeleter.PurgeGitBranches( gitBranchesToPurge );
+                    gitBranchesToPurge = null;
+
+                    if( Options.StaleSvnBranchPurgeOption == StaleSvnBranchPurgeOptions.delete_local_and_remote )
+                    {
+                        // TODO: Delete remote git branches.
+                    }
+                }
             }
             finally
             {

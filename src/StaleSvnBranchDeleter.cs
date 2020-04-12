@@ -14,7 +14,7 @@ namespace Svn2GitNetX
     /// 
     /// This becomes a no-op if --no-branches is enabled, or if --delete-stale-svn-branches is not specified.
     /// </summary>
-    public class StaleSvnBranchDeleter : Worker
+    public class StaleSvnBranchDeleter : Worker, IStaleSvnBranchDeleter
     {
         // ---------------- Fields ----------------
 

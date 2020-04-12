@@ -18,12 +18,34 @@ namespace Svn2GitNetX
         env_var
     }
 
+    public enum StaleSvnBranchPurgeOptions
+    {
+        /// <summary>
+        /// Leave stale SVN branches alone.
+        /// </summary>
+        nothing,
+
+        /// <summary>
+        /// Delete stale SVN branches from the local
+        /// git repo, but do not delete from remote.
+        /// </summary>
+        delete_local,
+
+        /// <summary>
+        /// Delete stale SVN branches from the local
+        /// git repo AND the remote git repo.
+        /// </summary>
+        delete_local_and_remote
+    }
+
     public class Options
     {
         public Options()
         {
             this.UserNameMethod = CredentialsMethod.args;
             this.PasswordMethod = CredentialsMethod.args;
+
+            this.StaleSvnBranchPurgeOption = StaleSvnBranchPurgeOptions.nothing;
         }
 
         /// <summary>
@@ -229,6 +251,21 @@ namespace Svn2GitNetX
             Default = false
         )]
         public bool IgnoreGcErrors
+        {
+            get;
+            set;
+        }
+
+        [Option(
+            "stale-svn-branch-action",
+            HelpText = "What to do with stale SVN branches (branches deleted from SVN).  This requires SVN to be installed.  " + 
+                nameof( StaleSvnBranchPurgeOptions.nothing ) + " to leave them alone.  " +
+                nameof( StaleSvnBranchPurgeOptions.delete_local ) + " to delete them from the local GIT repo.  " +
+                nameof( StaleSvnBranchPurgeOptions.delete_local_and_remote ) + " to delete from the local GIT repo and the remote GIT repo.",
+            Default = StaleSvnBranchPurgeOptions.nothing
+
+        )]
+        public StaleSvnBranchPurgeOptions StaleSvnBranchPurgeOption
         {
             get;
             set;
