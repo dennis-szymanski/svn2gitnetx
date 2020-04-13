@@ -40,6 +40,10 @@ namespace Svn2GitNetX
 
     public class Options
     {
+        // ---------------- Fields ----------------
+
+        // ---------------- Constructor ----------------
+
         public Options()
         {
             this.UserNameMethod = CredentialsMethod.args;
@@ -48,11 +52,18 @@ namespace Svn2GitNetX
             this.StaleSvnBranchPurgeOption = StaleSvnBranchPurgeOptions.nothing;
         }
 
+        // ---------------- Properties ----------------
+
         /// <summary>
         /// Be verbose in logging -- useful for debugging issues
         /// </summary>
         /// <returns></returns>
-        [Option( 'v', "verbose", Default = false, HelpText = "Be verbose in logging -- useful for debugging issues" )]
+        [Option(
+            'v',
+            "verbose",
+            Default = false,
+            HelpText = "Be verbose in logging -- useful for debugging issues"
+        )]
         public bool IsVerbose
         {
             get;
@@ -63,7 +74,12 @@ namespace Svn2GitNetX
         /// Include metadata in git logs (git-svn-id)
         /// </summary>
         /// <returns></returns>
-        [Option( 'm', "metadata", Default = false, HelpText = "Include metadata in git logs (git-svn-id)" )]
+        [Option(
+            'm',
+            "metadata",
+            Default = false,
+            HelpText = "Include metadata in git logs (git-svn-id)"
+        )]
         public bool IncludeMetaData
         {
             get;
@@ -74,14 +90,20 @@ namespace Svn2GitNetX
         /// Accept URLs as-is without attempting to connect to a higher level directory
         /// </summary>
         /// <returns></returns>
-        [Option( "no-minimize-url", HelpText = "Accept URLs as-is without attempting to connect to a higher level directory" )]
+        [Option(
+            "no-minimize-url",
+            HelpText = "Accept URLs as-is without attempting to connect to a higher level directory"
+        )]
         public bool NoMinimizeUrl
         {
             get;
             set;
         }
 
-        [Option( "rootistrunk", HelpText = "Use this if the root level of the repo is equivalent to the trunk and there are no tags or branches" )]
+        [Option(
+            "rootistrunk",
+            HelpText = "Use this if the root level of the repo is equivalent to the trunk and there are no tags or branches"
+        )]
         public bool RootIsTrunk
         {
             get;

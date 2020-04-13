@@ -28,5 +28,10 @@ namespace Svn2GitNetX
             char[] trimChars = { pattern };
             return source.TrimEnd( trimChars ).TrimStart( trimChars );
         }
+
+        public static bool EqualsIgnoreCase( this string str, string other )
+        {
+            return str.Equals( other, StringComparison.InvariantCultureIgnoreCase );
+        }
     }
 }
