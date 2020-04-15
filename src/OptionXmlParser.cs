@@ -140,6 +140,10 @@ namespace Svn2GitNetX
                 {
                     ConvertToBool( option, ( o ) => opt.IncludeMetaData = o );
                 }
+                else if( optionName.EqualsIgnoreCase( NoMinimizeUrlElement ) )
+                {
+                    ConvertToBool( option, ( o ) => opt.NoMinimizeUrl = o );
+                }
                 else if( optionName.EqualsIgnoreCase( RootIsTrunkElement ) )
                 {
                     ConvertToBool( option, ( o ) => opt.RootIsTrunk = o );
@@ -260,17 +264,17 @@ namespace Svn2GitNetX
             }
 
             // Only override list elements if they were specified in the XML.
-            if( branches != null )
+            if( ( branches != null ) && ( branches.Count > 0 ) )
             {
                 opt.Branches = branches;
             }
 
-            if( tags != null )
+            if( ( tags != null ) && ( tags.Count > 0 ) )
             {
                 opt.Tags = tags;
             }
 
-            if( excludes != null )
+            if( ( excludes != null ) && ( excludes.Count > 0 ) )
             {
                 opt.Exclude = excludes;
             }

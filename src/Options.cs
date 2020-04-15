@@ -42,14 +42,21 @@ namespace Svn2GitNetX
     {
         // ---------------- Fields ----------------
 
+        private const CredentialsMethod defaultCredentialsMethod = CredentialsMethod.args;
+        private const string defaultSubpathToTrunk = "trunk";
+        private const int defaultFetchAttempts = 0;
+        private const StaleSvnBranchPurgeOptions defaultStaleSvnBranchPurgeOption = StaleSvnBranchPurgeOptions.nothing;
+
         // ---------------- Constructor ----------------
 
         public Options()
         {
-            this.UserNameMethod = CredentialsMethod.args;
-            this.PasswordMethod = CredentialsMethod.args;
+            this.UserNameMethod = defaultCredentialsMethod;
+            this.PasswordMethod = defaultCredentialsMethod;
 
-            this.StaleSvnBranchPurgeOption = StaleSvnBranchPurgeOptions.nothing;
+            this.FetchAttempts = defaultFetchAttempts;
+
+            this.StaleSvnBranchPurgeOption = defaultStaleSvnBranchPurgeOption;
         }
 
         // ---------------- Properties ----------------
@@ -114,7 +121,11 @@ namespace Svn2GitNetX
         /// Subpath to trunk from repository URL (default: trunk)
         /// </summary>
         /// <returns></returns>
-        [Option( "trunk", Default = "trunk", HelpText = "Subpath to trunk from repository URL (default: trunk)" )]
+        [Option(
+            "trunk",
+            Default = defaultSubpathToTrunk,
+            HelpText = "Subpath to trunk from repository URL (default: trunk)"
+        )]
         public string SubpathToTrunk
         {
             get;
@@ -259,7 +270,7 @@ namespace Svn2GitNetX
         [Option( 
             "fetch-attempts", 
             HelpText = "How many attempts to try to fetch a single revision AFTER the first failure.  Set to -1 (or less) to try forever until CTRL+C is hit.",
-            Default = 0
+            Default = defaultFetchAttempts
         )]
         public int FetchAttempts
         {
@@ -284,7 +295,7 @@ namespace Svn2GitNetX
                 nameof( StaleSvnBranchPurgeOptions.nothing ) + " to leave them alone.  " +
                 nameof( StaleSvnBranchPurgeOptions.delete_local ) + " to delete them from the local GIT repo.  " +
                 nameof( StaleSvnBranchPurgeOptions.delete_local_and_remote ) + " to delete from the local GIT repo and the remote GIT repo.",
-            Default = StaleSvnBranchPurgeOptions.nothing
+            Default = defaultStaleSvnBranchPurgeOption
 
         )]
         public StaleSvnBranchPurgeOptions StaleSvnBranchPurgeOption
