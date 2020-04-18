@@ -300,9 +300,8 @@ namespace Svn2GitNetX
             HelpText = "What to do with stale SVN branches (branches deleted from SVN).  This requires SVN to be installed.  " + 
                 nameof( StaleSvnBranchPurgeOptions.nothing ) + " to leave them alone.  " +
                 nameof( StaleSvnBranchPurgeOptions.delete_local ) + " to delete them from the local GIT repo.  " +
-                nameof( StaleSvnBranchPurgeOptions.delete_local_and_remote ) + " to delete from the local GIT repo and the remote GIT repo.",
+                nameof( StaleSvnBranchPurgeOptions.delete_local_and_remote ) + " to delete from the local GIT repo and the remote GIT repo (requies git to support 'git push --prune').",
             Default = defaultStaleSvnBranchPurgeOption
-
         )]
         public StaleSvnBranchPurgeOptions StaleSvnBranchPurgeOption
         {

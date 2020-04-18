@@ -174,12 +174,12 @@ namespace Svn2GitNetX
                     IEnumerable<string> gitBranchesToPurge = svnBranchDeleter.GetGitBranchesToPurge( svnBranches );
                     svnBranches = null;
 
-                    IEnumerable<string> deletedLocalBranches = svnBranchDeleter.PurgeGitBranches( gitBranchesToPurge );
+                    svnBranchDeleter.PurgeGitBranches( gitBranchesToPurge );
                     gitBranchesToPurge = null;
 
                     if( Options.StaleSvnBranchPurgeOption == StaleSvnBranchPurgeOptions.delete_local_and_remote )
                     {
-                        // TODO: Delete remote git branches.
+                        gitPusher.PushPrune();
                     }
                 }
 

@@ -84,5 +84,82 @@ namespace Svn2GitNetX.Tests
             // Assert
             mockCmdRunner.VerifyAll();
         }
+
+        // -------- Push Prune --------
+
+        [Fact]
+        public void PushPruneNoUrlTest()
+        {
+            // Prepare
+            Mock<ICommandRunner> mockCmdRunner = new Mock<ICommandRunner>( MockBehavior.Strict );
+
+            Options options = new Options
+            {
+                StaleSvnBranchPurgeOption = StaleSvnBranchPurgeOptions.delete_local_and_remote
+            };
+
+            GitPusher uut = new GitPusher( options, mockCmdRunner.Object, null, null );
+
+            mockCmdRunner.Setup(
+                m => m.Run( "git", "push --prune" )
+            ).Returns( 0 );
+
+            // Act
+            uut.PushPrune();
+
+            // Assert
+            mockCmdRunner.VerifyAll();
+        }
+
+        [Fact]
+        public void PushPruneWithUrlTest()
+        {
+            // Prepare
+            const string url = "ssh://git@github.com:xforever1313/svn2gitnetx.git";
+
+            Mock<ICommandRunner> mockCmdRunner = new Mock<ICommandRunner>( MockBehavior.Strict );
+
+            Options options = new Options
+            {
+                StaleSvnBranchPurgeOption = StaleSvnBranchPurgeOptions.delete_local_and_remote,
+                RemoteGitUrl = url
+            };
+
+            GitPusher uut = new GitPusher( options, mockCmdRunner.Object, null, null );
+
+            mockCmdRunner.Setup(
+                m => m.Run( "git", $"push --prune \"{url}\"" )
+            ).Returns( 0 );
+
+            // Act
+            uut.PushPrune();
+
+            // Assert
+            mockCmdRunner.VerifyAll();
+        }
+
+        [Fact]
+        public void PushPruneFailureTest()
+        {
+            // Prepare
+            Mock<ICommandRunner> mockCmdRunner = new Mock<ICommandRunner>( MockBehavior.Strict );
+
+            Options options = new Options
+            {
+                StaleSvnBranchPurgeOption = StaleSvnBranchPurgeOptions.delete_local_and_remote
+            };
+
+            GitPusher uut = new GitPusher( options, mockCmdRunner.Object, null, null );
+
+            mockCmdRunner.Setup(
+                m => m.Run( "git", "push --prune" )
+            ).Returns( 1 ); // Non-zero, should get an exception.
+
+            // Act
+            Assert.Throws<ApplicationException>( () => uut.PushPrune() );
+
+            // Assert
+            mockCmdRunner.VerifyAll();
+        }
     }
 }

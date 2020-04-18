@@ -39,5 +39,22 @@ namespace Svn2GitNetX
                 throw new ApplicationException( "Unable to push to git repo" );
             }
         }
+
+        public void PushPrune()
+        {
+            StringBuilder args = new StringBuilder();
+
+            args.Append( "push --prune" );
+            if( string.IsNullOrWhiteSpace( this.Options.RemoteGitUrl ) == false )
+            {
+                args.Append( $" \"{this.Options.RemoteGitUrl}\"" );
+            }
+
+            int exitCode = CommandRunner.Run( "git", args.ToString() );
+            if( exitCode != 0 )
+            {
+                throw new ApplicationException( "Unable to push to git repo.  Does your version of git support 'git push --prune'?" );
+            }
+        }
     }
 }
