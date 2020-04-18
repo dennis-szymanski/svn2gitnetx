@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using CommandLine;
 using Microsoft.Extensions.Logging;
@@ -9,6 +10,17 @@ namespace Svn2GitNetX
     {
         static void Migrate( Options options, string[] args )
         {
+            if( string.IsNullOrWhiteSpace( options.ConfigFile ) == false )
+            {
+                if( File.Exists( options.ConfigFile ) == false )
+                {
+                    throw new FileNotFoundException( "Could not find file " + options.ConfigFile );
+                }
+
+                Console.WriteLine( "Using option file: " + options.ConfigFile );
+                OptionXmlParser.ParseOptionFromFile( options, options.ConfigFile );
+            }
+
             using( CancellationTokenSource cancelToken = new CancellationTokenSource() )
             {
                 ConsoleCancelEventHandler onCtrlC = delegate ( object sender, ConsoleCancelEventArgs cancelArgs )

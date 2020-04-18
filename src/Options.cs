@@ -235,14 +235,20 @@ namespace Svn2GitNetX
             set;
         }
 
-        [Option( "rebase", HelpText = "Instead of cloning a new project, rebase an existing one against SVN" )]
+        [Option(
+            "rebase",
+            HelpText = "Instead of cloning a new project, rebase an existing one against SVN"
+        )]
         public bool Rebase
         {
             get;
             set;
         }
 
-        [Option( "rebasebranch", HelpText = "Rebase specified branch" )]
+        [Option(
+            "rebasebranch",
+            HelpText = "Rebase specified branch"
+        )]
         public string RebaseBranch
         {
             get;
@@ -299,6 +305,16 @@ namespace Svn2GitNetX
 
         )]
         public StaleSvnBranchPurgeOptions StaleSvnBranchPurgeOption
+        {
+            get;
+            set;
+        }
+
+        [Option(
+            "config-file",
+            HelpText = "Path to a config file that contains the options.  Note: the config file will *overwrite* any arguments from the command line."
+        )]
+        public string ConfigFile
         {
             get;
             set;

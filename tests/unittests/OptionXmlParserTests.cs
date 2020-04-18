@@ -48,7 +48,8 @@ namespace Svn2GitNetX.Tests
 </svn2gitnetx>
 ";
             // Act
-            Options actualOptions = OptionXmlParser.ParseOptionFromString( xml );
+            Options actualOptions = new Options();
+            OptionXmlParser.ParseOptionFromString( actualOptions, xml );
 
             // Assert
             Assert.False( actualOptions.IsVerbose );
@@ -116,7 +117,8 @@ namespace Svn2GitNetX.Tests
 </svn2gitnetx>
 ";
             // Act
-            Options actualOptions = OptionXmlParser.ParseOptionFromString( xml );
+            Options actualOptions = new Options();
+            OptionXmlParser.ParseOptionFromString( actualOptions, xml );
 
             // Assert
             Assert.True( actualOptions.IsVerbose );
@@ -154,7 +156,8 @@ namespace Svn2GitNetX.Tests
 </svn2gitnetx>
 ";
             // Act
-            Options actualOptions = OptionXmlParser.ParseOptionFromString( xml );
+            Options actualOptions = new Options();
+            OptionXmlParser.ParseOptionFromString( actualOptions, xml );
 
             // Assert
             Assert.False( actualOptions.IsVerbose );
@@ -198,7 +201,8 @@ namespace Svn2GitNetX.Tests
 </svn2gitnetx>
 ";
             // Act
-            Options actualOptions = OptionXmlParser.ParseOptionFromString( xml );
+            Options actualOptions = new Options();
+            OptionXmlParser.ParseOptionFromString( actualOptions, xml );
 
             // Assert
             Assert.False( actualOptions.IsVerbose );

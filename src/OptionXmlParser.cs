@@ -43,24 +43,29 @@ namespace Svn2GitNetX
 
         // ---------------- Functions ----------------
 
-        public static Options ParseOptionFromFile( string fileName )
+        public static void ParseOptionFromFile( Options optionsToOverwrite, string fileName )
         {
             using( FileStream fs = new FileStream( fileName, FileMode.Open, FileAccess.Read ) )
             {
-                return ParseOptionsFromStream( fs );
+                ParseOptionsFromStream( optionsToOverwrite, fs );
             }
         }
 
-        public static Options ParseOptionFromString( string str )
+        public static void ParseOptionFromString( Options optionsToOverwrite, string str )
         {
             using( MemoryStream stream = new MemoryStream( Encoding.UTF8.GetBytes( str ) ) )
             {
-                return ParseOptionsFromStream( stream );
+                ParseOptionsFromStream( optionsToOverwrite, stream );
             }
         }
 
-        public static Options ParseOptionsFromStream( Stream stream )
+        public static void ParseOptionsFromStream( Options optionsToOverwrite, Stream stream )
         {
+            if( optionsToOverwrite == null )
+            {
+                throw new ArgumentNullException( nameof( optionsToOverwrite ) );
+            }
+
             XDocument xmlDoc = XDocument.Load( stream );
 
             XElement rootNode = xmlDoc.Root;
@@ -72,17 +77,13 @@ namespace Svn2GitNetX
                 );
             }
 
-            Options options = new Options();
-
             foreach( XElement childNode in rootNode.Descendants() )
             {
                 if( childNode.Name.LocalName.EqualsIgnoreCase( OptionsXmlNodeName ) )
                 {
-                    ParseOptions( options, childNode );
+                    ParseOptions( optionsToOverwrite, childNode );
                 }
             }
-
-            return options;
         }
 
         private static void ParseOptions( Options opt, XElement optionNode )
