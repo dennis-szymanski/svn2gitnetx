@@ -3,6 +3,7 @@
 
 const string buildTarget = "build";
 const string buildDockerTarget = "build_docker";
+const string buildArchDockerTarget = "build_arch_docker";
 const string unitTestTarget = "unit_test";
 const string integrationTestTarget = "integration_test";
 const string testTarget = "test";
@@ -299,7 +300,25 @@ Task( buildDockerTarget )
 .Does(
     () =>
     {
-        string arguments = "build -t svn2gitnetx -f ./docker/Dockerfile";
+        BuildDocker( "svn2gitnetx", "./docker/Dockerfile" );
+    }
+)
+.Description( "Builds the ubuntu docker image" )
+.IsDependentOn( publishDockerTarget );
+
+Task( buildArchDockerTarget )
+.Does(
+    () =>
+    {
+        BuildDocker( "svn2gitnetx_arch", "./docker/Arch.Dockerfile" );
+    }
+)
+.Description( "Builds the arch-linux docker image" )
+.IsDependentOn( publishDockerTarget );
+
+ void BuildDocker( string imageName, string dockerFile )
+ {
+        string arguments = $"build -t {imageName} -f {dockerFile}";
 
         if( skipDockerCache )
         {
@@ -319,11 +338,8 @@ Task( buildDockerTarget )
             throw new ApplicationException(
                 "Error when running docker.  Got error: " + exitCode
             );
-        }
-    }
-)
-.Description( "Builds the docker image" )
-.IsDependentOn( publishDockerTarget );
+        } 
+ }
 
 // ---------------- All ----------------
 
