@@ -10,7 +10,11 @@ RUN dpkg -i packages-microsoft-prod.deb
 RUN apt -y update
 RUN apt -y install dotnet-runtime-3.1
 
-# Install git-svn
+# Install git, svn, and git-svn.
+# Need git if we want to push
+# Need SVN if we want to query for SVN branches.
+RUN apt -y install git
+RUN apt -y install subversion
 RUN apt -y install git-svn
 
 # Delete unneeded things:
@@ -31,6 +35,10 @@ COPY ./* /svn2gitnetx/app/
 
 # Make our working directory the repo directory.
 WORKDIR /svn2gitnetx/repo/
+
+RUN svn --version
+RUN git --version
+RUN git svn --version
 
 ENTRYPOINT [ "/svn2gitnetx/app/svn2gitnetx" ]
 CMD [ "--help" ]

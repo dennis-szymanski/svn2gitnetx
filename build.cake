@@ -17,6 +17,7 @@ const string packageTarget = "package";
 string target = Argument( "target", buildTarget );
 bool skipPublish = Argument<bool>( "skip_publish", false );
 bool deleteIntegrationTestDir = Argument<bool>( "delete_test_repos", true );
+bool skipDockerCache = Argument<bool>( "skip_docker_cache", false );
 
 FilePath sln = File( "./svn2gitnetx.sln" );
 DirectoryPath packageDir = Directory( "./dist" );
@@ -298,7 +299,15 @@ Task( buildDockerTarget )
 .Does(
     () =>
     {
-        string arguments = "build -t svn2gitnetx -f ./docker/Dockerfile ./dist/docker";
+        string arguments = "build -t svn2gitnetx -f ./docker/Dockerfile";
+
+        if( skipDockerCache )
+        {
+            arguments += " --no-cache";
+        }
+
+        arguments += " ./dist/docker";
+
         ProcessArgumentBuilder argumentsBuilder = ProcessArgumentBuilder.FromString( arguments );
         ProcessSettings settings = new ProcessSettings
         {

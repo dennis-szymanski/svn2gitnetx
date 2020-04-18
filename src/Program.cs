@@ -53,6 +53,12 @@ namespace Svn2GitNetX
                     );
                     IMessageDisplayer messageDisplayer = new ConsoleMessageDisplayer();
 
+                    int exitCode = commandRunner.Run( "git", "svn --version" );
+                    if( exitCode != 0 )
+                    {
+                        throw new PlatformNotSupportedException( "git svn not installed" );
+                    }
+
                     Migrator migrator = new Migrator(
                         options,
                         args,
