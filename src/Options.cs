@@ -312,7 +312,7 @@ namespace Svn2GitNetX
 
         [Option(
             "remote-git-url",
-            HelpText = "URL to the remote git repo.  Useful if pushing to it or deleting remote branches.  Leave blank to only send the 'git push' command"
+            HelpText = "URL to the remote git repo.  Useful if pushing to it or deleting remote branches.  Leave blank to only send the 'git push' command.  Can also be the remote name as well (e.g. origin)."
         )]
         public string RemoteGitUrl
         {
@@ -322,7 +322,7 @@ namespace Svn2GitNetX
 
         [Option(
             "push-when-done",
-            HelpText = "Should we do a 'git push' when done?  Note, interactive (requireing username/password) is not supported yet."
+            HelpText = "Should we do a 'git push' when done?  Note, interactive pushing (requiring username/password) is not supported yet."
         )]
         public bool PushWhenDone
         {

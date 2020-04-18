@@ -12,6 +12,8 @@ namespace Svn2GitNetX
 {
     public class Migrator : Worker
     {
+        // ---------------- Fields ----------------
+
         private readonly string _defaultAuthorsFile = Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.UserProfile ), ".svn2gitnet", "authors" );
         private readonly string _gitSvnCacheDirectory = Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.UserProfile ), ".subversion", "auth" );
 
@@ -20,6 +22,8 @@ namespace Svn2GitNetX
         private string _svnUrl;
         private readonly ILoggerFactory _loggerFactory;
         private readonly IFileSystem fileSystem;
+
+        // ---------------- Constructor ----------------
 
         public Migrator(
             Options options,
@@ -34,6 +38,10 @@ namespace Svn2GitNetX
             this._loggerFactory = loggerFactory;
             this.fileSystem = new FileSystem( options, this._loggerFactory.CreateLogger<FileSystem>() );
         }
+
+        // ---------------- Properties ----------------
+
+        // ---------------- Functions ----------------
 
         public void Initialize()
         {
@@ -100,10 +108,22 @@ namespace Svn2GitNetX
                 fileSystem
             );
 
-            Run( grabber, fixer, branchDeleter );
+            GitPusher pusher = new GitPusher(
+                Options,
+                CommandRunner,
+                MessageDisplayer,
+                _loggerFactory.CreateLogger<GitPusher>()
+            );
+
+            Run( grabber, fixer, branchDeleter, pusher );
         }
 
-        public void Run( IGrabber grabber, IFixer fixer, IStaleSvnBranchDeleter svnBranchDeleter )
+        public void Run(
+            IGrabber grabber,
+            IFixer fixer,
+            IStaleSvnBranchDeleter svnBranchDeleter,
+            IGitPusher gitPusher
+        )
         {
             if( grabber == null )
             {
@@ -161,6 +181,11 @@ namespace Svn2GitNetX
                     {
                         // TODO: Delete remote git branches.
                     }
+                }
+
+                if( Options.PushWhenDone )
+                {
+                    gitPusher.PushAll();
                 }
             }
             finally

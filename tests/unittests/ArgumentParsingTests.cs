@@ -1,11 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.IO.Pipes;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Xml.Serialization;
 using System.Linq;
 using CommandLine;
 using Xunit;
@@ -30,6 +23,29 @@ namespace Svn2GitNetX.Tests
 
             // Assert
             Assert.True( opt.IsVerbose );
+        }
+
+        [Fact]
+        public void GitArgumentParsingTest()
+        {
+            // Prepare
+            const string url = "ssh://git@github.com:xforever1313/svn2gitnetx.git";
+
+            string[] args = new string[]
+            {
+                $"--remote-git-url={url}",
+                "--push-when-done",
+                "--stale-svn-branch-action",
+                "delete_local_and_remote"
+            };
+
+            // Act
+            Options opt = ParseArgs( args );
+
+            // Assert
+            Assert.Equal( url, opt.RemoteGitUrl );
+            Assert.True( opt.PushWhenDone );
+            Assert.Equal( StaleSvnBranchPurgeOptions.delete_local_and_remote, opt.StaleSvnBranchPurgeOption );
         }
 
         /// <summary>
