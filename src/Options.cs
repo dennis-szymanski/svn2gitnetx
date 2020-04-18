@@ -311,6 +311,26 @@ namespace Svn2GitNetX
         }
 
         [Option(
+            "remote-git-url",
+            HelpText = "URL to the remote git repo.  Useful if pushing to it or deleting remote branches.  Leave blank to only send the 'git push' command"
+        )]
+        public string RemoteGitUrl
+        {
+            get;
+            set;
+        }
+
+        [Option(
+            "push-when-done",
+            HelpText = "Should we do a 'git push' when done?  Note, interactive (requireing username/password) is not supported yet."
+        )]
+        public bool PushWhenDone
+        {
+            get;
+            set;
+        }
+
+        [Option(
             "config-file",
             HelpText = "Path to a config file that contains the options.  Note: the config file will *overwrite* any arguments from the command line."
         )]

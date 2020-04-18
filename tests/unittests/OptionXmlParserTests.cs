@@ -44,6 +44,8 @@ namespace Svn2GitNetX.Tests
         <FetchAttempts>0</FetchAttempts>
         <IgnoreGcErrors>false</IgnoreGcErrors>
         <StaleSvnBranchPurgeOption>nothing</StaleSvnBranchPurgeOption>
+        <RemoteGitUrl>ssh://git@github.com/xforever1313/Chaskis.git</RemoteGitUrl>
+        <PushWhenDone>false</PushWhenDone>
     </options>
 </svn2gitnetx>
 ";
@@ -73,6 +75,8 @@ namespace Svn2GitNetX.Tests
             Assert.Equal( 0, actualOptions.FetchAttempts );
             Assert.False( actualOptions.IgnoreGcErrors );
             Assert.Equal( StaleSvnBranchPurgeOptions.nothing, actualOptions.StaleSvnBranchPurgeOption );
+            Assert.Equal( "ssh://git@github.com/xforever1313/Chaskis.git", actualOptions.RemoteGitUrl );
+            Assert.False( actualOptions.PushWhenDone );
         }
 
         [Fact]
@@ -113,6 +117,8 @@ namespace Svn2GitNetX.Tests
         <FetchAttempts>3</FetchAttempts>
         <IgnoreGcErrors>true</IgnoreGcErrors>
         <StaleSvnBranchPurgeOption>delete_local</StaleSvnBranchPurgeOption>
+        <RemoteGitUrl>ssh://git@github.com/xforever1313/svn2gitnetx.git</RemoteGitUrl>
+        <PushWhenDone>true</PushWhenDone>
     </options>
 </svn2gitnetx>
 ";
@@ -142,6 +148,8 @@ namespace Svn2GitNetX.Tests
             Assert.Equal( 3, actualOptions.FetchAttempts );
             Assert.True( actualOptions.IgnoreGcErrors );
             Assert.Equal( StaleSvnBranchPurgeOptions.delete_local, actualOptions.StaleSvnBranchPurgeOption );
+            Assert.Equal( "ssh://git@github.com/xforever1313/svn2gitnetx.git", actualOptions.RemoteGitUrl );
+            Assert.True( actualOptions.PushWhenDone );
         }
 
         [Fact]
@@ -181,6 +189,8 @@ namespace Svn2GitNetX.Tests
             Assert.Equal( 0, actualOptions.FetchAttempts );
             Assert.False( actualOptions.IgnoreGcErrors );
             Assert.Equal( StaleSvnBranchPurgeOptions.nothing, actualOptions.StaleSvnBranchPurgeOption );
+            Assert.Null( actualOptions.RemoteGitUrl );
+            Assert.False( actualOptions.PushWhenDone );
         }
 
         [Fact]
@@ -226,6 +236,8 @@ namespace Svn2GitNetX.Tests
             Assert.Equal( 0, actualOptions.FetchAttempts );
             Assert.False( actualOptions.IgnoreGcErrors );
             Assert.Equal( StaleSvnBranchPurgeOptions.nothing, actualOptions.StaleSvnBranchPurgeOption );
+            Assert.Null( actualOptions.RemoteGitUrl );
+            Assert.False( actualOptions.PushWhenDone );
         }
     }
 }

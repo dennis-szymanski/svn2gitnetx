@@ -40,6 +40,8 @@ namespace Svn2GitNetX
         internal const string FetchAttemptsElement = "FetchAttempts";
         internal const string IgnoreGcErrorsElement = "IgnoreGcErrors";
         internal const string StaleSvnBranchPurgeOptionElement = "StaleSvnBranchPurgeOption";
+        internal const string RemoteGitUrlElement = "RemoteGitUrl";
+        internal const string PushWhenDoneElement = "PushWhenDone";
 
         // ---------------- Functions ----------------
 
@@ -249,6 +251,14 @@ namespace Svn2GitNetX
                 else if( optionName.EqualsIgnoreCase( StaleSvnBranchPurgeOptionElement ) )
                 {
                     ConvertToEnum<StaleSvnBranchPurgeOptions>( option, ( o ) => opt.StaleSvnBranchPurgeOption = o );
+                }
+                else if( optionName.EqualsIgnoreCase( RemoteGitUrlElement ) )
+                {
+                    opt.RemoteGitUrl = option.Value;
+                }
+                else if( optionName.EqualsIgnoreCase( PushWhenDoneElement ) )
+                {
+                    ConvertToBool( option, ( o ) => opt.PushWhenDone = o );
                 }
             } // End foreach
 
