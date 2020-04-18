@@ -16,6 +16,7 @@ const string packageTarget = "package";
 
 string target = Argument( "target", buildTarget );
 bool skipPublish = Argument<bool>( "skip_publish", false );
+bool deleteIntegrationTestDir = Argument<bool>( "delete_test_repos", true );
 
 FilePath sln = File( "./svn2gitnetx.sln" );
 DirectoryPath packageDir = Directory( "./dist" );
@@ -138,12 +139,15 @@ var integrationTestTask = Task( integrationTestTarget )
         }
         finally
         {
-            DeleteDirectorySettings delSettings = new DeleteDirectorySettings
+            if( deleteIntegrationTestDir )
             {
-                Recursive = true,
-                Force = true
-            };
-            DeleteDirectory( integrationTestDir, delSettings );
+                DeleteDirectorySettings delSettings = new DeleteDirectorySettings
+                {
+                    Recursive = true,
+                    Force = true
+                };
+                DeleteDirectory( integrationTestDir, delSettings );
+            }
         }
     }
 ).Description( "Runs Integration Tests" );
