@@ -36,6 +36,8 @@ namespace Svn2GitNetX
             }
 
             string regexStr = null;
+            string excludeStr = null;
+            string ignoreStr = null;
             if( ( options.Exclude != null ) && options.Exclude.Any() )
             {
                 // Add exclude paths to the command line. Some versions of git support
@@ -65,7 +67,25 @@ namespace Svn2GitNetX
                     }
                 }
 
-                regexStr = "^(?:" + string.Join( "|", regex ) + ")(?:" + string.Join( "|", options.Exclude ) + ")";
+                excludeStr = string.Join( "|", regex ) + ")(?:" + string.Join( "|", options.Exclude );
+            }
+
+            if( options.IgnorePaths != null && options.IgnorePaths.Any() )
+            {
+                ignoreStr = string.Join( "|", options.IgnorePaths );
+            }
+
+            if( ( excludeStr == null ) && ( ignoreStr != null ) )
+            {
+                regexStr = "^(?:" + ignoreStr + ")";
+            }
+            else if( ( excludeStr != null ) && ( ignoreStr == null ) )
+            {
+                regexStr = "^(?:" + excludeStr + ")";
+            }
+            else if( ( excludeStr != null ) && ( ignoreStr != null ) )
+            {
+                regexStr = $"^(?:({ignoreStr})|(({excludeStr})))";
             }
 
             return regexStr;

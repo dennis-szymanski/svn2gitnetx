@@ -1,12 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Pipes;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Xml.Serialization;
-using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace Svn2GitNetX.Tests
@@ -133,6 +128,36 @@ namespace Svn2GitNetX.Tests
         }
 
         [Fact]
+        public void PublicNonstandardLayoutRepositoryWithConfigEnd2EndBranchTest()
+        {
+            string subWorkingFolder = "PublicNonStandardRepoBranchWithConfigTest";
+            string expectedBranchInfo = "  1.0.0  1.0.0@1  1.0.0@3  br1  br1@17  br1@3* master";
+            string configFilePath = GetConfigFilePath( "PublicNonstandardLayoutRepositoryConfig.xml" );
+
+            int exitCode = RunCommand( BuildSvn2GitNetProcessStartInfo(
+                $"{PUBLIC_NON_STANDARD_LAYOUT_REPOSITORY_URL} --config-file=\"{configFilePath}\"",
+                subWorkingFolder )
+            );
+
+            Assert.Equal( 0, exitCode );
+
+            ICommandRunner commandRunner = TestHelper.CreateCommandRunner();
+
+            string actualBranchInfo = string.Empty;
+            string dummyError = string.Empty;
+            commandRunner.Run(
+                "git",
+                "branch",
+                out actualBranchInfo,
+                out dummyError,
+                Path.Combine( GetIntegrationTestsTempFolderPath(), subWorkingFolder )
+            );
+
+            Assert.Equal( 0, exitCode );
+            Assert.Equal( expectedBranchInfo, actualBranchInfo );
+        }
+
+        [Fact]
         public void PublicNonstandardLayoutRepositoryEnd2EndTagTest()
         {
             string subWorkingFolder = "PublicNonStandardRepoTagTest";
@@ -211,9 +236,31 @@ namespace Svn2GitNetX.Tests
             return exitCode;
         }
 
+        private string GetConfigFilePath( string fileName )
+        {
+            return Path.Combine( GetConfigFileDirPath(), fileName );
+        }
+
+        private string GetConfigFileDirPath()
+        {
+            return Path.Combine(
+                Directory.GetParent( Directory.GetCurrentDirectory() ) // CurrentDir is netcoreapp3.1.  GetParent is Debug
+                    .Parent // bin
+                    .Parent.FullName, // integrationtests
+                "ConfigFiles"
+            );
+        }
+
         private string GetIntegrationTestsTempFolderPath()
         {
-            return Path.Combine( Directory.GetParent( Directory.GetCurrentDirectory() ).Parent.Parent.Parent.Parent.FullName, "integrationtests" );
+            return Path.Combine(
+                Directory.GetParent( Directory.GetCurrentDirectory() ) // CurrentDir is netcoreapp3.1.  GetParent is Debug
+                    .Parent // bin
+                    .Parent // integrationtests
+                    .Parent // tests
+                    .Parent.FullName, // svn2gitnetx (root of git repo)
+                "integrationtests"
+            );
         }
 
         private string GetBinaryName()
