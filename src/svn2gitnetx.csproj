@@ -3,7 +3,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Svn2GitNetX</RootNamespace>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <Authors>Seth Hendrick, Jingyu Ma</Authors>
     <Company>Seth Hendrick, Jingyu Ma</Company>
     <Product>Svn2Git.NETX</Product>
