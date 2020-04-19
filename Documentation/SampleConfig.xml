@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    This is a sample config file to pass into the "config-file"
+    argument.  Remember, what is specified in the file OVERRIDES
+    anything passed into the command line arguments.
+
+    Anything not specified in this file will default back to the command
+    line arguments.  Anything not specified on either will
+    default to the values specified in this file.
+-->
+<svn2gitnetx>
+    <options>
+        <!--
+            Show verbose output from the program.
+            Defaulted to false
+        -->
+        <IsVerbose>false</IsVerbose>
+        <!--
+            Include metadata in git logs (git-svn-id)
+            Defaulted to false
+        -->
+        <IncludeMetaData>false</IncludeMetaData>
+        <!--
+            Accept URLs as-is without attempting to connect to a higher level directory
+            Defaulted to false
+        -->
+        <NoMinimizeUrl>false</NoMinimizeUrl>
+        <!--
+            Set this to true if the root level of the repo is
+            equivalent to the trunk and there are no tags or branches.
+            Defaulted to false
+        -->
+        <RootIsTrunk>false</RootIsTrunk>
+        <!--
+            Subpath to trunk from repository URL.
+            Defaulted to 'trunk'
+        -->
+        <SubpathToTrunk>trunk</SubpathToTrunk>
+        <!--
+            Set to true to not import anything from trunk.
+            Defaulted to false.
+        -->
+        <NoTrunk>false</NoTrunk>
+        <!--
+            Paths that contain branches.
+            If not specified, this defaults to "branches".
+        -->
+        <Branches>
+            <Branch>branches</Branch>
+        </Branches>
+        <!--
+            Set to true to not import branches.
+            Defaulted to false.
+        -->
+        <NoBranches>false</NoBranches>
+        <!--
+            Paths that contain tags.
+            If not specified, this defaults to "tags".
+        -->
+        <Tags>
+            <Tag>tags</Tag>
+        </Tags>
+        <!--
+            Set to true to not import tags.
+            Defaulted to false.
+        -->
+        <NoTags>false</NoTags>
+        <!--
+            Paths to exclude.
+            This is a regex that is used in all of the branches,
+            tags, and trunk.  So if doc is specified,
+            this will ignore paths in /branches/*/doc,
+            /trunk/doc, and /tags/*/doc.
+            Defaulted to none.
+        -->
+        <Excludes>
+            <Exclude>doc</Exclude>
+        </Excludes>
+        <!--
+            String of the SVN revisions to checkout.
+            Defaulted to all revisions.
+        -->
+        <Revision>50</Revision>
+        <!--
+            If UserNameMethod is set to "args",
+            this is Username for transports that needs it (http(s), svn).
+            If UserNameMethod is set to "env_var", this is the environment variable
+            name that contains the username, not the username itself.
+
+            UserName is defaulted to not specified (e.g. a public repo)
+            and UserNameMethod is defaulted to "args". 
+        -->
+        <UserName>user123</UserName>
+        <UserNameMethod>args</UserNameMethod>
+
+        <!--
+            If PasswordMethod is set to "args",
+            this is password for transports that needs it (http(s), svn).
+            If PasswordMethod is set to "env_var", this is the environment variable
+            name that contains the password, not the password itself.
+
+            ...Its probably best to use env_var for something like passwords.  But for
+            consistency, Password is defaulted to not specified (e.g. a public repo)
+            and PasswordMethod is defaulted to "args".
+        -->
+        <Password>password123</Password>
+        <PasswordMethod>args</PasswordMethod>
+        <!--
+            Path to file containing svn-to-git authors mapping
+            Defaulted to not-specified.
+        -->
+        <AuthorsFile>./authors.txt</AuthorsFile>
+        <!--
+            Breaks any index.lock files in the .git/svn/refs/remotes/svn/* directories.
+            Only use this if you are sure there are no other git process running in this directory.
+            Defaulted to false.
+        -->
+        <BreakLocks>false</BreakLocks>
+        <!--
+            How many attempts to try to fetch a single revision AFTER 
+            the first failure.  Set to -1 (or less) to try forever until CTRL+C is hit.
+            Defaulted to 0.
+        -->
+        <FetchAttempts>0</FetchAttempts>
+        <!--
+            If a GC error happens during fetching, ignore it.  This also deletes the gc.log file.
+            Defaulted to false
+        -->
+        <IgnoreGcErrors>false</IgnoreGcErrors>
+        <!--
+            Action to take if an SVN branch is deleted on the SVN repo.
+            If this is anything other than "nothing", SVN must be installed.
+            Options are:
+                * nothing - Do nothing, branches will remain on the local git repo until
+                            someone manually deletes them.
+                * delete_local - Deletes the equivalent local git branch,
+                                 but does not delete the remote git branch.
+                * delete_local_and_remote - Deletes the local git branch AND
+                                            the remote git branch.
+            Defaulted to "nothing".
+        -->
+        <StaleSvnBranchPurgeOption>nothing</StaleSvnBranchPurgeOption>
+        <!--
+            The remote git URL.  Used with PushWhenDone and
+            StaleSvnBranchPurgeOptions (if the option is delete_local_and_remote).
+            This doesn't need to be a URL, it could be "origin" or whatever.
+            Really, this is just the target after the "git push <target>" command.
+            If empty, nothing is specified when doing a "git push",
+            so it uses whatever the local repo is configured as.
+
+            Defaulted to not specified.
+        -->
+        <RemoteGitUrl>ssh://git@github.com/xforever1313/Chaskis.git</RemoteGitUrl>
+        <!--
+            After updating SVN, should a git push happen?
+
+            Note: Non-Interactive does not work yet.  This means git repos
+            protected by username/password need someone to type a password into.
+            Recommend pushing to ssh-only repos with a key.
+
+            Defaulted to false.
+        -->
+        <PushWhenDone>false</PushWhenDone>
+    </options>
+</svn2gitnetx>
