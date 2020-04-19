@@ -46,6 +46,9 @@ namespace Svn2GitNetX.Tests
         <StaleSvnBranchPurgeOption>nothing</StaleSvnBranchPurgeOption>
         <RemoteGitUrl>ssh://git@github.com/xforever1313/Chaskis.git</RemoteGitUrl>
         <PushWhenDone>false</PushWhenDone>
+        <IgnorePaths>
+            <IgnorePath>places</IgnorePath>
+        </IgnorePaths>
     </options>
 </svn2gitnetx>
 ";
@@ -77,6 +80,7 @@ namespace Svn2GitNetX.Tests
             Assert.Equal( StaleSvnBranchPurgeOptions.nothing, actualOptions.StaleSvnBranchPurgeOption );
             Assert.Equal( "ssh://git@github.com/xforever1313/Chaskis.git", actualOptions.RemoteGitUrl );
             Assert.False( actualOptions.PushWhenDone );
+            Assert.Equal( new List<string> { "places" }, actualOptions.IgnorePaths );
         }
 
         [Fact]
@@ -119,6 +123,9 @@ namespace Svn2GitNetX.Tests
         <StaleSvnBranchPurgeOption>delete_local</StaleSvnBranchPurgeOption>
         <RemoteGitUrl>ssh://git@github.com/xforever1313/svn2gitnetx.git</RemoteGitUrl>
         <PushWhenDone>true</PushWhenDone>
+        <IgnorePaths>
+            <IgnorePath>\/doc</IgnorePath>
+        </IgnorePaths>
     </options>
 </svn2gitnetx>
 ";
@@ -150,6 +157,7 @@ namespace Svn2GitNetX.Tests
             Assert.Equal( StaleSvnBranchPurgeOptions.delete_local, actualOptions.StaleSvnBranchPurgeOption );
             Assert.Equal( "ssh://git@github.com/xforever1313/svn2gitnetx.git", actualOptions.RemoteGitUrl );
             Assert.True( actualOptions.PushWhenDone );
+            Assert.Equal( new List<string> { @"\/doc" }, actualOptions.IgnorePaths );
         }
 
         [Fact]
@@ -191,6 +199,7 @@ namespace Svn2GitNetX.Tests
             Assert.Equal( StaleSvnBranchPurgeOptions.nothing, actualOptions.StaleSvnBranchPurgeOption );
             Assert.Null( actualOptions.RemoteGitUrl );
             Assert.False( actualOptions.PushWhenDone );
+            Assert.Null( actualOptions.IgnorePaths );
         }
 
         [Fact]
@@ -207,6 +216,8 @@ namespace Svn2GitNetX.Tests
         </Tags>
         <Excludes>
         </Excludes>
+        <IgnorePaths>
+        </IgnorePaths>
     </options>
 </svn2gitnetx>
 ";
@@ -238,6 +249,7 @@ namespace Svn2GitNetX.Tests
             Assert.Equal( StaleSvnBranchPurgeOptions.nothing, actualOptions.StaleSvnBranchPurgeOption );
             Assert.Null( actualOptions.RemoteGitUrl );
             Assert.False( actualOptions.PushWhenDone );
+            Assert.Null( actualOptions.IgnorePaths );
         }
     }
 }

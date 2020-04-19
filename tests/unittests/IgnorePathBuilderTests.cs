@@ -19,8 +19,8 @@ namespace Svn2GitNetX.Tests
             // Act
             string regexStr = IgnorePathBuilder.BuildIgnorePathRegex(
                 options,
-                null,
-                null
+                new List<string>(),
+                new List<string>()
             );
 
             // Asset
@@ -39,8 +39,8 @@ namespace Svn2GitNetX.Tests
             // Act
             string regexStr = IgnorePathBuilder.BuildIgnorePathRegex(
                 options,
-                null,
-                null
+                new List<string>(),
+                new List<string>()
             );
 
             // Asset

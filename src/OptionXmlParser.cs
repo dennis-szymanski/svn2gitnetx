@@ -42,6 +42,8 @@ namespace Svn2GitNetX
         internal const string StaleSvnBranchPurgeOptionElement = "StaleSvnBranchPurgeOption";
         internal const string RemoteGitUrlElement = "RemoteGitUrl";
         internal const string PushWhenDoneElement = "PushWhenDone";
+        internal const string IgnorePathsElement = "IgnorePaths";
+        internal const string IgnorePathElement = "IgnorePath";
 
         // ---------------- Functions ----------------
 
@@ -95,6 +97,7 @@ namespace Svn2GitNetX
             List<string> branches = null;
             List<string> tags = null;
             List<string> excludes = null;
+            List<string> ignorePaths = null;
 
             void ConvertToBool( XElement element, Action<bool> setAction )
             {
@@ -260,6 +263,21 @@ namespace Svn2GitNetX
                 {
                     ConvertToBool( option, ( o ) => opt.PushWhenDone = o );
                 }
+                else if( optionName.EqualsIgnoreCase( IgnorePathsElement ) )
+                {
+                    if( ignorePaths == null )
+                    {
+                        ignorePaths = new List<string>();
+                    }
+
+                    foreach( XElement ignorePath in option.Descendants() )
+                    {
+                        if( ignorePath.Name.LocalName.EqualsIgnoreCase( IgnorePathElement ) )
+                        {
+                            ignorePaths.Add( ignorePath.Value );
+                        }
+                    }
+                }
             } // End foreach
 
             if( errors.Count != 0 )
@@ -288,6 +306,11 @@ namespace Svn2GitNetX
             if( ( excludes != null ) && ( excludes.Count > 0 ) )
             {
                 opt.Exclude = excludes;
+            }
+
+            if( ( ignorePaths != null ) && ( ignorePaths.Count > 0 ) )
+            {
+                opt.IgnorePaths = ignorePaths;
             }
         }
     }

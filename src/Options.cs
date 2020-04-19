@@ -175,7 +175,7 @@ namespace Svn2GitNetX
 
         [Option(
             "exclude",
-            HelpText = "Specify a Perl regular expression to filter paths when fetching; can take in multiple values via '--exclude exclude1 exclude2'"
+            HelpText = "Specify a Perl regular expression to filter paths when fetching; can take in multiple values via '--exclude exclude1 exclude2'.  This regex gets applied to each branch, tag, and trunk."
         )]
         public IEnumerable<string> Exclude
         {
@@ -324,6 +324,16 @@ namespace Svn2GitNetX
             HelpText = "Should we do a 'git push' when done?  Note, interactive pushing (requiring username/password) is not supported yet."
         )]
         public bool PushWhenDone
+        {
+            get;
+            set;
+        }
+
+        [Option(
+            "ignore-paths",
+            HelpText = "Specify a Perl regular expression to filter paths when fetching; can take in multiple values via '--ignore-path path1 path2'.  Unlike Exclude, this is one path, not a glob of trunk, branches, and tags."
+        )]
+        public IEnumerable<string> IgnorePaths
         {
             get;
             set;

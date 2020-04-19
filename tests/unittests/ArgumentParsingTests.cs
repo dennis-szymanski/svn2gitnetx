@@ -231,9 +231,47 @@ namespace Svn2GitNetX.Tests
             Assert.Equal( "are you", opt.Tags.Last() );
         }
 
-// This test does not work.  It seems like its a limitation
-// with the CommandLineParser Library
-// Just need to specify the exclude and tag arguments once.
+        [Fact]
+        public void SingleIgnorePaths()
+        {
+            string[] args = new string[]
+            {
+                "--ignore-paths",
+                "hello"
+            };
+
+            // Act
+            Options opt = ParseArgs( args );
+
+            // Assert
+            Assert.NotNull( opt.IgnorePaths );
+            Assert.Single( opt.IgnorePaths );
+            Assert.Equal( "hello", opt.IgnorePaths.First() );
+        }
+
+        [Fact]
+        public void MultipleIgnorePaths()
+        {
+            string[] args = new string[]
+            {
+                "--ignore-paths",
+                "hello",
+                "world"
+            };
+
+            // Act
+            Options opt = ParseArgs( args );
+
+            // Assert
+            Assert.NotNull( opt.IgnorePaths );
+            Assert.Equal( 2, opt.IgnorePaths.Count() );
+            Assert.Equal( "hello", opt.IgnorePaths.First() );
+            Assert.Equal( "world", opt.IgnorePaths.Last() );
+        }
+
+        // This test does not work.  It seems like its a limitation
+        // with the CommandLineParser Library
+        // Just need to specify the exclude and tag arguments once.
 #if FALSE
         [Fact]
         public void MultipleExcludeAndTagOutOfOrderTest()
