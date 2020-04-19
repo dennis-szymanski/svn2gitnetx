@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Xunit;
 
 namespace Svn2GitNetX.Tests
@@ -55,8 +53,8 @@ namespace Svn2GitNetX.Tests
             {
                 IgnorePaths = new List<string>
                 {
-                    @"\/doc",
-                    @"\/somewhere"
+                    @"doc",
+                    @"somewhere"
                 }
             };
 
@@ -69,7 +67,7 @@ namespace Svn2GitNetX.Tests
 
             // Assert
             Assert.Equal(
-                @"^(?:\/doc|\/somewhere)",
+                @"^(?:doc|somewhere)",
                 regexStr
             );
         }
@@ -97,8 +95,8 @@ namespace Svn2GitNetX.Tests
                 },
                 IgnorePaths = new List<string>
                 {
-                    @"\/doc",
-                    @"\/somewhere"
+                    @"doc",
+                    @"somewhere"
                 }
             };
 
@@ -111,7 +109,7 @@ namespace Svn2GitNetX.Tests
 
             // Assert
             Assert.Equal(
-                @"^(?:(\/doc|\/somewhere)|((subpath[\/]|tag1[\/][^\/]+[\/]|tag2[\/][^\/]+[\/])(?:ex1|ex2)))",
+                @"^(?:(doc|somewhere)|((subpath[\/]|tag1[\/][^\/]+[\/]|tag2[\/][^\/]+[\/])(?:ex1|ex2)))",
                 regexStr
             );
         }

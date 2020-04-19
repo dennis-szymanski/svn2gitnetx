@@ -178,7 +178,7 @@ namespace Svn2GitNetX.Tests
 
         [Fact]
         public void PublicClassicLayoutRepositoryEnd2EndRebaseTest()
-        {
+        { 
             string subWorkingFolder = "PublicRepoRebaseTest";
             int exitCode = RunCommand( BuildSvn2GitNetProcessStartInfo( $"{PUBLIC_CLASSIC_LAYOUT_REPOSITORY_URL} -v", subWorkingFolder ) );
 
@@ -187,6 +187,39 @@ namespace Svn2GitNetX.Tests
             exitCode = RunCommand( BuildSvn2GitNetProcessStartInfo( "--rebase -v", subWorkingFolder ) );
 
             Assert.Equal( 0, exitCode );
+        }
+
+        [Fact]
+        public void PublicClassicLayoutRepositoryIgnoreFilesOnTrunkConfigTest()
+        {
+            string subWorkingFolder = "PublicClassicLayoutRepositoryIgnoreFilesOnTrunkConfigTest";
+
+            // Should only have master since /branches are ignored in the config file.
+            string expectedBranchInfo = "  dev  dev@1* master";
+            string configFilePath = GetConfigFilePath( "PublicClassicLayoutRepositoryIgnoreTrunkTxtFiles.xml" );
+            int exitCode = RunCommand(
+                BuildSvn2GitNetProcessStartInfo(
+                    $"{PUBLIC_CLASSIC_LAYOUT_REPOSITORY_URL} --config-file=\"{configFilePath}\"",
+                    subWorkingFolder
+                )
+            );
+
+            Assert.Equal( 0, exitCode );
+
+            ICommandRunner commandRunner = TestHelper.CreateCommandRunner();
+
+            string gitDir = Path.Combine( GetIntegrationTestsTempFolderPath(), subWorkingFolder );
+
+            string actualBranchInfo = string.Empty;
+            string dummyError = string.Empty;
+            commandRunner.Run( "git", "branch", out actualBranchInfo, out dummyError, gitDir );
+
+            Assert.Equal( 0, exitCode );
+            Assert.Equal( expectedBranchInfo, actualBranchInfo );
+
+            // Ensure dummy files do not exist since they were ignored.
+            Assert.False( File.Exists( Path.Combine( gitDir, "Dummy.txt" ) ) );
+            Assert.False( File.Exists( Path.Combine( gitDir, "Dummy2.txt" ) ) );
         }
 
         private ProcessStartInfo BuildSvn2GitNetProcessStartInfo( string arguments, string subWorkingFolder = "" )
