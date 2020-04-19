@@ -162,37 +162,15 @@ namespace Svn2GitNetX
                 arguments.AppendFormat( "-r {0}:{1} ", start, end );
             }
 
-            if( ( Options.Exclude != null ) && Options.Exclude.Any() )
+            string ignorePathRegex = IgnorePathBuilder.BuildIgnorePathRegex(
+                Options,
+                branches,
+                tags
+            );
+
+            if( string.IsNullOrWhiteSpace( ignorePathRegex ) == false )
             {
-                // Add exclude paths to the command line. Some versions of git support
-                // this for fetch only, later also for init.
-                List<string> regex = new List<string>();
-                if( Options.RootIsTrunk == false )
-                {
-                    if( string.IsNullOrWhiteSpace( Options.SubpathToTrunk ) == false )
-                    {
-                        regex.Add( Options.SubpathToTrunk + @"[\/]" );
-                    }
-
-                    if( ( Options.NoTags == false ) && tags.Count > 0 )
-                    {
-                        foreach( var t in tags )
-                        {
-                            regex.Add( t + @"[\/][^\/]+[\/]" );
-                        }
-                    }
-
-                    if( ( Options.NoBranches == false ) && branches.Count > 0 )
-                    {
-                        foreach( var b in branches )
-                        {
-                            regex.Add( b + @"[\/][^\/]+[\/]" );
-                        }
-                    }
-                }
-
-                string regexStr = "^(?:" + string.Join( "|", regex ) + ")(?:" + string.Join( "|", Options.Exclude ) + ")";
-                arguments.AppendFormat( "--ignore-paths=\"{0}\" ", regexStr );
+                arguments.AppendFormat( "--ignore-paths=\"{0}\" ", ignorePathRegex );
             }
 
             //---- Fetch ----
