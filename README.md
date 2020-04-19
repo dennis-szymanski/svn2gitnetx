@@ -11,9 +11,12 @@
 * Hitting CTRL+C now kills all child processes instead of orphaning them.
 * Can break SVN Locks via the "--breaklocks" argument on the command line.
 * Uses dotnet core 3.1 instead of 2.0.
-* Allows one to ignore git gc errors and auto-deletes gc.log.
-* Allows one to specify the number of times to attempt to fetch before giving up.  This count is reset whenever the process makes progress and downloads a new SVN revision.
+* Allows one to optionally ignore git gc errors and auto-deletes gc.log.
+* Allows one to optionally specify the number of times to attempt to fetch before giving up.  This count is reset whenever the process makes progress and downloads a new SVN revision.
 * Allows one to pass in the username and password through environment variables instead of through command line arguments.
+* Allows one to optionally delete stale SVN branches from the local git repo, or the local and remote git repo.  This requires the SVN to be installed.
+* Allows one to optionally push to the git repo when done checking out from SVN.
+* Can read in an XML-based configuration file instead of passing in several command line arguments.  See the "SampleConfig.xml" file in the Documentation folder of this repo for more information.
 
 ## Examples
 
@@ -212,60 +215,70 @@ svn2gitnetx http://svn.yoursite.com/path/to/repo --verbose
 
 ```txt
 PS C:\> svn2gitnetx --help
-svn2gitnetx 1.0.0
+svn2gitnetx 1.1.0
 Copyright (C) 2020 Seth Hendrick, Jingyu Ma
 
-  -v, --verbose         (Default: false) Be verbose in logging -- useful for debugging issues
+  -v, --verbose                (Default: false) Be verbose in logging -- useful for debugging issues
 
-  -m, --metadata        (Default: false) Include metadata in git logs (git-svn-id)
+  -m, --metadata               (Default: false) Include metadata in git logs (git-svn-id)
 
-  --no-minimize-url     Accept URLs as-is without attempting to connect to a higher level directory
+  --no-minimize-url            Accept URLs as-is without attempting to connect to a higher level directory
 
-  --rootistrunk         Use this if the root level of the repo is equivalent to the trunk and there are no tags or branches
+  --rootistrunk                Use this if the root level of the repo is equivalent to the trunk and there are no tags or branches
 
-  --trunk               (Default: trunk) Subpath to trunk from repository URL (default: trunk)
+  --trunk                      (Default: trunk) Subpath to trunk from repository URL (default: trunk)
 
-  --notrunk             Do not import anything from trunk
+  --notrunk                    Do not import anything from trunk
 
-  --branches            Subpath to branches from repository URL (default: branches); can take in multiple values via '--branches banch1 branch2'
+  --branches                   Subpath to branches from repository URL (default: branches); can take in multiple values via '--branches banch1 branch2'
 
-  --nobranches          Do not try to import any branches
+  --nobranches                 Do not try to import any branches
 
-  --tags                Subpath to tags from repository URL (default: tags); can take in multiple values via '--tags tag1 tag2'
+  --tags                       Subpath to tags from repository URL (default: tags); can take in multiple values via '--tags tag1 tag2'
 
-  --notags              Do not try to import any tags
+  --notags                     Do not try to import any tags
 
-  --exclude             Specify a Perl regular expression to filter paths when fetching; can take in multiple values via '--exclude exclude1 exclude2'
+  --exclude                    Specify a Perl regular expression to filter paths when fetching; can take in multiple values via '--exclude exclude1 exclude2'
 
-  --revision            Start importing from SVN revision START_REV; optionally end at END_REV
+  --revision                   Start importing from SVN revision START_REV; optionally end at END_REV
 
-  --username            Username for transports that needs it (http(s), svn)
+  --username                   Username for transports that needs it (http(s), svn)
 
-  --username-method     (Default: args) How to get the user name.  'args' for using the value passed into the username argument.  'env_var' for using the value stored
-                        in the environment variable specified in the username argument.
+  --username-method            (Default: args) How to get the user name.  'args' for using the value passed into the username argument.  'env_var' for using the value
+                               stored in the environment variable specified in the username argument.
 
-  --password            Password for transports that need it (http(s), svn)
+  --password                   Password for transports that need it (http(s), svn)
 
-  --password-method     (Default: args) How to get the password.  'args' for using the value passed into the password argument (not recommended).  'env_var' for using
-                        the value stored in the environment variable specified in the password argument.
+  --password-method            (Default: args) How to get the password.  'args' for using the value passed into the password argument (not recommended).  'env_var' for
+                               using the value stored in the environment variable specified in the password argument.
 
-  --rebase              Instead of cloning a new project, rebase an existing one against SVN
+  --rebase                     Instead of cloning a new project, rebase an existing one against SVN
 
-  --rebasebranch        Rebase specified branch
+  --rebasebranch               Rebase specified branch
 
-  --authors             Path to file containing svn-to-git authors mapping
+  --authors                    Path to file containing svn-to-git authors mapping
 
-  --break-locks         (Default: false) Breaks any index.lock files in the .git/svn/refs/remotes/svn/* directories.  Only use this if you are sure there are no git
-                        process running in this directory.
+  --break-locks                (Default: false) Breaks any index.lock files in the .git/svn/refs/remotes/svn/* directories.  Only use this if you are sure there are no
+                               git process running in this directory.
 
-  --fetch-attempts      (Default: 0) How many attempts to try to fetch a single revision AFTER the first failure.  Set to -1 (or less) to try forever until CTRL+C is
-                        hit.
+  --fetch-attempts             (Default: 0) How many attempts to try to fetch a single revision AFTER the first failure.  Set to -1 (or less) to try forever until
+                               CTRL+C is hit.
 
-  --ignore-gc-errors    (Default: false) If a GC error happens during fetching, ignore it.  This also deletes the gc.log file.
+  --ignore-gc-errors           (Default: false) If a GC error happens during fetching, ignore it.  This also deletes the gc.log file.
 
-  --help                Display this help screen.
+  --stale-svn-branch-action    (Default: nothing) What to do with stale SVN branches (branches deleted from SVN).  This requires SVN to be installed.  nothing to leave
+                               them alone.  delete_local to delete them from the local GIT repo.  delete_local_and_remote to delete from the local GIT repo and the
+                               remote GIT repo.
 
-  --version             Display version information.
+  --remote-git-url             URL to the remote git repo.  Useful if pushing to it or deleting remote branches.  Leave blank to only send the 'git push' command
+
+  --push-when-done             Should we do a 'git push' when done?  Note, interactive (requireing username/password) is not supported yet.
+
+  --config-file                Path to a config file that contains the options.  Note: the config file will *overwrite* any arguments from the command line.
+
+  --help                       Display this help screen.
+
+  --version                    Display version information.
 ```
 
 ### Contribution
