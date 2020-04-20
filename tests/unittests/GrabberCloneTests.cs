@@ -40,6 +40,38 @@ namespace Svn2GitNetX.Tests
         }
 
         [Fact]
+        public void CloneUserNameAndPasswordAreEmptyStrings()
+        {
+            // Prepare
+            var mock = new Mock<ICommandRunner>();
+            Options options = new Options()
+            {
+                UserName = "userName",
+                UserNameMethod = CredentialsMethod.empty_string,
+                Password = "password",
+                PasswordMethod = CredentialsMethod.empty_string,
+                IncludeMetaData = false,
+                NoMinimizeUrl = true,
+                RootIsTrunk = true
+            };
+
+            string expectedArguments = $"svn init --prefix=svn/ --username=\"\" --no-metadata --no-minimize-url --trunk=\"/\" {_testSvnUrl}";
+
+            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) ).Returns( 0 );
+
+            mock.Setup( f => f.RunGitSvnInteractiveCommand( It.IsAny<string>(), It.IsAny<string>() ) )
+                .Returns( 0 );
+
+            IGrabber grabber = CreateGrabber( options, mock.Object );
+
+            // Act
+            grabber.Clone();
+
+            // Assert
+            mock.Verify( f => f.RunGitSvnInteractiveCommand( expectedArguments, string.Empty ), Times.Once() );
+        }
+
+        [Fact]
         public void CloneWhenRootIsTrunkWithAllAndUserNamePasswordAreEnvParametersTest()
         {
             const string envVarName = "svn2gitnetxtest_user";

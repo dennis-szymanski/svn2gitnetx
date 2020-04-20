@@ -101,6 +101,34 @@ namespace Svn2GitNetX.Tests
         }
 
         [Fact]
+        public void UserNameThroughEmptyString()
+        {
+            const string expectedName = "myself";
+            const string expectedPassword = "password123";
+
+            string[] args = new string[]
+            {
+                $"--username={expectedName}",
+                "--username-method=empty_string",
+                $"--password={expectedPassword}",
+                "--password-method=empty_string"
+            };
+
+            // Act
+            Options opt = ParseArgs( args );
+
+            // Assert
+
+            // If empty string is specified, we will ignore the username/password
+            // parameter.
+            Assert.Equal( expectedName, opt.UserName );
+            Assert.Equal( string.Empty, opt.GetUserName() );
+
+            Assert.Equal( expectedPassword, opt.Password );
+            Assert.Equal( string.Empty, opt.GetPassword() );
+        }
+
+        [Fact]
         public void UserNamePasswordThroughEnvVarTest()
         {
             // Preparte

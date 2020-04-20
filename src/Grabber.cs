@@ -71,7 +71,7 @@ namespace Svn2GitNetX
         {
             StringBuilder arguments = new StringBuilder( "svn init --prefix=svn/ " );
 
-            if( string.IsNullOrWhiteSpace( Options.GetUserName() ) == false )
+            if( Options.GetUserName() != null )
             {
                 arguments.AppendFormat( "--username=\"{0}\" ", Options.GetUserName() );
             }

@@ -84,8 +84,12 @@
         <!--
             If UserNameMethod is set to "args",
             this is Username for transports that needs it (http(s), svn).
+
             If UserNameMethod is set to "env_var", this is the environment variable
             name that contains the username, not the username itself.
+
+            If UserNameMethod is set to "empty_string", then we will pass in
+            username="" to git-svn.  This will ignore the value in the UserName setting.
 
             UserName is defaulted to not specified (e.g. a public repo)
             and UserNameMethod is defaulted to "args". 
@@ -96,8 +100,13 @@
         <!--
             If PasswordMethod is set to "args",
             this is password for transports that needs it (http(s), svn).
+            
             If PasswordMethod is set to "env_var", this is the environment variable
             name that contains the password, not the password itself.
+
+            If Password is set to "empty_string", then we will send a new line
+            right away when prompted for the password.  This will ignore the value
+            specified in Password.
 
             ...Its probably best to use env_var for something like passwords.  But for
             consistency, Password is defaulted to not specified (e.g. a public repo)

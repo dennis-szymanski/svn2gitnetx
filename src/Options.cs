@@ -15,7 +15,12 @@ namespace Svn2GitNetX
         /// <summary>
         /// Get the credentials from an environment variable.
         /// </summary>
-        env_var
+        env_var,
+
+        /// <summary>
+        /// The credentials are an empty string (e.g. default password is empty).
+        /// </summary>
+        empty_string
     }
 
     public enum StaleSvnBranchPurgeOptions
@@ -205,7 +210,9 @@ namespace Svn2GitNetX
             HelpText = "How to get the user name.  '" + 
                        nameof( CredentialsMethod.args ) + 
                        "' for using the value passed into the username argument.  '" +
-                       nameof( CredentialsMethod.env_var ) + "' for using the value stored in the environment variable specified in the username argument.",
+                       nameof( CredentialsMethod.env_var ) + "' for using the value stored in the environment variable specified in the --username argument.  " +
+                       "'" + nameof( CredentialsMethod.empty_string ) + "' " +
+                       "if the username is an empty string (unlikely though).  If '" + nameof( CredentialsMethod.empty_string ) + "' is specified, the value in --username is ignored.",
             Default = CredentialsMethod.args
         )]
         public CredentialsMethod UserNameMethod
@@ -226,7 +233,9 @@ namespace Svn2GitNetX
             HelpText = "How to get the password.  '" + 
                        nameof( CredentialsMethod.args ) + 
                        "' for using the value passed into the password argument (not recommended).  '" +
-                       nameof( CredentialsMethod.env_var ) + "' for using the value stored in the environment variable specified in the password argument.",
+                       nameof( CredentialsMethod.env_var ) + "' for using the value stored in the environment variable specified in the --password argument.  " +
+                       "'" + nameof( CredentialsMethod.empty_string ) + "' " +
+                       "if the password is an empty string.  If '" + nameof( CredentialsMethod.empty_string ) + "' is specified, the value in --password is ignored.",
             Default = CredentialsMethod.args
         )]
         public CredentialsMethod PasswordMethod
@@ -357,6 +366,10 @@ namespace Svn2GitNetX
             {
                 return Environment.GetEnvironmentVariable( this.UserName );
             }
+            else if( this.UserNameMethod == CredentialsMethod.empty_string )
+            {
+                return string.Empty;
+            }
             else
             {
                 return this.UserName;
@@ -368,6 +381,10 @@ namespace Svn2GitNetX
             if( this.PasswordMethod == CredentialsMethod.env_var )
             {
                 return Environment.GetEnvironmentVariable( this.Password );
+            }
+            else if( this.PasswordMethod == CredentialsMethod.empty_string )
+            {
+                return string.Empty;
             }
             else
             {

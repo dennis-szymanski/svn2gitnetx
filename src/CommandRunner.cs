@@ -188,11 +188,13 @@ namespace Svn2GitNetX
                             messageType = ReadAndDisplayCommandProcessOutput( commandProcess );
                             if( messageType == OutputMessageType.RequestInputPassword )
                             {
-                                if( string.IsNullOrEmpty( password ) )
+                                if( password == null )
                                 {
+                                    password = string.Empty;
                                     while( true )
                                     {
                                         var key = System.Console.ReadKey( true );
+
                                         if( key.Key == ConsoleKey.Enter )
                                         {
                                             break;
