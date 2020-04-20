@@ -1,6 +1,8 @@
 #addin nuget:?package=SharpZipLib&Version=1.2.0
 #addin nuget:?package=Cake.Compression&Version=0.2.4
 
+using System.Reflection;
+
 const string buildTarget = "build";
 const string buildDockerTarget = "build_docker";
 const string buildArchDockerTarget = "build_arch_docker";
@@ -14,6 +16,7 @@ const string publishAllTarget = "publish";
 const string packageWindowsTarget = "package_windows";
 const string packageUnixTarget = "package_unix";
 const string packageTarget = "package";
+const string pushDockerTarget = "push_docker";
 
 string target = Argument( "target", buildTarget );
 bool skipPublish = Argument<bool>( "skip_publish", false );
@@ -340,6 +343,64 @@ Task( buildArchDockerTarget )
             );
         } 
  }
+
+Task( pushDockerTarget )
+.Does(
+    () =>
+    {
+        AssemblyName dll = AssemblyName.GetAssemblyName(
+            "./dist/docker/svn2gitnetx.dll"
+        );
+        Version assemblyVersion = dll.Version;
+
+        Information( assemblyVersion.ToString( 3 ) );
+
+        TagDocker( "svn2gitnetx", assemblyVersion );
+        TagDocker( "svn2gitnetx_arch", assemblyVersion );
+
+        PushDocker( "svn2gitnetx", assemblyVersion );
+        PushDocker( "svn2gitnetx_arch", assemblyVersion );
+    }
+)
+.Description( "Pushes docker images to dockerhub." )
+.IsDependentOn( buildDockerTarget )
+.IsDependentOn( buildArchDockerTarget );
+
+private void TagDocker( string tagName, Version vers )
+{
+    string arguments = $"tag {tagName}:latest xforever1313/{tagName}:{vers.ToString( 3 )}";
+
+    ProcessArgumentBuilder argumentsBuilder = ProcessArgumentBuilder.FromString( arguments );
+    ProcessSettings settings = new ProcessSettings
+    {
+        Arguments = argumentsBuilder
+    };
+    int exitCode = StartProcess( "docker", settings );
+    if( exitCode != 0 )
+    {
+        throw new ApplicationException(
+            "Error when running docker.  Got error: " + exitCode
+        );
+    } 
+}
+
+private void PushDocker( string tagName, Version vers )
+{
+    string arguments = $"push xforever1313/{tagName}:{vers.ToString( 3 )}";
+
+    ProcessArgumentBuilder argumentsBuilder = ProcessArgumentBuilder.FromString( arguments );
+    ProcessSettings settings = new ProcessSettings
+    {
+        Arguments = argumentsBuilder
+    };
+    int exitCode = StartProcess( "docker", settings );
+    if( exitCode != 0 )
+    {
+        throw new ApplicationException(
+            "Error when running docker.  Got error: " + exitCode
+        );
+    } 
+}
 
 // ---------------- All ----------------
 
