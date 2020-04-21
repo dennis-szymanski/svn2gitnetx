@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Threading;
 using Microsoft.Extensions.Logging;
@@ -185,7 +186,7 @@ namespace Svn2GitNetX
                             // Stop if we want to cancel.
                             this._cancelToken.ThrowIfCancellationRequested();
 
-                            messageType = ReadAndDisplayCommandProcessOutput( commandProcess );
+                            messageType = ReadAndDisplayInteractiveCommandProcessOutput( commandProcess.StandardError );
                             if( messageType == OutputMessageType.RequestInputPassword )
                             {
                                 if( password == null )
@@ -247,18 +248,18 @@ namespace Svn2GitNetX
             }
         }
 
-        private OutputMessageType ReadAndDisplayCommandProcessOutput( Process commandProcess )
+        public static OutputMessageType ReadAndDisplayInteractiveCommandProcessOutput( StreamReader standardError )
         {
             int lastChr = 0;
 
             string output = "";
             OutputMessageType messageType = OutputMessageType.None;
 
-            while( ( messageType == OutputMessageType.None || commandProcess.StandardError.Peek() != -1 )
-                    && ( lastChr = commandProcess.StandardError.Read() ) > 0 )
+            while( ( messageType == OutputMessageType.None || standardError.Peek() != -1 )
+                    && ( lastChr = standardError.Read() ) > 0 )
             {
                 string outputChr = null;
-                outputChr += commandProcess.StandardError.CurrentEncoding.GetString( new byte[] { (byte)lastChr } );
+                outputChr += standardError.CurrentEncoding.GetString( new byte[] { (byte)lastChr } );
                 output += outputChr;
 
                 if( messageType == OutputMessageType.None )
