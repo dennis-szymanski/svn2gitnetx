@@ -8,6 +8,7 @@ RUN pacman -Syu --noconfirm
 RUN pacman -S dotnet-runtime --noconfirm
 RUN pacman -S git --noconfirm
 RUN pacman -S subversion --noconfirm
+RUN pacman -S perl-term-readkey --noconfirm
 
 # Clear cache now that everything is installed
 RUN pacman -Sc --noconfirm
