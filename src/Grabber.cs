@@ -192,24 +192,40 @@ namespace Svn2GitNetX
             int currentAttempt = 0;
             do
             {
-                int exitCode = CommandRunner.Run( "git", arguments.ToString().Trim(), ParseRevision, null, null );
-                if( exitCode == 0 )
+                try
                 {
-                    Log( "Fetch Successful!" );
-                    success = true;
-                    break;
+                    int exitCode = CommandRunner.Run(
+                        "git",
+                        arguments.ToString().Trim(),
+                        ParseRevision,
+                        null,
+                        null
+                    );
+
+                    if( exitCode == 0 )
+                    {
+                        Log( "Fetch Successful!" );
+                        success = true;
+                        break;
+                    }
+                    else if( lastRevision != currentRevision )
+                    {
+                        Log( "Made Progress, will not increment attempt" );
+                        lastRevision = currentRevision;
+                        // We made progress! Reset our current attempts.
+                        currentAttempt = 0;
+                    }
+                    else
+                    {
+                        ++currentAttempt;
+                        LogWarning( "No progress made, attempt #" + currentAttempt + " was a failure" );
+                    }
                 }
-                else if( lastRevision != currentRevision )
+                catch( TimeoutException e )
                 {
-                    Log( "Made Progress, will not increment attempt" );
-                    lastRevision = currentRevision;
-                    // We made progress! Reset our current attempts.
-                    currentAttempt = 0;
-                }
-                else
-                {
+                    LogWarning( e.Message );
                     ++currentAttempt;
-                    LogWarning( "No progress made, attempt #" + currentAttempt + " was a failure" );
+                    LogWarning( "Attempt #" + currentAttempt + " was a failure" );
                 }
 
                 this._gcIgnorer.DeleteGcLogIfEnabled();
@@ -218,7 +234,9 @@ namespace Svn2GitNetX
 
             if( success == false )
             {
-                throw new MigrateException( $"Fail to execute command \"git {arguments.ToString()}\". Run with -v or --verbose for details." );
+                throw new MigrateException(
+                    $"Fail to execute command \"git {arguments.ToString()}\". Run with -v or --verbose for details."
+                );
             }
         }
 

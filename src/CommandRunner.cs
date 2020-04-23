@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace Svn2GitNetX
@@ -61,7 +62,32 @@ namespace Svn2GitNetX
             return exitCode;
         }
 
-        public int Run( string cmd, string arguments, Action<string> onStandardOutput, Action<string> onStandardError, string workingDirectory )
+        public int Run(
+            string cmd,
+            string arguments,
+            Action<string> onStandardOutput,
+            Action<string> onStandardError,
+            string workingDirectory
+        )
+        {
+            return Run(
+                cmd,
+                arguments,
+                onStandardOutput,
+                onStandardError,
+                workingDirectory,
+                Timeout.InfiniteTimeSpan
+            );
+        }
+
+        public int Run(
+            string cmd,
+            string arguments,
+            Action<string> onStandardOutput,
+            Action<string> onStandardError,
+            string workingDirectory,
+            TimeSpan watchDogTimeout
+        )
         {
             Log( $"Running command: {cmd} {arguments.ToString()}" );
 
@@ -80,7 +106,7 @@ namespace Svn2GitNetX
                 startInfo.WorkingDirectory = workingDirectory;
             }
 
-            using( ManualResetEventSlim exitedEvent = new ManualResetEventSlim( false ) )
+            using( ManualResetEventSlim progressMadeEvent = new ManualResetEventSlim( false ) )
             {
                 using( Process commandProcess = new Process() )
                 {
@@ -93,6 +119,7 @@ namespace Svn2GitNetX
                             return;
                         }
 
+                        progressMadeEvent.Set();
                         Console.WriteLine( e.Data );
                         onStandardOutput?.Invoke( e.Data );
                     };
@@ -104,15 +131,31 @@ namespace Svn2GitNetX
                             return;
                         }
 
+                        progressMadeEvent.Set();
                         Console.Error.WriteLine( e.Data );
                         onStandardError?.Invoke( e.Data );
                     };
+
+                    bool keepGoing = true;
+                    object keepGoingLock = new object();
+
+                    bool GetKeepGoing()
+                    {
+                        lock( keepGoingLock )
+                        {
+                            return keepGoing;
+                        }
+                    }
 
                     commandProcess.EnableRaisingEvents = true;
                     commandProcess.Exited += ( s, e ) =>
                     {
                         Log( $"Process '{startInfo.FileName} {startInfo.Arguments}' exited" );
-                        exitedEvent.Set();
+                        lock( keepGoingLock )
+                        {
+                            keepGoing = false;
+                        }
+                        progressMadeEvent.Set();
                     };
 
                     int exitCode = -1;
@@ -122,7 +165,19 @@ namespace Svn2GitNetX
                         commandProcess.BeginOutputReadLine();
                         commandProcess.BeginErrorReadLine();
 
-                        exitedEvent.Wait( this._cancelToken );
+                        while( GetKeepGoing() )
+                        {
+                            if( progressMadeEvent.Wait( watchDogTimeout, this._cancelToken ) == false )
+                            {
+                                throw new TimeoutException(
+                                    $"It has been more than {watchDogTimeout.TotalSeconds} since we got an update from the Process.  Possible broken Pipe.  Killing process"
+                                );
+                            }
+                            progressMadeEvent.Reset();
+
+                            // So we don't eat our CPU, do a delay.
+                            Task.Delay( 500, this._cancelToken );
+                        }
 
                         commandProcess.WaitForExit();
                     }
@@ -133,6 +188,12 @@ namespace Svn2GitNetX
                     catch( OperationCanceledException )
                     {
                         Log( "CTRL+C Received" );
+                        commandProcess.Kill( true );
+                        commandProcess.WaitForExit();
+                        throw;
+                    }
+                    catch( TimeoutException )
+                    {
                         commandProcess.Kill( true );
                         commandProcess.WaitForExit();
                         throw;
@@ -195,6 +256,8 @@ namespace Svn2GitNetX
                                     while( true )
                                     {
                                         var key = System.Console.ReadKey( true );
+
+                                        this._cancelToken.ThrowIfCancellationRequested();
 
                                         if( key.Key == ConsoleKey.Enter )
                                         {
