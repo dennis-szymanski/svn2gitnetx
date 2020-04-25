@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Moq;
 using Xunit;
 
@@ -474,7 +475,9 @@ namespace Svn2GitNetX.Tests
 
             string expectedArguments = "svn fetch -r 123:456";
 
-            mock.Setup( f => f.Run( "git", expectedArguments, It.IsAny<Action<string>>(), null, null ) ).Returns( 0 );
+            mock.Setup(
+                f => f.Run( "git", expectedArguments, It.IsAny<Action<string>>(), null, null, Timeout.InfiniteTimeSpan )
+            ).Returns( 0 );
 
             IGrabber grabber = CreateGrabber( options, mock.Object );
 
@@ -482,7 +485,10 @@ namespace Svn2GitNetX.Tests
             grabber.Clone();
 
             // Assert
-            mock.Verify( f => f.Run( "git", expectedArguments, It.IsAny<Action<string>>(), null, null ), Times.Once() );
+            mock.Verify(
+                f => f.Run( "git", expectedArguments, It.IsAny<Action<string>>(), null, null, Timeout.InfiniteTimeSpan ),
+                Times.Once()
+            );
         }
 
         [Fact]
@@ -506,7 +512,9 @@ namespace Svn2GitNetX.Tests
             string ignorePathsRegEx = @"^(?:)(?:ex1|ex2)";
             string expectedArguments = $"svn fetch --ignore-paths=\"{ignorePathsRegEx}\"";
 
-            mock.Setup( f => f.Run( "git", It.IsAny<string>() ) ).Returns( 0 );
+            mock.Setup(
+                f => f.Run( "git", It.IsAny<string>() )
+            ).Returns( 0 );
 
             IGrabber grabber = CreateGrabber( options, mock.Object );
 
@@ -514,7 +522,10 @@ namespace Svn2GitNetX.Tests
             grabber.Clone();
 
             // Assert
-            mock.Verify( f => f.Run( "git", expectedArguments, It.IsAny<Action<string>>(), null, null ), Times.Once() );
+            mock.Verify(
+                f => f.Run( "git", expectedArguments, It.IsAny<Action<string>>(), null, null, Timeout.InfiniteTimeSpan ),
+                Times.Once()
+            );
         }
 
         [Fact]
@@ -539,7 +550,9 @@ namespace Svn2GitNetX.Tests
             string ignorePathsRegEx = @"^(?:)(?:ex1|ex2)";
             string expectedArguments = $"svn fetch -r 123:456 --ignore-paths=\"{ignorePathsRegEx}\"";
 
-            mock.Setup( f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null ) ).Returns( 0 );
+            mock.Setup(
+                f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null, Timeout.InfiniteTimeSpan )
+            ).Returns( 0 );
 
             IGrabber grabber = CreateGrabber( options, mock.Object );
 
@@ -547,7 +560,10 @@ namespace Svn2GitNetX.Tests
             grabber.Clone();
 
             // Assert
-            mock.Verify( f => f.Run( "git", expectedArguments, It.IsAny<Action<string>>(), null, null ), Times.Once() );
+            mock.Verify(
+                f => f.Run( "git", expectedArguments, It.IsAny<Action<string>>(), null, null, Timeout.InfiniteTimeSpan ),
+                Times.Once()
+            );
         }
 
         [Fact]
@@ -572,7 +588,9 @@ namespace Svn2GitNetX.Tests
             string ignorePathsRegEx = @"^(?:subpath[\/])(?:ex1|ex2)";
             string expectedArguments = $"svn fetch --ignore-paths=\"{ignorePathsRegEx}\"";
 
-            mock.Setup( f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null ) ).Returns( 0 );
+            mock.Setup( 
+                f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null, Timeout.InfiniteTimeSpan )
+            ).Returns( 0 );
 
             IGrabber grabber = CreateGrabber( options, mock.Object );
 
@@ -580,7 +598,10 @@ namespace Svn2GitNetX.Tests
             grabber.Clone();
 
             // Assert
-            mock.Verify( f => f.Run( "git", expectedArguments, It.IsAny<Action<string>>(), null, null ), Times.Once() );
+            mock.Verify(
+                f => f.Run( "git", expectedArguments, It.IsAny<Action<string>>(), null, null, Timeout.InfiniteTimeSpan ),
+                Times.Once()
+            );
         }
 
         [Fact]
@@ -610,7 +631,9 @@ namespace Svn2GitNetX.Tests
             string ignorePathsRegEx = @"^(?:subpath[\/]|tag1[\/][^\/]+[\/]|tag2[\/][^\/]+[\/])(?:ex1|ex2)";
             string expectedArguments = $"svn fetch --ignore-paths=\"{ignorePathsRegEx}\"";
 
-            mock.Setup( f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null ) ).Returns( 0 );
+            mock.Setup(
+                f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null, Timeout.InfiniteTimeSpan )
+            ).Returns( 0 );
 
             IGrabber grabber = CreateGrabber( options, mock.Object );
 
@@ -618,7 +641,10 @@ namespace Svn2GitNetX.Tests
             grabber.Clone();
 
             // Assert
-            mock.Verify( f => f.Run( "git", expectedArguments, It.IsAny<Action<string>>(), null, null ), Times.Once() );
+            mock.Verify(
+                f => f.Run( "git", expectedArguments, It.IsAny<Action<string>>(), null, null, Timeout.InfiniteTimeSpan ),
+                Times.Once()
+            );
         }
 
         [Fact]
@@ -653,7 +679,9 @@ namespace Svn2GitNetX.Tests
             string ignorePathsRegEx = @"^(?:subpath[\/]|tag1[\/][^\/]+[\/]|tag2[\/][^\/]+[\/]|branch1[\/][^\/]+[\/]|branch2[\/][^\/]+[\/])(?:ex1|ex2)";
             string expectedArguments = $"svn fetch --ignore-paths=\"{ignorePathsRegEx}\"";
 
-            mock.Setup( f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null ) ).Returns( 0 );
+            mock.Setup(
+                f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null, Timeout.InfiniteTimeSpan )
+            ).Returns( 0 );
 
             IGrabber grabber = CreateGrabber( options, mock.Object );
 
@@ -661,7 +689,10 @@ namespace Svn2GitNetX.Tests
             grabber.Clone();
 
             // Assert
-            mock.Verify( f => f.Run( "git", expectedArguments, It.IsAny<Action<string>>(), null, null ), Times.Once() );
+            mock.Verify(
+                f => f.Run( "git", expectedArguments, It.IsAny<Action<string>>(), null, null, Timeout.InfiniteTimeSpan ),
+                Times.Once()
+            );
         }
 
         [Fact]
@@ -679,10 +710,10 @@ namespace Svn2GitNetX.Tests
             const int maxAttempts = 3;
 
             mock.Setup( 
-                f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null )
+                f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null, Timeout.InfiniteTimeSpan )
             )
             .Returns( 
-                delegate( string cmd, string arguments, Action<string> onStdout, Action<string> onStdErr, string workDir )
+                delegate( string cmd, string arguments, Action<string> onStdout, Action<string> onStdErr, string workDir, TimeSpan timeout )
                 {
                     // Only make progress on 1 revision.
                     onStdout( "r1 = somehash (ref/somewhere/svn)" );
@@ -723,10 +754,10 @@ namespace Svn2GitNetX.Tests
             int timesCalled = 0;
 
             mock.Setup( 
-                f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null )
+                f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null, Timeout.InfiniteTimeSpan )
             )
             .Returns( 
-                delegate( string cmd, string arguments, Action<string> onStdout, Action<string> onStdErr, string workDir )
+                delegate( string cmd, string arguments, Action<string> onStdout, Action<string> onStdErr, string workDir, TimeSpan timeout )
                 {
                     // Only make progress on 1 revision.
                     // This will increment our attempts since no progress has been made.
@@ -774,10 +805,10 @@ namespace Svn2GitNetX.Tests
             int timesCalled = 0;
 
             mock.Setup( 
-                f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null )
+                f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null, Timeout.InfiniteTimeSpan )
             )
             .Returns( 
-                delegate( string cmd, string arguments, Action<string> onStdout, Action<string> onStdErr, string workDir )
+                delegate( string cmd, string arguments, Action<string> onStdout, Action<string> onStdErr, string workDir, TimeSpan timeout )
                 {
                     onStdout( responses[timesCalled] );
 
@@ -830,10 +861,10 @@ namespace Svn2GitNetX.Tests
             int timesCalled = 0;
 
             mock.Setup( 
-                f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null )
+                f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null, Timeout.InfiniteTimeSpan )
             )
             .Returns( 
-                delegate( string cmd, string arguments, Action<string> onStdout, Action<string> onStdErr, string workDir )
+                delegate( string cmd, string arguments, Action<string> onStdout, Action<string> onStdErr, string workDir, TimeSpan timeout )
                 {
                     onStdout( responses[timesCalled].Item1 );
 
@@ -879,10 +910,10 @@ namespace Svn2GitNetX.Tests
             int timesCalled = 0;
 
             mock.Setup( 
-                f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null )
+                f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null, Timeout.InfiniteTimeSpan )
             )
             .Returns( 
-                delegate( string cmd, string arguments, Action<string> onStdout, Action<string> onStdErr, string workDir )
+                delegate( string cmd, string arguments, Action<string> onStdout, Action<string> onStdErr, string workDir, TimeSpan timeout )
                 {
                     onStdout( responses[timesCalled].Item1 );
 
@@ -928,10 +959,10 @@ namespace Svn2GitNetX.Tests
             int timesCalled = 0;
 
             mock.Setup( 
-                f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null )
+                f => f.Run( "git", It.IsAny<string>(), It.IsAny<Action<string>>(), null, null, Timeout.InfiniteTimeSpan )
             )
             .Returns( 
-                delegate( string cmd, string arguments, Action<string> onStdout, Action<string> onStdErr, string workDir )
+                delegate( string cmd, string arguments, Action<string> onStdout, Action<string> onStdErr, string workDir, TimeSpan timeout )
                 {
                     onStdout( responses[timesCalled].Item1 );
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using CommandLine;
 
 namespace Svn2GitNetX
@@ -402,6 +403,18 @@ namespace Svn2GitNetX
             else
             {
                 return this.Password;
+            }
+        }
+
+        public TimeSpan GetFetchTimeout()
+        {
+            if( this.FetchTimeout < 0 )
+            {
+                return Timeout.InfiniteTimeSpan;
+            }
+            else
+            {
+                return TimeSpan.FromSeconds( this.FetchTimeout );
             }
         }
     }

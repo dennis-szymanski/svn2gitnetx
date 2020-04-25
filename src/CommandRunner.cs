@@ -170,7 +170,7 @@ namespace Svn2GitNetX
                             if( progressMadeEvent.Wait( watchDogTimeout, this._cancelToken ) == false )
                             {
                                 throw new TimeoutException(
-                                    $"It has been more than {watchDogTimeout.TotalSeconds} since we got an update from the Process.  Possible broken Pipe.  Killing process"
+                                    $"It has been more than {watchDogTimeout.TotalSeconds} seconds since we got an update from the Process.  Possible broken Pipe.  Killing process"
                                 );
                             }
                             progressMadeEvent.Reset();

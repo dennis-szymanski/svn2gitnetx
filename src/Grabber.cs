@@ -199,7 +199,8 @@ namespace Svn2GitNetX
                         arguments.ToString().Trim(),
                         ParseRevision,
                         null,
-                        null
+                        null,
+                        this.Options.GetFetchTimeout()
                     );
 
                     if( exitCode == 0 )
@@ -230,7 +231,7 @@ namespace Svn2GitNetX
 
                 this._gcIgnorer.DeleteGcLogIfEnabled();
             }
-            while( ( this.Options.FetchAttempts <= 0 ) || ( currentAttempt <= this.Options.FetchAttempts ) );
+            while( ( this.Options.FetchAttempts < 0 ) || ( currentAttempt <= this.Options.FetchAttempts ) );
 
             if( success == false )
             {
