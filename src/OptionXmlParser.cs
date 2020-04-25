@@ -44,6 +44,7 @@ namespace Svn2GitNetX
         internal const string PushWhenDoneElement = "PushWhenDone";
         internal const string IgnorePathsElement = "IgnorePaths";
         internal const string IgnorePathElement = "IgnorePath";
+        internal const string FetchTimeoutElement = "FetchTimeout";
 
         // ---------------- Functions ----------------
 
@@ -276,6 +277,14 @@ namespace Svn2GitNetX
                         {
                             ignorePaths.Add( ignorePath.Value );
                         }
+                    }
+                }
+                else if( optionName.EqualsIgnoreCase( FetchTimeoutElement ) )
+                {
+                    ConvertToInt( option, ( o ) => opt.FetchTimeout = o );
+                    if( opt.FetchTimeout < 0 )
+                    {
+                        opt.FetchTimeout = -1;
                     }
                 }
             } // End foreach

@@ -170,5 +170,15 @@
             Defaulted to false.
         -->
         <PushWhenDone>false</PushWhenDone>
+        <!--
+            Time in seconds to wait for fetch operation to not report anything through stdout or stderr.
+            If this time elapses, the git process and killed, and another attempt is tried
+            until FetchAttempts is elapsed.
+            
+            Set to -1 (or less) to have no timeout.
+            
+            Defaulted to -1.
+        -->
+        <FetchTimeout>-1</FetchTimeout>
     </options>
 </svn2gitnetx>

@@ -51,6 +51,7 @@ namespace Svn2GitNetX
         private const string defaultSubpathToTrunk = "trunk";
         private const int defaultFetchAttempts = 0;
         private const StaleSvnBranchPurgeOptions defaultStaleSvnBranchPurgeOption = StaleSvnBranchPurgeOptions.nothing;
+        private const int defaultFetchTimeout = -1;
 
         // ---------------- Constructor ----------------
 
@@ -62,6 +63,7 @@ namespace Svn2GitNetX
             this.FetchAttempts = defaultFetchAttempts;
 
             this.StaleSvnBranchPurgeOption = defaultStaleSvnBranchPurgeOption;
+            this.FetchTimeout = defaultFetchTimeout;
         }
 
         // ---------------- Properties ----------------
@@ -343,6 +345,17 @@ namespace Svn2GitNetX
             HelpText = "Specify a Perl regular expression to filter paths when fetching; can take in multiple values via '--ignore-path path1 path2'.  Unlike Exclude, this is one path, not a glob of trunk, branches, and tags."
         )]
         public IEnumerable<string> IgnorePaths
+        {
+            get;
+            set;
+        }
+
+        [Option(
+            "fetch-timeout",
+            HelpText = "Time in seconds on how long to wait before not receving STDOUT or STDERR from fetching before killing the process and trying again.  -1 (or less) or not specified for no timeout.",
+            Default = defaultFetchTimeout
+        )]
+        public int FetchTimeout
         {
             get;
             set;

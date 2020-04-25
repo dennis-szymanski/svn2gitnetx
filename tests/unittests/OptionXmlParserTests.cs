@@ -49,6 +49,7 @@ namespace Svn2GitNetX.Tests
         <IgnorePaths>
             <IgnorePath>places</IgnorePath>
         </IgnorePaths>
+        <FetchTimeout>-1</FetchTimeout>
     </options>
 </svn2gitnetx>
 ";
@@ -81,6 +82,7 @@ namespace Svn2GitNetX.Tests
             Assert.Equal( "ssh://git@github.com/xforever1313/Chaskis.git", actualOptions.RemoteGitUrl );
             Assert.False( actualOptions.PushWhenDone );
             Assert.Equal( new List<string> { "places" }, actualOptions.IgnorePaths );
+            Assert.Equal( -1, actualOptions.FetchTimeout );
         }
 
         [Fact]
@@ -126,6 +128,7 @@ namespace Svn2GitNetX.Tests
         <IgnorePaths>
             <IgnorePath>\/doc</IgnorePath>
         </IgnorePaths>
+        <FetchTimeout>-10</FetchTimeout>
     </options>
 </svn2gitnetx>
 ";
@@ -158,6 +161,7 @@ namespace Svn2GitNetX.Tests
             Assert.Equal( "ssh://git@github.com/xforever1313/svn2gitnetx.git", actualOptions.RemoteGitUrl );
             Assert.True( actualOptions.PushWhenDone );
             Assert.Equal( new List<string> { @"\/doc" }, actualOptions.IgnorePaths );
+            Assert.Equal( -1, actualOptions.FetchTimeout ); // Should be fixed up to -1.
         }
 
         [Fact]
@@ -200,6 +204,7 @@ namespace Svn2GitNetX.Tests
             Assert.Null( actualOptions.RemoteGitUrl );
             Assert.False( actualOptions.PushWhenDone );
             Assert.Null( actualOptions.IgnorePaths );
+            Assert.Equal( -1, actualOptions.FetchTimeout );
         }
 
         [Fact]
@@ -250,6 +255,7 @@ namespace Svn2GitNetX.Tests
             Assert.Null( actualOptions.RemoteGitUrl );
             Assert.False( actualOptions.PushWhenDone );
             Assert.Null( actualOptions.IgnorePaths );
+            Assert.Equal( -1, actualOptions.FetchTimeout );
         }
     }
 }
