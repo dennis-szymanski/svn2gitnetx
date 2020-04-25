@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using Microsoft.Extensions.Logging;
 
 namespace Svn2GitNetX
@@ -43,6 +44,16 @@ namespace Svn2GitNetX
                 }
                 File.Delete( filePath );
             }
+        }
+
+        public bool DirectoryExists( string directoryPath )
+        {
+            return Directory.Exists( directoryPath );
+        }
+
+        public IEnumerable<string> GetChildDirectories( string directoryPath )
+        {
+            return Directory.GetDirectories( directoryPath );
         }
     }
 }
