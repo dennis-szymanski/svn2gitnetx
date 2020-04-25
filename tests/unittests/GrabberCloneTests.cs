@@ -992,8 +992,10 @@ namespace Svn2GitNetX.Tests
         private IGrabber CreateGrabber( Options options, ICommandRunner runner, string gitConfigCommandArgs = "" )
         {
             Mock<IGcErrorIgnorer> ignorer = new Mock<IGcErrorIgnorer>( MockBehavior.Strict );
-
             ignorer.Setup( m => m.IgnoreGcErrors ).Returns( options.IgnoreGcErrors );
+
+            Mock<ILockBreaker> lockBreaker = new Mock<ILockBreaker>( MockBehavior.Strict );
+            lockBreaker.Setup( m => m.ShouldBreakLocks ).Returns( options.BreakLocks );
 
             return new Grabber(
                 _testSvnUrl,
@@ -1002,7 +1004,8 @@ namespace Svn2GitNetX.Tests
                 gitConfigCommandArgs,
                 null,
                 null,
-                ignorer.Object
+                ignorer.Object,
+                lockBreaker.Object
             );
         }
     }

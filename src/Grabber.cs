@@ -17,6 +17,7 @@ namespace Svn2GitNetX
         private readonly MetaInfo _metaInfo;
 
         private readonly IGcErrorIgnorer _gcIgnorer;
+        private readonly ILockBreaker _lockBreaker;
 
         private static readonly Regex revisionRegex = new Regex(
             @"r(?<rev>\d+)\s+=\s+\S+\s+\(.+\)",
@@ -32,7 +33,8 @@ namespace Svn2GitNetX
             string gitConfigCommandArguments,
             IMessageDisplayer messageDisplayer,
             ILogger logger,
-            IGcErrorIgnorer ignorer
+            IGcErrorIgnorer ignorer,
+            ILockBreaker lockBreaker
         ) :
             base( options, commandRunner, gitConfigCommandArguments, messageDisplayer, logger )
         {
@@ -44,6 +46,7 @@ namespace Svn2GitNetX
                 Tags = new List<string>()
             };
             _gcIgnorer = ignorer;
+            _lockBreaker = lockBreaker;
         }
 
         // ----------------- Functions -----------------
@@ -136,6 +139,7 @@ namespace Svn2GitNetX
 
             arguments.Append( _svnUrl );
 
+            this._lockBreaker.BreakLocksIfEnabled();
             if( CommandRunner.RunGitSvnInteractiveCommand( arguments.ToString(), Options.GetPassword() ) != 0 )
             {
                 string exceptionMessage = string.Format( ExceptionHelper.ExceptionMessage.FAIL_TO_EXECUTE_COMMAND, $"git {arguments.ToString()}" );
@@ -176,6 +180,7 @@ namespace Svn2GitNetX
             //---- Fetch ----
 
             this._gcIgnorer.DeleteGcLogIfEnabled();
+            this._lockBreaker.BreakLocksIfEnabled();
 
             int lastRevision = -1;
             int currentRevision = lastRevision;
@@ -230,6 +235,7 @@ namespace Svn2GitNetX
                 }
 
                 this._gcIgnorer.DeleteGcLogIfEnabled();
+                this._lockBreaker.BreakLocksIfEnabled();
             }
             while( ( this.Options.FetchAttempts < 0 ) || ( currentAttempt <= this.Options.FetchAttempts ) );
 

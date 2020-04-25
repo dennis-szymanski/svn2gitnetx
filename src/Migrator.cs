@@ -75,6 +75,12 @@ namespace Svn2GitNetX
                 this.fileSystem
             );
 
+            LockBreaker lockBreaker = new LockBreaker(
+                _loggerFactory.CreateLogger<LockBreaker>(),
+                Options,
+                this.fileSystem
+            );
+
             Grabber grabber = new Grabber(
                 _svnUrl,
                 Options,
@@ -82,7 +88,8 @@ namespace Svn2GitNetX
                 GitConfigCommandArguments,
                 MessageDisplayer,
                 _loggerFactory.CreateLogger<Grabber>(),
-                gcIgnorer
+                gcIgnorer,
+                lockBreaker
             );
 
             Fixer fixer = new Fixer(
@@ -111,14 +118,15 @@ namespace Svn2GitNetX
                 _loggerFactory.CreateLogger<GitPusher>()
             );
 
-            Run( grabber, fixer, branchDeleter, pusher );
+            Run( grabber, fixer, branchDeleter, pusher, lockBreaker );
         }
 
         public void Run(
             IGrabber grabber,
             IFixer fixer,
             IStaleSvnBranchDeleter svnBranchDeleter,
-            IGitPusher gitPusher
+            IGitPusher gitPusher,
+            ILockBreaker lockBreaker
         )
         {
             if( grabber == null )
@@ -136,14 +144,16 @@ namespace Svn2GitNetX
                 throw new ArgumentNullException( nameof( svnBranchDeleter ) );
             }
 
+            if( lockBreaker == null )
+            {
+                throw new ArgumentNullException( nameof( lockBreaker ) );
+            }
+
             try
             {
                 PreRunPrepare();
 
-                if( Options.BreakLocks )
-                {
-                    BreakLocks();
-                }
+                lockBreaker.BreakLocksIfEnabled();
 
                 if( Options.Rebase )
                 {
@@ -268,31 +278,6 @@ namespace Svn2GitNetX
             {
                 MessageDisplayer.Show( "Failed to disable the cached credentials. We'll use the cached credentials for further actions." );
                 LogError( ex.ToString() );
-            }
-        }
-
-        private void BreakLocks()
-        {
-            string svnIndexFolder = Path.Combine( ".", ".git", "svn", "refs", "remotes", "svn" );
-            if( Directory.Exists( svnIndexFolder ) )
-            {
-                foreach( string dir in Directory.GetDirectories( svnIndexFolder ) )
-                {
-                    string lockFile = Path.Combine( dir, "index.lock" );
-                    if( File.Exists( lockFile ) )
-                    {
-                        Log( $"Breaking lock at '{lockFile}" );
-                        try
-                        {
-                            File.Delete( lockFile );
-                        }
-                        catch( Exception )
-                        {
-                            LogError( $"Could not delete lock at '{lockFile}', is the file in use by a different process?" );
-                            throw;
-                        }
-                    }
-                }
             }
         }
 
